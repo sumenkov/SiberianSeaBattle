@@ -42,6 +42,15 @@ public class TestController {
         for (Warship warship : fleet.getWarships()) {
             log.info("start " + warship.start() + "end " + warship.end());
         }
+        log.info("grids");
+        for (Integer[] row : fleet.getGrids()) {
+            StringBuilder stRor = new StringBuilder();
+            for(Integer point:row) {
+                stRor.append(point ==null?0:point);
+                stRor.append(" ");
+            }
+            log.info(stRor.toString());
+        }
 
     }
 }
