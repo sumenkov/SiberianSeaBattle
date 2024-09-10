@@ -30,7 +30,6 @@ import java.util.List;
 public class Fleet {
    private List<Warship> warships;
 
-
    public void addWarship(Warship warship) {
       if(warships == null) {
          warships = new ArrayList<>();

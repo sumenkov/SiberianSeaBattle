@@ -34,18 +34,13 @@ import java.util.Random;
 @Service
 public class GameService {
 
-    private Random rand = new Random();
+    private final Random rand = new Random();
     List<WarshipDescription> warshipDescriptions = List.of(
-            new WarshipDescription(1,
-                                   4),
-            new WarshipDescription(2,
-                                   3),
-            new WarshipDescription(3,
-                                   2),
-            new WarshipDescription(4,
-                                   1)
-                                                          );
-
+            new WarshipDescription(1, 4),
+            new WarshipDescription(2, 3),
+            new WarshipDescription(3, 2),
+            new WarshipDescription(4, 1)
+    );
 
     public Fleet getFleet(int xSize, int ySize) {
         Fleet fleet = new Fleet();
@@ -53,10 +48,11 @@ public class GameService {
         for (WarshipDescription warshipDescription : warshipDescriptions) {
             for (int warshipCount = 0; warshipCount < warshipDescription.count(); warshipCount++) {
                 Warship warship = getWarship(grids,
-                                             warshipDescription.size());
+                        warshipDescription.size());
                 fleet.addWarship(warship);
             }
         }
+
         return fleet;
     }
 
@@ -71,32 +67,25 @@ public class GameService {
             directionOX = rand.nextBoolean();
             int maxX = grids[0].length - (directionOX ? size : 1);
             int maxY = grids.length - (directionOX ? 1 : size);
-            int x = getRandom(maxX,
-                              minX);
-            int y = getRandom(maxY,
-                              minY);
-            end = getPosition(x,
-                              y,
-                              directionOX,
-                              grids,
-                              size);
-            start = new Point(x,
-                              y);
+            int x = getRandom(maxX, minX);
+            int y = getRandom(maxY, minY);
+            end = getPosition(x, y, directionOX, grids, size);
+            start = new Point(x, y);
         } while (end.isEmpty());
 
         return new Warship(start, end.get());
     }
 
     private Optional<Point> getPosition(int x, int y, boolean directionOX, Integer[][] grids, int size) {
-        Optional<Point> end =  getPosition(x, y, directionOX, grids, size, 1);
-        if(end.isPresent()) {
+        Optional<Point> end = getPosition(x, y, directionOX, grids, size, 1);
+        if (end.isPresent()) {
             return end;
         }
-        return getPosition(x, y, directionOX, grids, size, -1);
 
+        return getPosition(x, y, directionOX, grids, size, -1);
     }
-    private Optional<Point> getPosition(int x, int y, boolean directionOX, Integer[][] grids, int size,
-                                        int direction) {
+
+    private Optional<Point> getPosition(int x, int y, boolean directionOX, Integer[][] grids, int size, int direction) {
         int maxX = x + (size * direction);
         if (directionOX && maxX > grids[0].length || maxX < -1) {
             return Optional.empty();
@@ -131,18 +120,14 @@ public class GameService {
             }
         }
 
-        if(directionOX)  {
-            return Optional.of(new Point(x + ((size-1) * direction), y));
+        if (directionOX) {
+            return Optional.of(new Point(x + ((size - 1) * direction), y));
         } else {
-            return Optional.of(new Point(x, y + ((size-1) * direction)));
+            return Optional.of(new Point(x, y + ((size - 1) * direction)));
         }
     }
-
-
 
     private int getRandom(int max, int min) {
         return rand.nextInt(max - min + 1) + min;
     }
-
-
 }

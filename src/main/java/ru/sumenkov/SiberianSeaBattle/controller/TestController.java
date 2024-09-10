@@ -37,13 +37,11 @@ public class TestController {
 
     @PostConstruct
     void initTest() {
-        Fleet fleet = gameService.getFleet(10,
-                                           10);
+        Fleet fleet = gameService.getFleet(10, 10);
         log.info("fleat");
         for (Warship warship : fleet.getWarships()) {
             log.info("start " + warship.start() + "end " + warship.end());
         }
 
     }
-
 }
