@@ -192,7 +192,7 @@ public class GameService {
             }
             //проверяем клетку левее
             checkX = x-1;
-            if(checkX >=0 && grids[0][checkX] != null) {
+            if(checkX >=0 && grids[y][checkX] != null) {
                 return true;
             }
             //если это первая клетка проверяем выше 3 клетки
