@@ -52,7 +52,7 @@ public class GameService {
                 fleet.addWarship(warship);
             }
         }
-
+        fleet.setGrids(grids);
         return fleet;
     }
 
@@ -101,9 +101,16 @@ public class GameService {
                 if (grids[y][checkX] != null) {
                     return Optional.empty();
                 }
+                if(isInvalidPositionAround(index ==0, index == size-1, directionOX, y, checkX, grids, direction)){
+                    return Optional.empty();
+                }
+
             } else {
                 int checkY = y + (index * direction);
                 if (grids[checkY][x] != null) {
+                    return Optional.empty();
+                }
+                if(isInvalidPositionAround(index ==0, index == size-1, directionOX, checkY, x, grids, direction)){
                     return Optional.empty();
                 }
             }
@@ -125,6 +132,102 @@ public class GameService {
         } else {
             return Optional.of(new Point(x, y + ((size - 1) * direction)));
         }
+    }
+
+    private boolean isInvalidPositionAround(boolean isFirst, boolean isLast, boolean directionOX, int y, int x,
+                                            Integer[][] grids, int direction) {
+        if(direction <0) {
+            //Если навправление обратное то поменять местами признаки начала и конца
+            boolean tmp = isFirst;
+            isFirst = isLast;
+            isLast = tmp;
+        }
+        if(directionOX) {
+            //проверяем клетку ниже
+            int checkY = y+1;
+            if(checkY < grids.length && grids[checkY][x] != null)  {
+                return true;
+            }
+            //проверяем клетку выше
+            checkY = y-1;
+            if(checkY >=0 && grids[checkY][x] != null) {
+                return true;
+            }
+            //если это первая клетка проверяем левее 3 клетки
+            if(isFirst) {
+                checkY = y-1;
+                int checkX = x -1;
+                if(checkX >=0 && checkY>=0 && grids[checkY][checkX] != null) {
+                    return true;
+                }
+                checkY = y+1;
+                if(checkX >=0 && checkY < grids.length && grids[checkY][checkX] != null) {
+                    return true;
+                }
+                if(checkX >=0 && grids[y][checkX] != null) {
+                    return true;
+                }
+            }
+            //если это последняя клетка проверяем правые 3 клетки
+            if(isLast) {
+                checkY = y-1;
+                int checkX = x +1;
+                if(checkX < grids[0].length && checkY>=0 && grids[checkY][checkX] != null) {
+                    return true;
+                }
+                checkY = y+1;
+                if(checkX < grids[0].length && checkY < grids.length && grids[checkY][checkX] != null) {
+                    return true;
+                }
+                if(checkX < grids[0].length && grids[y][checkX] != null) {
+                    return true;
+                }
+            }
+
+        } else {
+            //проверяем клетку правее
+            int checkX = x+1;
+            if(checkX < grids[0].length && grids[y][checkX] != null)  {
+                return true;
+            }
+            //проверяем клетку левее
+            checkX = x-1;
+            if(checkX >=0 && grids[0][checkX] != null) {
+                return true;
+            }
+            //если это первая клетка проверяем выше 3 клетки
+            if(isFirst) {
+                checkX = x-1;
+                int checkY = y -1;
+                if(checkY >=0 && checkX>=0 && grids[checkY][checkX] != null) {
+                    return true;
+                }
+                checkX = x+1;
+                if(checkY >=0 && checkX < grids[0].length && grids[checkY][checkX] != null) {
+                    return true;
+                }
+                if(checkY >=0 && grids[checkY][x] != null) {
+                    return true;
+                }
+            }
+            //если это последняя клетка проверяем ниже 3 клетки
+            if(isLast) {
+                checkX = x-1;
+                int checkY = y +1;
+                if(checkY < grids.length  && checkX >=0 && grids[checkY][checkX] != null) {
+                    return true;
+                }
+                checkX = y+1;
+                if(checkY < grids.length && checkX < grids[0].length && grids[checkY][checkX] != null) {
+                    return true;
+                }
+                if(checkY < grids.length && grids[checkY][x] != null) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private int getRandom(int max, int min) {

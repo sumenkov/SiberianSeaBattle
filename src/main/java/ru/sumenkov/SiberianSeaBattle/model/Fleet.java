@@ -29,6 +29,7 @@ import java.util.List;
 @Data
 public class Fleet {
    private List<Warship> warships;
+   private Integer[][] grids;
 
    public void addWarship(Warship warship) {
       if(warships == null) {
