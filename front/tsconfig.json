@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "moduleResolution": "Node",
+        "target": "ES5",
+        "strictNullChecks": true,
+        "strictFunctionTypes": true,
+        "strict": true,
+        "outDir": "./public"
+    },
+    "exclude": [
+        "node_modules",
+        "**/node_modules/*"
+    ]
+}
