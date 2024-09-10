@@ -37,20 +37,46 @@ public class TestController {
 
     @PostConstruct
     void initTest() {
-        Fleet fleet = gameService.getFleet(10, 10);
-        log.info("fleat");
-        for (Warship warship : fleet.getWarships()) {
-            log.info("start " + warship.start() + "end " + warship.end());
-        }
-        log.info("grids");
-        for (Integer[] row : fleet.getGrids()) {
-            StringBuilder stRor = new StringBuilder();
-            for(Integer point:row) {
-                stRor.append(point ==null?0:point);
-                stRor.append(" ");
-            }
-            log.info(stRor.toString());
-        }
+        for (int countGame = 0; countGame < 10; countGame++) {
 
+            Fleet fleet = gameService.getFleet(10,
+                                               10);
+            log.info("fleat game " + countGame);
+            for (Warship warship : fleet.getWarships()) {
+                log.info(String.format("start (x=%s, y=%s) end (x=%s, y=%s)",
+                                       warship.start().x() + 1,
+                                       warship.start().y() + 1,
+                                       warship.end().x() + 1,
+                                       warship.end().y() + 1));
+            }
+            log.info("grids");
+            Integer[][] grids = fleet.getGrids();
+            for (int oy = 0; oy < grids.length; oy++) {
+                if (oy == 0) {
+                    log.info("    1,2,3,4,5,6,7,8,9,10");
+                    log.info("   ---------------------");
+                }
+                String line = getOxLine(grids, oy);
+                log.info(line);
+            }
+        }
+    }
+
+    private static String getOxLine(Integer[][] grids, int oy) {
+        StringBuilder stRor = new StringBuilder();
+        Integer[] pointsOx = grids[oy];
+        for (int ox = 0; ox < pointsOx.length; ox++) {
+            if (ox == 0) {
+                if (oy < 9) {
+                    stRor.append("0");
+                }
+                stRor.append((oy + 1));
+                stRor.append(" |");
+            }
+            Integer point = pointsOx[ox];
+            stRor.append(point == null ? 0 : point);
+            stRor.append(" ");
+        }
+        return stRor.toString();
     }
 }
