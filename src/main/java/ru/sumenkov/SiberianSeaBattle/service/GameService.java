@@ -110,6 +110,135 @@ public class GameService {
      * @param grids поле
      */
     private void kill(Warship warship, GridPoint[][] grids) {
+        final int x1;
+        final int x2;
+        final int y1;
+        final int y2;
+        //Алгорит вычесляет x1 y1 самую левую и верхгюю точку (минимальные)
+        final boolean directionOX;
+        if(warship.getStart().x() == warship.getEnd().x()) {
+            directionOX = true;
+            if(warship.getStart().y() < warship.getEnd().y()) {
+                x1 = warship.getStart().x();
+                y1 = warship.getStart().y();
+
+                x2 = warship.getEnd().x();
+                y2 = warship.getEnd().y();
+            } else {
+                x1 = warship.getEnd().x();
+                y1 = warship.getEnd().y();
+
+                x2 = warship.getStart().x();
+                y2 = warship.getStart().y();
+            }
+
+        } else {
+            directionOX = false;
+            if(warship.getStart().x() < warship.getEnd().x()) {
+                x1 = warship.getStart().x();
+                y1 = warship.getStart().y();
+
+                x2 = warship.getEnd().x();
+                y2 = warship.getEnd().y();
+            } else {
+                x1 = warship.getEnd().x();
+                y1 = warship.getEnd().y();
+
+                x2 = warship.getStart().x();
+                y2 = warship.getStart().y();
+            }
+        }
+        for(int oy = y1; oy <= y2; oy++) {
+            for(int ox = x1; ox <= x2; ox++) {
+                // первая клетка
+                if(ox == x1 && oy== y1) {
+                    if (directionOX) {
+                        int checkY = oy-1;
+                        int checkX = ox -1;
+                        if(checkX >=0 && checkY>=0) {
+                            grids[checkY][checkX].setExplored(true);
+                        }
+                        checkY = oy+1;
+                        if(checkX >=0 && checkY < grids.length ) {
+                            grids[checkY][checkX].setExplored(true);
+                        }
+                        if(checkX >=0 ) {
+                            grids[oy][checkX].setExplored(true);
+                        }
+                    } else {
+                        int checkX = ox-1;
+                        int checkY = oy -1;
+                        if(checkY >=0 && checkX>=0 ) {
+                            grids[checkY][checkX].setExplored(true);
+                        }
+                        checkX = ox+1;
+                        if(checkY >=0 && checkX < grids[0].length ) {
+                            grids[checkY][checkX].setExplored(true);
+                        }
+                        if(checkY >=0 ) {
+                            grids[checkY][ox].setExplored(true);
+                        }
+                    }
+                }
+                if (directionOX) {
+                    //клетку ниже
+                    int checkY = oy + 1;
+                    if (checkY < grids.length) {
+                        grids[checkY][ox].setExplored(true);
+                    }
+                    //клетку выше
+                    checkY = oy - 1;
+                    if (checkY >= 0) {
+                        grids[checkY][ox].setExplored(true);
+                    }
+                } else {
+                    //клетку правее
+                    int checkX = ox + 1;
+                    if (checkX < grids[0].length) {
+                        grids[oy][checkX].setExplored(true);
+                    }
+                    //клетку левее
+                    checkX = ox - 1;
+                    if (checkX >= 0) {
+                        grids[oy][checkX].setExplored(true);
+                    }
+                }
+
+                //последняя клетка
+                if(ox == x2 && oy == y2) {
+                    if(directionOX) {
+                        int checkY = oy-1;
+                        int checkX = ox +1;
+                        if(checkX < grids[0].length && checkY>=0 ) {
+                          grids[checkY][checkX].setExplored(true);
+                        }
+                        checkY = oy+1;
+                        if(checkX < grids[0].length && checkY < grids.length ) {
+                           grids[checkY][checkX].setExplored(true);
+                        }
+                        if(checkX < grids[0].length) {
+                             grids[oy][checkX].setExplored(true);
+                        }
+                    } else {
+                        int checkX = ox-1;
+                        int checkY = oy +1;
+                        if(checkY < grids.length  && checkX >=0 ) {
+                            grids[checkY][checkX].setExplored(true);
+                        }
+                        checkX = ox+1;
+                        if(checkY < grids.length && checkX < grids[0].length ) {
+                            grids[checkY][checkX].setExplored(true);
+                        }
+                        if(checkY < grids.length ) {
+                            grids[checkY][ox].setExplored(true);
+                        }
+                    }
+
+                }
+
+            }
+        }
+
         //TODO реализовать убийсво корабля
     }
 
@@ -276,7 +405,7 @@ public class GameService {
                 if(checkY < grids.length  && checkX >=0 && grids[checkY][checkX].getWarship().isPresent()) {
                     return true;
                 }
-                checkX = y+1;
+                checkX = x+1;
                 if(checkY < grids.length && checkX < grids[0].length && grids[checkY][checkX].getWarship().isPresent()) {
                     return true;
                 }

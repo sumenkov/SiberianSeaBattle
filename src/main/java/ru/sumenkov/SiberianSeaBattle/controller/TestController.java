@@ -42,7 +42,7 @@ public class TestController {
     void initTest() {
         Fleet fleet = gameService.getFleet(10,
                                            10);
-        for (int countGame = 0; countGame < 3; countGame++) {
+        for (int countGame = 0; countGame < 10; countGame++) {
             log.info("fleat game " + countGame);
             for (Warship warship : fleet.getWarships()) {
                 log.info(String.format("start (x=%s, y=%s) end (x=%s, y=%s) size %s live %s",
@@ -64,14 +64,15 @@ public class TestController {
                                         oy);
                 log.info(line);
             }
-            Warship warship = fleet.getWarships().get(Math.toIntExact(Math.round(Math.random() * 9)));
+            int x = Math.toIntExact(Math.round(Math.random() * 9));
+            int y = Math.toIntExact(Math.round(Math.random() * 9));
             boolean isHit = gameService.checkShot(fleet,
-                                                  warship.getStart().x(),
-                                                  warship.getStart().y());
+                                                  x,
+                                                  y);
             log.info(String.format("is hit %s x %s y %s",
                                    isHit,
-                                   warship.getStart().x() + 1,
-                                   warship.getStart().y() + 1));
+                                   x + 1,
+                                   y + 1));
 
         }
     }
@@ -89,9 +90,10 @@ public class TestController {
             }
             GridPoint point = pointsOx[ox];
             Optional<Warship> warship = point.getWarship();
-            String exploredPoint = point.isExplored() ? "+" : "*";
-
-            stRor.append(warship.isEmpty() ? exploredPoint : warship.get().getSize());
+            String pointX;
+            pointX = warship.map(value -> value.getLives() == 0 ? "x" : "" + value.getSize())
+                    .orElseGet(() -> point.isExplored() ? "x" : "*");
+            stRor.append(pointX);
             stRor.append(" ");
         }
         return stRor.toString();

@@ -21,5 +21,5 @@ package ru.sumenkov.SiberianSeaBattle.model;
  * @author <a href="mailto:onixbed@gmail.com">amaksimov</a>
  * crested on 09.09.2024
  */
-public record Point(Integer x, Integer y) {
+public record Point(int x, int y) {
 }
