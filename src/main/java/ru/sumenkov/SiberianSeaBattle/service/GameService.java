@@ -16,7 +16,9 @@
 package ru.sumenkov.SiberianSeaBattle.service;
 
 import org.springframework.stereotype.Service;
+import ru.sumenkov.SiberianSeaBattle.model.CustomFleet;
 import ru.sumenkov.SiberianSeaBattle.model.Fleet;
+import ru.sumenkov.SiberianSeaBattle.model.GridPoint;
 import ru.sumenkov.SiberianSeaBattle.model.Point;
 import ru.sumenkov.SiberianSeaBattle.model.Warship;
 import ru.sumenkov.SiberianSeaBattle.model.WarshipDescription;
@@ -42,9 +44,22 @@ public class GameService {
             new WarshipDescription(4, 1)
     );
 
+    /**
+     * Метод геерации флота и карты
+     * @param xSize размкер карты по OX
+     * @param ySize размкер карты по OY
+     * @return флот
+     */
     public Fleet getFleet(int xSize, int ySize) {
         Fleet fleet = new Fleet();
-        Integer[][] grids = new Integer[xSize][ySize];
+        GridPoint[][] grids = new GridPoint[xSize][ySize];
+        //Заполяем поля пустыми клетками
+        for(GridPoint[] points: grids) {
+            for(int ox=0; ox< points.length; ox++) {
+                points[ox] = new GridPoint(Optional.empty(), false);
+            }
+        }
+
         for (WarshipDescription warshipDescription : warshipDescriptions) {
             for (int warshipCount = 0; warshipCount < warshipDescription.count(); warshipCount++) {
                 Warship warship = getWarship(grids,
@@ -56,12 +71,53 @@ public class GameService {
         return fleet;
     }
 
-    private Warship getWarship(Integer[][] grids, int size) {
+    /**
+     * Метод проерки расстановки флота от Пользователя
+     * @param grids поле с флотом
+     * @return Возвращает структуру с информацией где кривые данные
+     */
+    public CustomFleet checkCustomFleet(Integer[][] grids) {
+        //TODO можно не делать пока если проверка будет сделана на фронте
+        //нужно отдавать статус и если статус кривой то еще и карту с отеткой что не так
+        CustomFleet customFleet =  new CustomFleet();
+        customFleet.setStatus(true);
+        return customFleet;
+    }
+
+    /**
+     * Проверить выстрел
+     * Внимание структура флота будет включть выстрел (пройзойдет изминение во флоте)
+     * @return true если выстрел попал, false - промах
+     */
+    public boolean checkShot(Fleet fleet, int x, int y) {
+        GridPoint gridPoint = fleet.getGrids()[y][x];
+        Optional<Warship> warshipOpt = gridPoint.getWarship();
+        gridPoint.setExplored(true);
+        if (warshipOpt.isEmpty()) {
+            return false;
+        }
+        Warship warship = warshipOpt.get();
+        boolean isKilled = warship.hit();
+        if(isKilled) {
+            kill(warship, fleet.getGrids());
+        }
+        return true;
+    }
+
+    /**
+     * Убить корабыль (вокруг корабля пометить все клетки)
+     * @param warship корабыль
+     * @param grids поле
+     */
+    private void kill(Warship warship, GridPoint[][] grids) {
+        //TODO реализовать убийсво корабля
+    }
+
+    private Warship getWarship(GridPoint[][] grids, int size) {
         //TODO Нужно добавить разные алгоритмы растанновки
         int minX = 0;
         int minY = 0;
-        Point start;
-        Optional<Point> end;
+        Optional<Warship> warship;
         boolean directionOX;
         do {
             directionOX = rand.nextBoolean();
@@ -69,23 +125,22 @@ public class GameService {
             int maxY = grids.length - (directionOX ? 1 : size);
             int x = getRandom(maxX, minX);
             int y = getRandom(maxY, minY);
-            end = getPosition(x, y, directionOX, grids, size);
-            start = new Point(x, y);
-        } while (end.isEmpty());
+            warship = getWarship(x, y, directionOX, grids, size);
+        } while (warship.isEmpty());
 
-        return new Warship(start, end.get());
+        return warship.get();
     }
 
-    private Optional<Point> getPosition(int x, int y, boolean directionOX, Integer[][] grids, int size) {
-        Optional<Point> end = getPosition(x, y, directionOX, grids, size, 1);
-        if (end.isPresent()) {
-            return end;
+    private Optional<Warship> getWarship(int x, int y, boolean directionOX, GridPoint[][] grids, int size) {
+        Optional<Warship> warship = getWarship(x, y, directionOX, grids, size, 1);
+        if (warship.isPresent()) {
+            return warship;
         }
 
-        return getPosition(x, y, directionOX, grids, size, -1);
+        return getWarship(x, y, directionOX, grids, size, -1);
     }
 
-    private Optional<Point> getPosition(int x, int y, boolean directionOX, Integer[][] grids, int size, int direction) {
+    private Optional<Warship> getWarship(int x, int y, boolean directionOX, GridPoint[][] grids, int size, int direction) {
         int maxX = x + (size * direction);
         if (directionOX && maxX > grids[0].length || maxX < -1) {
             return Optional.empty();
@@ -94,48 +149,52 @@ public class GameService {
         if (!directionOX && maxY > grids.length || maxY < -1) {
             return Optional.empty();
         }
-        //TODO добавить проверку ВОКРУГ  лодки чтобы было ПУСТО!!
+
         for (int index = 0; index < size; index++) {
             if (directionOX) {
                 int checkX = x + (index * direction);
-                if (grids[y][checkX] != null) {
+                if (grids[y][checkX].getWarship().isPresent()) {
                     return Optional.empty();
                 }
-                if(isInvalidPositionAround(index ==0, index == size-1, directionOX, y, checkX, grids, direction)){
+                if(isInvalidPositionAround(index == 0, index == size-1, directionOX, y, checkX, grids, direction)){
                     return Optional.empty();
                 }
-
             } else {
                 int checkY = y + (index * direction);
-                if (grids[checkY][x] != null) {
+                if (grids[checkY][x].getWarship().isPresent()) {
                     return Optional.empty();
                 }
-                if(isInvalidPositionAround(index ==0, index == size-1, directionOX, checkY, x, grids, direction)){
+                if(isInvalidPositionAround(index == 0, index == size-1, directionOX, checkY, x, grids, direction)){
                     return Optional.empty();
                 }
             }
         }
+        Point end;
+        if (directionOX) {
+            end = new Point(x + ((size - 1) * direction), y);
+        } else {
+            end = new Point(x, y + ((size - 1) * direction));
+        }
 
+        Warship warship = new Warship(new Point(x, y), end, size, size);
+        GridPoint point = new GridPoint(Optional.of(warship), false);
         //После провкерки нужно пометить поле
         for (int index = 0; index < size; index++) {
             if (directionOX) {
                 int checkX = x + (index * direction);
-                grids[y][checkX] = size;
+                grids[y][checkX] = point;
             } else {
                 int checkY = y + (index * direction);
-                grids[checkY][x] = size;
+                grids[checkY][x] = point;
             }
         }
+        return Optional.of(warship);
 
-        if (directionOX) {
-            return Optional.of(new Point(x + ((size - 1) * direction), y));
-        } else {
-            return Optional.of(new Point(x, y + ((size - 1) * direction)));
-        }
+
     }
 
     private boolean isInvalidPositionAround(boolean isFirst, boolean isLast, boolean directionOX, int y, int x,
-                                            Integer[][] grids, int direction) {
+                                            GridPoint[][] grids, int direction) {
         if(direction <0) {
             //Если навправление обратное то поменять местами признаки начала и конца
             boolean tmp = isFirst;
@@ -145,26 +204,26 @@ public class GameService {
         if(directionOX) {
             //проверяем клетку ниже
             int checkY = y+1;
-            if(checkY < grids.length && grids[checkY][x] != null)  {
+            if(checkY < grids.length && grids[checkY][x].getWarship().isPresent())  {
                 return true;
             }
             //проверяем клетку выше
             checkY = y-1;
-            if(checkY >=0 && grids[checkY][x] != null) {
+            if(checkY >=0 && grids[checkY][x].getWarship().isPresent()) {
                 return true;
             }
             //если это первая клетка проверяем левее 3 клетки
             if(isFirst) {
                 checkY = y-1;
                 int checkX = x -1;
-                if(checkX >=0 && checkY>=0 && grids[checkY][checkX] != null) {
+                if(checkX >=0 && checkY>=0 && grids[checkY][checkX].getWarship().isPresent()) {
                     return true;
                 }
                 checkY = y+1;
-                if(checkX >=0 && checkY < grids.length && grids[checkY][checkX] != null) {
+                if(checkX >=0 && checkY < grids.length && grids[checkY][checkX].getWarship().isPresent()) {
                     return true;
                 }
-                if(checkX >=0 && grids[y][checkX] != null) {
+                if(checkX >=0 && grids[y][checkX].getWarship().isPresent()) {
                     return true;
                 }
             }
@@ -172,14 +231,14 @@ public class GameService {
             if(isLast) {
                 checkY = y-1;
                 int checkX = x +1;
-                if(checkX < grids[0].length && checkY>=0 && grids[checkY][checkX] != null) {
+                if(checkX < grids[0].length && checkY>=0 && grids[checkY][checkX].getWarship().isPresent()) {
                     return true;
                 }
                 checkY = y+1;
-                if(checkX < grids[0].length && checkY < grids.length && grids[checkY][checkX] != null) {
+                if(checkX < grids[0].length && checkY < grids.length && grids[checkY][checkX].getWarship().isPresent()) {
                     return true;
                 }
-                if(checkX < grids[0].length && grids[y][checkX] != null) {
+                if(checkX < grids[0].length && grids[y][checkX].getWarship().isPresent()) {
                     return true;
                 }
             }
@@ -187,26 +246,26 @@ public class GameService {
         } else {
             //проверяем клетку правее
             int checkX = x+1;
-            if(checkX < grids[0].length && grids[y][checkX] != null)  {
+            if(checkX < grids[0].length && grids[y][checkX].getWarship().isPresent())  {
                 return true;
             }
             //проверяем клетку левее
             checkX = x-1;
-            if(checkX >=0 && grids[y][checkX] != null) {
+            if(checkX >=0 && grids[y][checkX].getWarship().isPresent()) {
                 return true;
             }
             //если это первая клетка проверяем выше 3 клетки
             if(isFirst) {
                 checkX = x-1;
                 int checkY = y -1;
-                if(checkY >=0 && checkX>=0 && grids[checkY][checkX] != null) {
+                if(checkY >=0 && checkX>=0 && grids[checkY][checkX].getWarship().isPresent()) {
                     return true;
                 }
                 checkX = x+1;
-                if(checkY >=0 && checkX < grids[0].length && grids[checkY][checkX] != null) {
+                if(checkY >=0 && checkX < grids[0].length && grids[checkY][checkX].getWarship().isPresent()) {
                     return true;
                 }
-                if(checkY >=0 && grids[checkY][x] != null) {
+                if(checkY >=0 && grids[checkY][x].getWarship().isPresent()) {
                     return true;
                 }
             }
@@ -214,14 +273,14 @@ public class GameService {
             if(isLast) {
                 checkX = x-1;
                 int checkY = y +1;
-                if(checkY < grids.length  && checkX >=0 && grids[checkY][checkX] != null) {
+                if(checkY < grids.length  && checkX >=0 && grids[checkY][checkX].getWarship().isPresent()) {
                     return true;
                 }
                 checkX = y+1;
-                if(checkY < grids.length && checkX < grids[0].length && grids[checkY][checkX] != null) {
+                if(checkY < grids.length && checkX < grids[0].length && grids[checkY][checkX].getWarship().isPresent()) {
                     return true;
                 }
-                if(checkY < grids.length && grids[checkY][x] != null) {
+                if(checkY < grids.length && grids[checkY][x].getWarship().isPresent()) {
                     return true;
                 }
             }

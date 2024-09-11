@@ -20,8 +20,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 import ru.sumenkov.SiberianSeaBattle.model.Fleet;
+import ru.sumenkov.SiberianSeaBattle.model.GridPoint;
 import ru.sumenkov.SiberianSeaBattle.model.Warship;
 import ru.sumenkov.SiberianSeaBattle.service.GameService;
+
+import java.util.Optional;
 
 /**
  * Description:
@@ -37,34 +40,45 @@ public class TestController {
 
     @PostConstruct
     void initTest() {
-        for (int countGame = 0; countGame < 10; countGame++) {
-
-            Fleet fleet = gameService.getFleet(10,
-                                               10);
+        Fleet fleet = gameService.getFleet(10,
+                                           10);
+        for (int countGame = 0; countGame < 3; countGame++) {
             log.info("fleat game " + countGame);
             for (Warship warship : fleet.getWarships()) {
-                log.info(String.format("start (x=%s, y=%s) end (x=%s, y=%s)",
-                                       warship.start().x() + 1,
-                                       warship.start().y() + 1,
-                                       warship.end().x() + 1,
-                                       warship.end().y() + 1));
+                log.info(String.format("start (x=%s, y=%s) end (x=%s, y=%s) size %s live %s",
+                                       warship.getStart().x() + 1,
+                                       warship.getStart().y() + 1,
+                                       warship.getEnd().x() + 1,
+                                       warship.getEnd().y() + 1,
+                                       warship.getSize(),
+                                       warship.getLives()));
             }
             log.info("grids");
-            Integer[][] grids = fleet.getGrids();
+            GridPoint[][] grids = fleet.getGrids();
             for (int oy = 0; oy < grids.length; oy++) {
                 if (oy == 0) {
                     log.info("    1,2,3,4,5,6,7,8,9,10");
                     log.info("   ---------------------");
                 }
-                String line = getOxLine(grids, oy);
+                String line = getOxLine(grids,
+                                        oy);
                 log.info(line);
             }
+            Warship warship = fleet.getWarships().get(Math.toIntExact(Math.round(Math.random() * 9)));
+            boolean isHit = gameService.checkShot(fleet,
+                                                  warship.getStart().x(),
+                                                  warship.getStart().y());
+            log.info(String.format("is hit %s x %s y %s",
+                                   isHit,
+                                   warship.getStart().x() + 1,
+                                   warship.getStart().y() + 1));
+
         }
     }
 
-    private static String getOxLine(Integer[][] grids, int oy) {
+    private static String getOxLine(GridPoint[][] grids, int oy) {
         StringBuilder stRor = new StringBuilder();
-        Integer[] pointsOx = grids[oy];
+        GridPoint[] pointsOx = grids[oy];
         for (int ox = 0; ox < pointsOx.length; ox++) {
             if (ox == 0) {
                 if (oy < 9) {
@@ -73,8 +87,11 @@ public class TestController {
                 stRor.append((oy + 1));
                 stRor.append(" |");
             }
-            Integer point = pointsOx[ox];
-            stRor.append(point == null ? 0 : point);
+            GridPoint point = pointsOx[ox];
+            Optional<Warship> warship = point.getWarship();
+            String exploredPoint = point.isExplored() ? "+" : "*";
+
+            stRor.append(warship.isEmpty() ? exploredPoint : warship.get().getSize());
             stRor.append(" ");
         }
         return stRor.toString();

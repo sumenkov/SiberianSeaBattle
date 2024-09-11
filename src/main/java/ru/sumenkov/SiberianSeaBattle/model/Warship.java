@@ -15,11 +15,29 @@
  */
 package ru.sumenkov.SiberianSeaBattle.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 /**
  * Description: Военный корабль
  *
  * @author <a href="mailto:onixbed@gmail.com">amaksimov</a>
  * crested on 09.09.2024
  */
-public record Warship(Point start, Point end) {
+@Data
+@AllArgsConstructor
+public final class Warship {
+    private final Point start;
+    private final Point end;
+    private final int size;
+    private int lives;
+
+    /**
+     * Нанести удар
+     * @return true если убил, false если живой
+     */
+    public boolean hit() {
+        lives--;
+        return lives==0;
+    }
 }
