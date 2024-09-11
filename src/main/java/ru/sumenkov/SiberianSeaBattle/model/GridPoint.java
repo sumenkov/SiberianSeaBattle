@@ -15,26 +15,25 @@
  */
 package ru.sumenkov.SiberianSeaBattle.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
 
 /**
- * Description: Флот
+ * Description: Точка в гриде
+ * В точке может быть корабыль, а так же isExplored признак  попадания в эту точку
  *
  * @author <a href="mailto:onixbed@gmail.com">amaksimov</a>
- * crested on 09.09.2024
+ * crested on 11.09.2024
  */
 @Data
-public class Fleet {
-   private List<Warship> warships;
-   private GridPoint[][] grids;
+@AllArgsConstructor
+public final class GridPoint {
+    private final Optional<Warship> warship;
+    private boolean isExplored;
 
-   public void addWarship(Warship warship) {
-      if(warships == null) {
-         warships = new ArrayList<>();
-      }
-      warships.add(warship);
-   }
+
+
+
 }
