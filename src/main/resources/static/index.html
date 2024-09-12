@@ -7,6 +7,7 @@
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
     <script src="/app.js"></script>
+    <meta charset="UTF-8">
 </head>
 <body>
 <noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being
@@ -17,9 +18,9 @@
         <div class="col-md-6">
             <form class="form-inline">
                 <div class="form-group">
-                    <label for="connect">WebSocket connection:</label>
-                    <button id="connect" class="btn btn-default" type="submit">Connect</button>
-                    <button id="disconnect" class="btn btn-default" type="submit" disabled="disabled">Disconnect
+                    <label for="connect">Подключение к WebSocket:</label>
+                    <button id="connect" class="btn btn-default" type="submit">Подключить</button>
+                    <button id="disconnect" class="btn btn-default" type="submit" disabled="disabled">Отключить
                     </button>
                 </div>
             </form>
@@ -27,10 +28,10 @@
         <div class="col-md-6">
             <form class="form-inline">
                 <div class="form-group">
-                    <label for="name">What is your name?</label>
-                    <input type="text" id="name" class="form-control" placeholder="Your name here...">
+                    <label for="name">Сообщение</label>
+                    <input type="text" id="name" class="form-control" placeholder="Введите сообщение">
                 </div>
-                <button id="send" class="btn btn-default" type="submit">Send</button>
+                <button id="send" class="btn btn-default" type="submit">Отправить</button>
             </form>
         </div>
     </div>
@@ -39,10 +40,10 @@
             <table id="conversation" class="table table-striped">
                 <thead>
                 <tr>
-                    <th>Game</th>
+                    <th>Сообщение:</th>
                 </tr>
                 </thead>
-                <tbody id="game">
+                <tbody id="message">
                 </tbody>
             </table>
         </div>

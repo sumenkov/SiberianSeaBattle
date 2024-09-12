@@ -1,11 +1,11 @@
 const stompClient = new StompJs.Client({
-    brokerURL: 'ws://localhost:8080/ws'
+    brokerURL: 'ws://localhost:8080/chat'
 });
 
 stompClient.onConnect = (frame) => {
     setConnected(true);
     console.log('Connected: ' + frame);
-    stompClient.subscribe('/topic/game', (greeting) => {
+    stompClient.subscribe('/topic/messages', (greeting) => {
         showGreeting(JSON.parse(greeting.body).content);
     });
 };
@@ -28,7 +28,7 @@ function setConnected(connected) {
     else {
         $("#conversation").hide();
     }
-    $("#greetings").html("");
+    $("#message").html("");
 }
 
 function connect() {
@@ -43,13 +43,13 @@ function disconnect() {
 
 function sendName() {
     stompClient.publish({
-        destination: "/app/hello",
+        destination: "/app/chat",
         body: JSON.stringify({'name': $("#name").val()})
     });
 }
 
 function showGreeting(message) {
-    $("#greetings").append("<tr><td>" + message + "</td></tr>");
+    $("#message").append("<tr><td>" + message + "</td></tr>");
 }
 
 $(function () {
