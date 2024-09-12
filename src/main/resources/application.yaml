@@ -7,7 +7,10 @@ spring:
     username: username
     password: password
   jpa:
+    generate-ddl: true
     database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
   sql:
     init:
       mode: always

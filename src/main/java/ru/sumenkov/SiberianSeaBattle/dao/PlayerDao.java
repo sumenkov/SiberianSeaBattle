@@ -19,10 +19,10 @@ public class PlayerDao extends AbstractDao {
 
     @Id
     @GeneratedValue
-    @Column(name = "id")
+    @Column(name = "id", unique = true)
     private UUID id;
 
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     private String name;
 
 }
