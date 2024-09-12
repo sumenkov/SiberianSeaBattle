@@ -23,6 +23,8 @@ import ru.sumenkov.SiberianSeaBattle.model.Point;
 import ru.sumenkov.SiberianSeaBattle.model.Warship;
 import ru.sumenkov.SiberianSeaBattle.model.WarshipDescription;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -53,12 +55,7 @@ public class GameService {
     public Fleet getFleet(int xSize, int ySize) {
         Fleet fleet = new Fleet();
         GridPoint[][] grids = new GridPoint[xSize][ySize];
-        //Заполяем поля пустыми клетками
-        for(GridPoint[] points: grids) {
-            for(int ox=0; ox< points.length; ox++) {
-                points[ox] = new GridPoint(Optional.empty(), false);
-            }
-        }
+        initEmptyGrids(grids);
 
         for (WarshipDescription warshipDescription : warshipDescriptions) {
             for (int warshipCount = 0; warshipCount < warshipDescription.count(); warshipCount++) {
@@ -74,13 +71,77 @@ public class GameService {
     /**
      * Метод проерки расстановки флота от Пользователя
      * @param grids поле с флотом
+     *              Условные обозначения число размер корабля (палубы)
+     *              0 - пустая клетка
      * @return Возвращает структуру с информацией где кривые данные
      */
-    public CustomFleet checkCustomFleet(Integer[][] grids) {
-        //TODO можно не делать пока если проверка будет сделана на фронте
-        //нужно отдавать статус и если статус кривой то еще и карту с отеткой что не так
-        CustomFleet customFleet =  new CustomFleet();
+    public CustomFleet checkCustomFleet(int[][] grids) {
+        CustomFleet customFleet = new CustomFleet();
         customFleet.setStatus(true);
+        customFleet.setErrorGrids(new int[grids.length][grids[0].length]);
+        initEmptyGrids(customFleet.getErrorGrids());
+        customFleet.setFleet(new Fleet());
+        GridPoint[][] fleetGrids = new GridPoint[grids.length][grids[0].length];
+        customFleet.getFleet().setGrids(fleetGrids);
+        initEmptyGrids(fleetGrids);
+        for (int oy = 0; oy < grids.length; oy++) {
+            for (int ox = 0; ox < grids[0].length; ox++) {
+                int startSize = grids[oy][ox];
+                if (startSize != 0) {
+                    //Создаем палубу с первой точкой
+                    Warship warship = new Warship(new Point(ox, oy), new Point(-1, -1), 0, 0);
+                    int checkX = ox + 1;
+                    final boolean directionOX = checkX < grids[0].length && grids[oy][checkX] != 0;
+                    //выкусываем найденный кораблик
+                    int endX = ox;
+                    int endY = oy;
+                    int checkEndX = ox;
+                    int checkEndY = oy;
+                    int size = 0;
+                    do {
+                        int checkSize = grids[checkEndY][checkEndX];
+                        if (checkSize != 0) {
+                            size++;
+                            fleetGrids[checkEndY][checkEndX].setWarship(Optional.of(warship));
+                            //проверка точки
+                            boolean isFirst = ox == checkEndX && oy == checkEndY;
+                            boolean isLast = size == grids[checkEndY][checkEndX];
+                            boolean isInvalidPosition = isInvalidPositionAround(isFirst, isLast, directionOX, checkEndY,
+                                                                                checkEndX, fleetGrids,1);
+
+
+                            if(isInvalidPosition || startSize != checkSize) {
+                                customFleet.setStatus(false);
+                                customFleet.getErrorGrids()[checkEndY][checkEndX] = -777;
+                                break;
+                            } else {
+                                customFleet.getErrorGrids()[checkEndY][checkEndX] = grids[checkEndY][checkEndX];
+                            }
+                            endX = checkEndX;
+                            endY = checkEndY;
+                            grids[checkEndY][checkEndX] = 0;
+                        } else {
+                            break;
+                        }
+                        if (directionOX) {
+                            checkEndX = checkEndX + 1;
+                        } else {
+                            checkEndY = checkEndY + 1;
+                        }
+                    } while (checkEndX < grids[0].length && checkEndY < grids.length);
+                    warship.setEnd(new Point(endX, endY));
+                    warship.setSize(size);
+                    warship.setLives(size);
+                    customFleet.getFleet().addWarship(warship);
+                }
+            }
+        }
+        if(customFleet.getFleet().getWarships() == null) {
+            customFleet.getFleet().setWarships(new ArrayList<>());
+            customFleet.setStatus(false);
+        }
+
+
         return customFleet;
     }
 
@@ -238,8 +299,31 @@ public class GameService {
 
             }
         }
+    }
 
-        //TODO реализовать убийсво корабля
+    /**
+     * Метод заполения поля пустатой
+     * @param grids поле боя
+     */
+    private static void initEmptyGrids(GridPoint[][] grids) {
+        //Заполяем поля пустыми клетками
+        for(GridPoint[] points: grids) {
+            for(int ox=0; ox< points.length; ox++) {
+                points[ox] = new GridPoint(Optional.empty(), false);
+            }
+        }
+    }
+
+    /**
+     * Метод заполения поля пустатой
+     * @param grids поле боя
+     */
+    private static void initEmptyGrids(int[][] grids) {
+        //Заполяем поля пустыми клетками
+        for(int[] points: grids) {
+            Arrays.fill(points,
+                        0);
+        }
     }
 
     private Warship getWarship(GridPoint[][] grids, int size) {
@@ -306,15 +390,14 @@ public class GameService {
         }
 
         Warship warship = new Warship(new Point(x, y), end, size, size);
-        GridPoint point = new GridPoint(Optional.of(warship), false);
         //После провкерки нужно пометить поле
         for (int index = 0; index < size; index++) {
             if (directionOX) {
                 int checkX = x + (index * direction);
-                grids[y][checkX] = point;
+                grids[y][checkX].setWarship(Optional.of(warship));
             } else {
                 int checkY = y + (index * direction);
-                grids[checkY][x] = point;
+                grids[checkY][x].setWarship(Optional.of(warship));
             }
         }
         return Optional.of(warship);
