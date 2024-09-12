@@ -32,7 +32,7 @@ public class CustomFleet {
     /**
      * Если статус не успешный то отображаем поле с ошибкой
      */
-    private Integer[][] errorGrids;
+    private int[][] errorGrids;
 
     /**
      * Флот

@@ -28,8 +28,8 @@ import lombok.Data;
 @AllArgsConstructor
 public final class Warship {
     private final Point start;
-    private final Point end;
-    private final int size;
+    private Point end;
+    private int size;
     private int lives;
 
     /**

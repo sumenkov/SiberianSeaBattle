@@ -30,7 +30,7 @@ import java.util.Optional;
 @Data
 @AllArgsConstructor
 public final class GridPoint {
-    private final Optional<Warship> warship;
+    private Optional<Warship> warship;
     private boolean isExplored;
 
 
