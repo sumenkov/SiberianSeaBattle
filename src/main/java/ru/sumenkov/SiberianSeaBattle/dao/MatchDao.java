@@ -23,9 +23,15 @@ public class MatchDao extends AbstractDao {
     private UUID id;
 
     @ManyToOne(cascade = CascadeType.DETACH)
-    @JoinColumn(name = "owner_id", referencedColumnName = "id")
+    @JoinColumn(name = "owner_id", referencedColumnName = "id", nullable = false)
     private PlayerDao owner;
 
+    @ManyToOne(cascade = CascadeType.DETACH)
+    @JoinColumn(name = "opponent_id", referencedColumnName = "id")
     private PlayerDao opponent;
+
+    @ManyToOne(cascade = CascadeType.DETACH)
+    @JoinColumn(name = "winner_id", referencedColumnName = "id")
+    private PlayerDao winner;
 
 }

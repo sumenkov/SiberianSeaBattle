@@ -4,21 +4,25 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.sumenkov.SiberianSeaBattle.dao.AbstractDao;
 
+import javax.swing.*;
 import java.util.UUID;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Match {
+public class ActionHistory extends AbstractDao {
 
     private UUID id;
 
-    private Player owner;
+    private UUID playerId;
 
-    private Player opponent;
+    private UUID matchId;
 
-    private Player winner;
+    private Integer x;
+
+    private Integer y;
 
 }
