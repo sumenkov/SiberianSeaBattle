@@ -1,26 +1,41 @@
-import { GameLoopUpdateHook } from "../GameLoop";
 
-const board = [
-    ['a1', 'a2', 'a3', 'a4', 'a5'],
-    ['b1', 'b2', 'b3', 'b4', 'b5'],
-    ['c1', 'c2', 'c3', 'c4', 'c5'],
-    ['d1', 'd2', 'd3', 'd4', 'd5'],
-    ['e1', 'e2', 'e3', 'e4', 'e5'],
-    ['f1', 'f2', 'f3', 'f4', 'f5'],
-]
-
-const drawBoardHook: GameLoopUpdateHook = (
-    context,
-    canvas,
+interface DrawBoardHookProps {
+    displayPositionX: number,
+    displayPositionY: number,
     activeX: number,
     activeY: number
+    width: number,
+    height: number
+}
+
+const board = [
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    //     [0, 0, 0, 0, 0],
+]
+
+const BORDER_WIDTH = 1;
+
+// const drawBoardHook: GameLoopUpdateHook = (
+const drawBoardHook = (
+    context: CanvasRenderingContext2D,
+    canvas: HTMLCanvasElement,
+    {
+        displayPositionX,
+        displayPositionY,
+        activeX,
+        activeY,
+        width,
+        height
+    }: DrawBoardHookProps,
+
 ) => {
-    const { width, height } = canvas;
+
     const cellHeight = height / 5;
     const cellWidth = width / 5;
-
-    //     context.strokeStyle = 'red';
-    context.fillStyle = 'darkblue';
 
     for (let i = 0; i < board.length; i++) {
         const row = board[i];
@@ -28,8 +43,11 @@ const drawBoardHook: GameLoopUpdateHook = (
         for (let j = 0; j < row.length; j++) {
             const cell = row[j];
 
-            const cellStartY = i * cellHeight;
-            const cellStartX = j * cellWidth;
+            const cellStartY = displayPositionY + (i * cellHeight);
+            const cellStartX = displayPositionX + (j * cellWidth);
+
+            context.fillStyle = '#000';
+            context.fillRect(cellStartX, cellStartY, cellWidth, cellHeight);
 
             if (
                 activeX > cellStartX &&
@@ -39,11 +57,15 @@ const drawBoardHook: GameLoopUpdateHook = (
             ) {
                 context.fillStyle = 'magenta';
             } else {
-                context.fillStyle = 'darkblue';
+                context.fillStyle = 'blue';
             }
 
-            context.fillRect(cellStartX, cellStartY, cellWidth, cellHeight);
-            context.stroke();
+            context.fillRect(
+                cellStartX + BORDER_WIDTH,
+                cellStartY + BORDER_WIDTH,
+                cellWidth - (BORDER_WIDTH * 2),
+                cellHeight - (BORDER_WIDTH * 2)
+            );
         }
 
     }
