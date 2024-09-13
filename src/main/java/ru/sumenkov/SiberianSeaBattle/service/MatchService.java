@@ -35,6 +35,7 @@ public class MatchService {
         return this.modelMapper.map(matchDao, Match.class);
     }
 
+    @Transactional
     public Optional<Match> getMatchById(String id) {
         return getMatchById(UUID.fromString(id));
     }
