@@ -38,6 +38,7 @@ public class PlayerService {
         return this.modelMapper.map(playerDao, Player.class);
     }
 
+    @Transactional
     public Optional<Player> getPlayer(String id) {
         return getPlayer(UUID.fromString(id));
     }

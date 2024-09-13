@@ -41,6 +41,7 @@ public class ActionHistoryService {
         return this.modelMapper.map(actionHistoryDao, ActionHistory.class);
     }
 
+    @Transactional
     public Optional<ActionHistory> findActionHistoryById(String id) {
         return findActionHistoryById(UUID.fromString(id));
     }
