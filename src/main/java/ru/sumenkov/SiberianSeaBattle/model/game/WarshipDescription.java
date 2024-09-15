@@ -13,13 +13,13 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ru.sumenkov.SiberianSeaBattle.model;
+package ru.sumenkov.SiberianSeaBattle.model.game;
 
 /**
- * Description: Точка
+ * Description: Характеристики корабля
  *
  * @author <a href="mailto:onixbed@gmail.com">amaksimov</a>
  * crested on 09.09.2024
  */
-public record Point(int x, int y) {
+public record WarshipDescription(int count, int size) {
 }

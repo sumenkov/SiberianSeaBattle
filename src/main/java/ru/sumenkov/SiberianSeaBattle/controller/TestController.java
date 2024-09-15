@@ -19,10 +19,10 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
-import ru.sumenkov.SiberianSeaBattle.model.CustomFleet;
-import ru.sumenkov.SiberianSeaBattle.model.Fleet;
-import ru.sumenkov.SiberianSeaBattle.model.GridPoint;
-import ru.sumenkov.SiberianSeaBattle.model.Warship;
+import ru.sumenkov.SiberianSeaBattle.model.game.CustomFleet;
+import ru.sumenkov.SiberianSeaBattle.model.game.Fleet;
+import ru.sumenkov.SiberianSeaBattle.model.game.GridPoint;
+import ru.sumenkov.SiberianSeaBattle.model.game.Warship;
 import ru.sumenkov.SiberianSeaBattle.service.GameService;
 
 import java.util.Optional;

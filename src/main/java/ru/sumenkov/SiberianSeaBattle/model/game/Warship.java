@@ -13,13 +13,31 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ru.sumenkov.SiberianSeaBattle.model;
+package ru.sumenkov.SiberianSeaBattle.model.game;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 /**
- * Description: Характеристики корабля
+ * Description: Военный корабль
  *
  * @author <a href="mailto:onixbed@gmail.com">amaksimov</a>
  * crested on 09.09.2024
  */
-public record WarshipDescription(int count, int size) {
+@Data
+@AllArgsConstructor
+public final class Warship {
+    private final Point start;
+    private Point end;
+    private int size;
+    private int lives;
+
+    /**
+     * Нанести удар
+     * @return true если убил, false если живой
+     */
+    public boolean hit() {
+        lives--;
+        return lives==0;
+    }
 }
