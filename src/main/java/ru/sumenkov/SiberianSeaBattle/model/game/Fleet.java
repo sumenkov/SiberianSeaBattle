@@ -13,31 +13,28 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ru.sumenkov.SiberianSeaBattle.model;
+package ru.sumenkov.SiberianSeaBattle.model.game;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Description: Военный корабль
+ * Description: Флот
  *
  * @author <a href="mailto:onixbed@gmail.com">amaksimov</a>
  * crested on 09.09.2024
  */
 @Data
-@AllArgsConstructor
-public final class Warship {
-    private final Point start;
-    private Point end;
-    private int size;
-    private int lives;
+public class Fleet {
+   private List<Warship> warships;
+   private GridPoint[][] grids;
 
-    /**
-     * Нанести удар
-     * @return true если убил, false если живой
-     */
-    public boolean hit() {
-        lives--;
-        return lives==0;
-    }
+   public void addWarship(Warship warship) {
+      if(warships == null) {
+         warships = new ArrayList<>();
+      }
+      warships.add(warship);
+   }
 }

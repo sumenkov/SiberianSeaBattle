@@ -13,28 +13,29 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ru.sumenkov.SiberianSeaBattle.model;
+package ru.sumenkov.SiberianSeaBattle.model.game;
 
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * Description: Флот
+ * Description: Флот пользователя с ручным вводом
  *
  * @author <a href="mailto:onixbed@gmail.com">amaksimov</a>
- * crested on 09.09.2024
+ * crested on 11.09.2024
  */
 @Data
-public class Fleet {
-   private List<Warship> warships;
-   private GridPoint[][] grids;
+public class CustomFleet {
+    /**
+     * Статус проверки true -все хорошо, false - флот не прошел проверку
+     */
+    private boolean status;
+    /**
+     * Если статус не успешный то отображаем поле с ошибкой
+     */
+    private int[][] errorGrids;
 
-   public void addWarship(Warship warship) {
-      if(warships == null) {
-         warships = new ArrayList<>();
-      }
-      warships.add(warship);
-   }
+    /**
+     * Флот
+     */
+    private Fleet fleet;
 }

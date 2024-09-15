@@ -16,12 +16,12 @@
 package ru.sumenkov.SiberianSeaBattle.service;
 
 import org.springframework.stereotype.Service;
-import ru.sumenkov.SiberianSeaBattle.model.CustomFleet;
-import ru.sumenkov.SiberianSeaBattle.model.Fleet;
-import ru.sumenkov.SiberianSeaBattle.model.GridPoint;
-import ru.sumenkov.SiberianSeaBattle.model.Point;
-import ru.sumenkov.SiberianSeaBattle.model.Warship;
-import ru.sumenkov.SiberianSeaBattle.model.WarshipDescription;
+import ru.sumenkov.SiberianSeaBattle.model.game.CustomFleet;
+import ru.sumenkov.SiberianSeaBattle.model.game.Fleet;
+import ru.sumenkov.SiberianSeaBattle.model.game.GridPoint;
+import ru.sumenkov.SiberianSeaBattle.model.game.Point;
+import ru.sumenkov.SiberianSeaBattle.model.game.Warship;
+import ru.sumenkov.SiberianSeaBattle.model.game.WarshipDescription;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -109,10 +109,13 @@ public class GameService {
                             boolean isInvalidPosition = isInvalidPositionAround(isFirst, isLast, directionOX, checkEndY,
                                                                                 checkEndX, fleetGrids,1);
 
-
-                            if(isInvalidPosition || startSize != checkSize) {
+                            boolean isDiffSize = startSize != checkSize;
+                            if(isDiffSize){
+                                size--;
+                            }
+                            if(isInvalidPosition || isDiffSize) {
                                 customFleet.setStatus(false);
-                                customFleet.getErrorGrids()[checkEndY][checkEndX] = -777;
+                                customFleet.getErrorGrids()[checkEndY][checkEndX] = Point.NUMBER_TO_ERROR;
                                 break;
                             } else {
                                 customFleet.getErrorGrids()[checkEndY][checkEndX] = grids[checkEndY][checkEndX];
@@ -407,7 +410,7 @@ public class GameService {
 
     private boolean isInvalidPositionAround(boolean isFirst, boolean isLast, boolean directionOX, int y, int x,
                                             GridPoint[][] grids, int direction) {
-        if(direction <0) {
+        if(direction < 0) {
             //Если навправление обратное то поменять местами признаки начала и конца
             boolean tmp = isFirst;
             isFirst = isLast;
@@ -421,7 +424,7 @@ public class GameService {
             }
             //проверяем клетку выше
             checkY = y-1;
-            if(checkY >=0 && grids[checkY][x].getWarship().isPresent()) {
+            if(checkY >= 0 && grids[checkY][x].getWarship().isPresent()) {
                 return true;
             }
             //если это первая клетка проверяем левее 3 клетки
