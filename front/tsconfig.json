@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "moduleResolution": "Node",
-        "target": "ES5",
+        "target": "es2015",
         "strictNullChecks": true,
         "strictFunctionTypes": true,
         "strict": true,
