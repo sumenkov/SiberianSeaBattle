@@ -11,7 +11,8 @@ defineConfig(({ command, mode }) => {
         build: {
             lib: {
                 entry: './index.ts'
-            }
+            },
+            outDir: './dist'
         }
     }
 });
