@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "vite dev",
+    "build": "vite build",
     "convert-images": "node scripts/images-to-data-urls.js"
   },
   "author": "",
