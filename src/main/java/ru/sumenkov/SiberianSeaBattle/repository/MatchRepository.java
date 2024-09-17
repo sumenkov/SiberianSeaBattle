@@ -1,6 +1,7 @@
 package ru.sumenkov.SiberianSeaBattle.repository;
 
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 import ru.sumenkov.SiberianSeaBattle.dao.MatchDao;
 
@@ -10,6 +11,7 @@ import java.util.UUID;
 @Repository
 public interface MatchRepository extends CrudRepository<MatchDao, UUID> {
 
+    @NonNull
     List<MatchDao> findAll();
 
 }

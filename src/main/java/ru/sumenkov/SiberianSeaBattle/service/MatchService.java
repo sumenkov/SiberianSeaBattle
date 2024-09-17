@@ -32,6 +32,7 @@ public class MatchService {
                 .owner(ownerDao)
                 .build();
         this.matchRepository.save(matchDao);
+
         return this.modelMapper.map(matchDao, Match.class);
     }
 
@@ -53,7 +54,6 @@ public class MatchService {
                 .map(matchDao -> this.modelMapper.map(matchDao, Match.class))
                 .toList();
     }
-
 
     @Transactional
     public void updateMatch(Match match) {
