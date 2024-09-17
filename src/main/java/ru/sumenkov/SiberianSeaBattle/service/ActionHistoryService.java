@@ -38,6 +38,7 @@ public class ActionHistoryService {
                 .y(y)
                 .build();
         this.actionHistoryRepository.save(actionHistoryDao);
+
         return this.modelMapper.map(actionHistoryDao, ActionHistory.class);
     }
 
