@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.sumenkov.SiberianSeaBattle.model.Player;
 
+import java.util.UUID;
 import java.util.function.ObjLongConsumer;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,14 +18,14 @@ class PlayerServiceTest {
 
     @Test
     void createPlayerTest() {
-        Player player = playerService.createPlayer();
+        Player player = playerService.createPlayer("p1" + UUID.randomUUID());
         assertNotNull(player);
         assertNotNull(player.getId());
     }
 
     @Test
     void updatePlayerTest() {
-        Player oldPlayer = this.playerService.createPlayer();
+        Player oldPlayer = this.playerService.createPlayer("p1" + UUID.randomUUID());
 
     }
 

@@ -21,6 +21,9 @@ public class MatchDao extends AbstractDao {
     @Column(name = "id")
     private UUID id;
 
+    @Column(name = "size_grid", nullable = false)
+    private Integer sizeGrid;
+
     @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "owner_id", referencedColumnName = "id", nullable = false)
     private PlayerDao owner;

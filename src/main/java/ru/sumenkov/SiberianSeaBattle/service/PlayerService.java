@@ -22,9 +22,7 @@ public class PlayerService {
         this.modelMapper = modelMapper;
     }
 
-    public Player createPlayer() {
-        return createPlayer(null);
-    }
+
 
     @Transactional
     public Player createPlayer(String name) {
@@ -38,6 +36,12 @@ public class PlayerService {
     @Transactional
     public Optional<Player> getPlayer(String id) {
         return getPlayer(UUID.fromString(id));
+    }
+
+    @Transactional
+    public Optional<Player> getPlayerByName(String name) {
+        return this.playerRepository.findByName(name)
+                .map(playerDao -> this.modelMapper.map(playerDao, Player.class));
     }
 
     @Transactional

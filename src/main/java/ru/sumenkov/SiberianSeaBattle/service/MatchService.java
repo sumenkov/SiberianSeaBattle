@@ -26,10 +26,12 @@ public class MatchService {
     }
 
     @Transactional
-    public Match createMatch(Player owner) {
+    public Match createMatch(Player owner, int sizeGrid) {
         PlayerDao ownerDao = this.modelMapper.map(owner, PlayerDao.class);
         MatchDao matchDao = new MatchDao();
         matchDao.setOwner(ownerDao);
+        matchDao.setSizeGrid(sizeGrid);
+
 
         this.matchRepository.save(matchDao);
 

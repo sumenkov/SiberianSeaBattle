@@ -15,28 +15,14 @@
  */
 package ru.sumenkov.SiberianSeaBattle.model.game;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
-import java.util.Optional;
+import java.util.Map;
+import java.util.UUID;
 
 /**
- * Description: Точка в гриде
- * В точке может быть корабыль, а так же isExplored признак  попадания в эту точку
+ * Description: Структура для хранения прогреса матча
  *
  * @author <a href="mailto:onixbed@gmail.com">amaksimov</a>
- * crested on 11.09.2024
+ * crested on 17.09.2024
  */
-@Data
-@AllArgsConstructor
-public class GridPoint {
-    private Optional<Warship> warship;
-    /**
-     * true - если точка изучена (прострел), false - значит туман войны
-     */
-    private boolean isExplored;
-
-
-
-
+public record MatchFleet(Map<UUID, Fleet> userIdToFleet) {
 }

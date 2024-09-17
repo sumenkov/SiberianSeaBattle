@@ -15,7 +15,10 @@ public class Match {
 
     private UUID id;
 
+    private Integer sizeGrid;
+
     private Player owner;
+
 
     private Player opponent;
 

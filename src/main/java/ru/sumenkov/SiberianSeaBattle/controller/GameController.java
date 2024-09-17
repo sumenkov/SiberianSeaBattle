@@ -1,5 +1,6 @@
 package ru.sumenkov.SiberianSeaBattle.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
@@ -8,17 +9,22 @@ import org.springframework.web.util.HtmlUtils;
 
 import ru.sumenkov.SiberianSeaBattle.acl.GameMapper;
 import ru.sumenkov.SiberianSeaBattle.model.game.Fleet;
+import ru.sumenkov.SiberianSeaBattle.model.message.CreateFleetRequestMessage;
+import ru.sumenkov.SiberianSeaBattle.model.message.CreateFleetResponseMessage;
+import ru.sumenkov.SiberianSeaBattle.model.message.CreateGameRequestMessage;
+import ru.sumenkov.SiberianSeaBattle.model.message.CreateGameResponseMessage;
+import ru.sumenkov.SiberianSeaBattle.model.message.GenerateFleetRequestMessage;
+import ru.sumenkov.SiberianSeaBattle.model.message.GenerateFleetResponseMessage;
 import ru.sumenkov.SiberianSeaBattle.model.message.HelloMessage;
-import ru.sumenkov.SiberianSeaBattle.model.response.Greeting;
+import ru.sumenkov.SiberianSeaBattle.model.message.Greeting;
 import ru.sumenkov.SiberianSeaBattle.service.GameService;
+import ru.sumenkov.SiberianSeaBattle.service.SeaBattleService;
 
 @Controller
+@RequiredArgsConstructor
 public class GameController {
     private final GameService gameService;
-
-    public GameController(GameService gameService) {
-        this.gameService = gameService;
-    }
+    private final SeaBattleService seaBattleService;
 
     @MessageMapping("/see-battle/chat/request")
     @SendTo("/see-battle/chat/response")
@@ -48,6 +54,24 @@ public class GameController {
         }
 
         return new Greeting( HtmlUtils.htmlEscape(message.getName()) + "<br>Текущий расклад: <br>" + stRor.toString() + "!");
+    }
+
+    @MessageMapping("/see-battle/create-game/request")
+    @SendTo("/see-battle/create-game/response")
+    public CreateGameResponseMessage createGame(CreateGameRequestMessage request) throws Exception {
+        return seaBattleService.createGame(request);
+    }
+
+    @MessageMapping("/see-battle/create-fleet/request")
+    @SendTo("/see-battle/create-fleet/response")
+    public CreateFleetResponseMessage createFleet(CreateFleetRequestMessage request) throws Exception {
+        return seaBattleService.createFleet(request);
+    }
+
+    @MessageMapping("/see-battle/generate-fleet/request")
+    @SendTo("/see-battle/generate-fleet/response")
+    public GenerateFleetResponseMessage generateFleet(GenerateFleetRequestMessage request) throws Exception {
+        return seaBattleService.generateFleet(request);
     }
 
 }

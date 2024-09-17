@@ -8,6 +8,8 @@ import ru.sumenkov.SiberianSeaBattle.model.ActionHistory;
 import ru.sumenkov.SiberianSeaBattle.model.Match;
 import ru.sumenkov.SiberianSeaBattle.model.Player;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -24,8 +26,8 @@ class ActionHistoryServiceTest {
 
     @Test
     void createActionHistoryTest() {
-        Player player = this.playerService.createPlayer();
-        Match match = this.matchService.createMatch(player);
+        Player player = this.playerService.createPlayer("p1" + UUID.randomUUID());
+        Match match = this.matchService.createMatch(player, 5);
         ActionHistory actionHistory = this.actionHistoryService.createActionHistory(match, player, 1, 1);
         Assertions.assertNotNull(actionHistory);
     }

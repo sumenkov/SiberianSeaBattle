@@ -1,4 +1,4 @@
-package ru.sumenkov.SiberianSeaBattle.model.response;
+package ru.sumenkov.SiberianSeaBattle.model.message;
 
 public class Greeting {
     private String content;

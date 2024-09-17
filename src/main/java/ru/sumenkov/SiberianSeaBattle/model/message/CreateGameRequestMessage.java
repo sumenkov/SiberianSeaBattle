@@ -13,30 +13,26 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ru.sumenkov.SiberianSeaBattle.model.game;
+package ru.sumenkov.SiberianSeaBattle.model.message;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import java.util.Optional;
+import lombok.EqualsAndHashCode;
 
 /**
- * Description: Точка в гриде
- * В точке может быть корабыль, а так же isExplored признак  попадания в эту точку
+ * Description: Запрос на создание игры
  *
  * @author <a href="mailto:onixbed@gmail.com">amaksimov</a>
- * crested on 11.09.2024
+ * crested on 17.09.2024
  */
 @Data
-@AllArgsConstructor
-public class GridPoint {
-    private Optional<Warship> warship;
+@EqualsAndHashCode(callSuper = true)
+public class CreateGameRequestMessage extends BaseRequestMessage {
     /**
-     * true - если точка изучена (прострел), false - значит туман войны
+     * Имя игрока который создает игру
      */
-    private boolean isExplored;
-
-
-
-
+    private String username;
+    /**
+     * Размер поля если не задан то используем дефолт
+     */
+    private Integer sizeGrid;
 }

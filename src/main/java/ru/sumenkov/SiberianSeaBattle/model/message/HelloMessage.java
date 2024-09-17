@@ -1,6 +1,7 @@
 package ru.sumenkov.SiberianSeaBattle.model.message;
 
 
+
 public class HelloMessage {
     public String getName() {
         return name;
