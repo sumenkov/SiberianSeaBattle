@@ -33,6 +33,7 @@ public class GameMapper {
 
     /**
      * Возвращает карту для владелца поля
+     *
      * @param grids карта
      * @return карта боя
      */
@@ -42,6 +43,7 @@ public class GameMapper {
 
     /**
      * Возвращает карту для соперника или наблюдателя (чужую карту с туманом войны)
+     *
      * @param grids карта
      * @return карта боя
      */
@@ -50,26 +52,20 @@ public class GameMapper {
     }
 
     private static int[][] toGrids(GridPoint[][] grids, boolean isOwner) {
+
         int[][] result = new int[grids.length][grids[0].length];
-        for(int  oy = 0; oy< grids.length; oy++) {
-            for(int ox = 0; ox < grids[0].length; ox++) {
 
-                final int point;
-                if (isOwner) {
-                    point = getPoint(grids[oy][ox].getWarship());
-                } else {
-                    point =  grids[oy][ox].isExplored()?getPoint(grids[oy][ox].getWarship()): Point.NUMBER_TO_FOG_WON;
-                }
-
-                result[oy][ox] =  point;
+        for (int oy = 0; oy < grids.length; oy++) {
+            for (int ox = 0; ox < grids[0].length; ox++) {
+                result[oy][ox] = isOwner ? getPoint(grids[oy][ox].getWarship())
+                        : grids[oy][ox].isExplored() ? getPoint(grids[oy][ox].getWarship()) : Point.NUMBER_TO_FOG_WON;
             }
         }
-        return  result;
-     }
 
-     private static int getPoint(Optional<Warship> warship) {
+        return result;
+    }
+
+    private static int getPoint(Optional<Warship> warship) {
         return warship.map(Warship::getSize).orElse(Point.NUMBER_TO_VOID);
-     }
-
-
+    }
 }
