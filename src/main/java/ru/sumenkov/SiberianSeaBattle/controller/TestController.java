@@ -15,7 +15,6 @@
  */
 package ru.sumenkov.SiberianSeaBattle.controller;
 
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,7 +38,7 @@ import java.util.Optional;
 public class TestController {
     private final GameService gameService;
 
-    @PostConstruct
+
     void initTest() {
         Fleet fleet = gameService.getFleet(10,
                                            10);

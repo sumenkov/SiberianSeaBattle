@@ -1,11 +1,11 @@
-const stompClient = new StompJs.Client({
-    brokerURL: 'ws://localhost:8080/ws'
-});
+var  stompClient = new StompJs.Client({
+            brokerURL: 'ws://localhost:8080/ws'
+        });
 
 stompClient.onConnect = (frame) => {
     setConnected(true);
     console.log('Connected: ' + frame);
-    stompClient.subscribe('/topic/messages', (greeting) => {
+    stompClient.subscribe('/see-battle/chat/response', (greeting) => {
         showGreeting(JSON.parse(greeting.body).content);
     });
 };
@@ -28,7 +28,6 @@ function setConnected(connected) {
     else {
         $("#conversation").hide();
     }
-    $("#message").html("");
     $("#game").html("");
 }
 
@@ -45,13 +44,13 @@ function disconnect() {
 
 function sendName() {
     stompClient.publish({
-        destination: "/game/hello",
+        destination: "/see-battle/chat/request",
         body: JSON.stringify({'name': $("#name").val()})
     });
 }
 
 function showGreeting(message) {
-    $("#game").append("<tr><td>" + message + "</td></tr>");
+    $("#message").append("<tr><td>" + message + "</td></tr>");
 }
 
 $(function () {
