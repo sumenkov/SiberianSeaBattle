@@ -31,8 +31,8 @@ public class SpringSecurityConfiguration {
                         .loginPage("/login")
                         .permitAll()
                 )
-                .logout(LogoutConfigurer::permitAll);
-        http.csrf(AbstractHttpConfigurer::disable).cors(AbstractHttpConfigurer::disable);
+                .logout((logout) -> logout.permitAll());
+        http.csrf(AbstractHttpConfigurer::disable);
 
         return http.build();
     }
@@ -49,25 +49,7 @@ public class SpringSecurityConfiguration {
         return new InMemoryUserDetailsManager(user);
     }
 
-    /*
-        @Bean
-        public CorsFilter corsFilter() {
-            final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-            final CorsConfiguration config = new CorsConfiguration();
-            config.setAllowCredentials(true);
-            config.addAllowedOrigin("*");
-            config.addAllowedHeader("*");
-            config.addAllowedMethod("OPTIONS");
-            config.addAllowedMethod("HEAD");
-            config.addAllowedMethod("GET");
-            config.addAllowedMethod("PUT");
-            config.addAllowedMethod("POST");
-            config.addAllowedMethod("DELETE");
-            config.addAllowedMethod("PATCH");
-            source.registerCorsConfiguration("/**", config);
-            return new CorsFilter(source);
-        }
-     */
+
     @Bean
     public CorsFilter corsFilter() {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

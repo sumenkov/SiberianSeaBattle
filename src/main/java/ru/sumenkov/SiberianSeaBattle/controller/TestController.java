@@ -39,7 +39,7 @@ import java.util.Optional;
 public class TestController {
     private final GameService gameService;
 
-    @PostConstruct
+
     void initTest() {
         Fleet fleet = gameService.getFleet(10, 10);
         for (int countGame = 0; countGame < 10; countGame++) {
