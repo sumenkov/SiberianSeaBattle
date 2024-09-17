@@ -28,9 +28,8 @@ public class PlayerService {
 
     @Transactional
     public Player createPlayer(String name) {
-        PlayerDao playerDao = PlayerDao.builder()
-                .name(name)
-                .build();
+        PlayerDao playerDao =  new PlayerDao();
+        playerDao.setName(name);
         this.playerRepository.save(playerDao);
 
         return this.modelMapper.map(playerDao, Player.class);

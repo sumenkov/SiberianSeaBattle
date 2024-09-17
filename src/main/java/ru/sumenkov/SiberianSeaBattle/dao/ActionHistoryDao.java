@@ -8,15 +8,14 @@ import org.hibernate.proxy.HibernateProxy;
 import java.util.Objects;
 import java.util.UUID;
 
+
+@Entity
+@Table(name = "actions_history", schema = "siberian_sea_battle")
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
-@Entity
-@Table(name = "actions_history", schema = "siberian_sea_battle")
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class ActionHistoryDao extends AbstractDao {
 
     @Id

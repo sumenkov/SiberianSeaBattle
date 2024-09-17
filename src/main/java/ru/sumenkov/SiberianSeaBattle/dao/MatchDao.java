@@ -7,15 +7,13 @@ import org.hibernate.proxy.HibernateProxy;
 import java.util.Objects;
 import java.util.UUID;
 
+@Entity
+@Table(name = "matches", schema = "siberian_sea_battle")
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
-@Entity
-@Table(name = "matches", schema = "siberian_sea_battle")
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class MatchDao extends AbstractDao {
 
     @Id

@@ -31,12 +31,12 @@ public class ActionHistoryService {
     public ActionHistory createActionHistory(Match match, Player player, int x, int y) {
         MatchDao matchDao = this.modelMapper.map(match, MatchDao.class);
         PlayerDao playerDao = this.modelMapper.map(player, PlayerDao.class);
-        ActionHistoryDao actionHistoryDao = ActionHistoryDao.builder()
-                .match(matchDao)
-                .player(playerDao)
-                .x(x)
-                .y(y)
-                .build();
+        ActionHistoryDao actionHistoryDao = new ActionHistoryDao();
+        actionHistoryDao.setMatch(matchDao);
+        actionHistoryDao.setPlayer(playerDao);
+        actionHistoryDao.setX(x);
+        actionHistoryDao.setY(y);
+
         this.actionHistoryRepository.save(actionHistoryDao);
 
         return this.modelMapper.map(actionHistoryDao, ActionHistory.class);

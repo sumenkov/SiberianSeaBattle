@@ -12,8 +12,6 @@ import java.util.UUID;
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class PlayerDao extends AbstractDao {

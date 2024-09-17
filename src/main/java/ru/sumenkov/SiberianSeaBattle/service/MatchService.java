@@ -28,9 +28,9 @@ public class MatchService {
     @Transactional
     public Match createMatch(Player owner) {
         PlayerDao ownerDao = this.modelMapper.map(owner, PlayerDao.class);
-        MatchDao matchDao = MatchDao.builder()
-                .owner(ownerDao)
-                .build();
+        MatchDao matchDao = new MatchDao();
+        matchDao.setOwner(ownerDao);
+
         this.matchRepository.save(matchDao);
 
         return this.modelMapper.map(matchDao, Match.class);
