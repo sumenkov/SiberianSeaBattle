@@ -1,6 +1,6 @@
-const stompClient = new StompJs.Client({
-    brokerURL: 'ws://localhost:8080/ws'
-});
+var  stompClient = new StompJs.Client({
+            brokerURL: 'ws://localhost:8080/ws'
+        });
 
 stompClient.onConnect = (frame) => {
     setConnected(true);
@@ -28,10 +28,11 @@ function setConnected(connected) {
     else {
         $("#conversation").hide();
     }
-    $("#greetings").html("");
+    $("#game").html("");
 }
 
 function connect() {
+    stompClient.brokerURL=$("#connect_name").val();
     stompClient.activate();
 }
 
@@ -43,13 +44,13 @@ function disconnect() {
 
 function sendName() {
     stompClient.publish({
-        destination: "/app/hello",
+        destination: "/game/hello",
         body: JSON.stringify({'name': $("#name").val()})
     });
 }
 
 function showGreeting(message) {
-    $("#greetings").append("<tr><td>" + message + "</td></tr>");
+    $("#game").append("<tr><td>" + message + "</td></tr>");
 }
 
 $(function () {

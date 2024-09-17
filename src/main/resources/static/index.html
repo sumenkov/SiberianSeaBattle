@@ -18,7 +18,11 @@
             <form class="form-inline">
                 <div class="form-group">
                     <label for="connect">WebSocket connection:</label>
-                    <button id="connect" class="btn btn-default" type="submit">Connect</button>
+                    <div class="form-group">
+                        <button id="connect" class="btn btn-default" type="submit">Connect</button>
+                        <label for="connect_name">What is your host ws?</label>
+                        <input type="text" id="connect_name" class="form-control" value="ws://localhost:8080/ws">
+                    </div>
                     <button id="disconnect" class="btn btn-default" type="submit" disabled="disabled">Disconnect
                     </button>
                 </div>
