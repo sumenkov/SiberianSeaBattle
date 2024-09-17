@@ -14,8 +14,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -37,6 +37,7 @@ public class SpringSecurityConfiguration {
 
         return http.build();
     }
+
     @Bean
     public UserDetailsService userDetailsService() {
         UserDetails user =
@@ -49,36 +50,36 @@ public class SpringSecurityConfiguration {
         return new InMemoryUserDetailsManager(user);
     }
 
-/*
+    /*
+        @Bean
+        public CorsFilter corsFilter() {
+            final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+            final CorsConfiguration config = new CorsConfiguration();
+            config.setAllowCredentials(true);
+            config.addAllowedOrigin("*");
+            config.addAllowedHeader("*");
+            config.addAllowedMethod("OPTIONS");
+            config.addAllowedMethod("HEAD");
+            config.addAllowedMethod("GET");
+            config.addAllowedMethod("PUT");
+            config.addAllowedMethod("POST");
+            config.addAllowedMethod("DELETE");
+            config.addAllowedMethod("PATCH");
+            source.registerCorsConfiguration("/**", config);
+            return new CorsFilter(source);
+        }
+     */
     @Bean
-    public CorsFilter corsFilter() {
-        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        final CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.addAllowedOrigin("*");
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("OPTIONS");
-        config.addAllowedMethod("HEAD");
-        config.addAllowedMethod("GET");
-        config.addAllowedMethod("PUT");
-        config.addAllowedMethod("POST");
-        config.addAllowedMethod("DELETE");
-        config.addAllowedMethod("PATCH");
-        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
+    public CorsConfigurationSource corsConfigurationSource() {
+        final CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowCredentials(false);
+        configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
+        configuration.setAllowedMethods(List.of("*"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
- */
-@Bean
-public CorsConfigurationSource corsConfigurationSource() {
-    final CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowCredentials(false);
-    configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
-    configuration.setAllowedMethods(Arrays.asList("*"));
-    configuration.setAllowedHeaders(Arrays.asList("*"));
-    configuration.setAllowCredentials(true);
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", configuration);
-    return source;
-}
 
 }
