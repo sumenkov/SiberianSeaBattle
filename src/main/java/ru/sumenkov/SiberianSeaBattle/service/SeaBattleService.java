@@ -22,15 +22,8 @@ import ru.sumenkov.SiberianSeaBattle.model.Match;
 import ru.sumenkov.SiberianSeaBattle.model.Player;
 import ru.sumenkov.SiberianSeaBattle.model.game.CustomFleet;
 import ru.sumenkov.SiberianSeaBattle.model.game.Fleet;
-import ru.sumenkov.SiberianSeaBattle.model.game.GridPoint;
 import ru.sumenkov.SiberianSeaBattle.model.game.MatchFleet;
-import ru.sumenkov.SiberianSeaBattle.model.message.CreateFleetRequestMessage;
-import ru.sumenkov.SiberianSeaBattle.model.message.CreateFleetResponseMessage;
-import ru.sumenkov.SiberianSeaBattle.model.message.CreateGameRequestMessage;
-import ru.sumenkov.SiberianSeaBattle.model.message.CreateGameResponseMessage;
-import ru.sumenkov.SiberianSeaBattle.model.message.GenerateFleetRequestMessage;
-import ru.sumenkov.SiberianSeaBattle.model.message.GenerateFleetResponseMessage;
-import ru.sumenkov.SiberianSeaBattle.model.message.Status;
+import ru.sumenkov.SiberianSeaBattle.model.message.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -121,6 +114,29 @@ public class SeaBattleService {
         response.setStatus(Status.OK);
         int[][] grids = GameMapper.toGridsForOwner(fleet.getGrids());
         response.setGrids(grids);
+
+        return response;
+    }
+
+    /**
+     * Запрос на подключение к игре
+     * @param request запрос
+     * @return ответ
+     */
+    public JoinGameResponseMessage joinGame(JoinGameRequestMessage request) {
+        //TODO добавить проверку входных данных
+        Match match = checkMatch(request.getMatchId());
+        if(match.getOpponent() != null) {
+            throw new RuntimeException(
+                    String.format("В игре с %s игрок уже есть соперник %s", match.getId(), match.getOpponent().getId()));
+        }
+        Optional<Player> user = playerService.getPlayerByName(request.getUsername());
+        Player opponent = user.orElseGet(() -> playerService.createPlayer(request.getUsername()));
+        match.setOpponent(opponent);
+        matchService.updateMatch(match);
+
+        JoinGameResponseMessage response = new JoinGameResponseMessage();
+        response.setStatus(Status.OK);
 
         return response;
     }

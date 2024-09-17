@@ -9,14 +9,7 @@ import org.springframework.web.util.HtmlUtils;
 
 import ru.sumenkov.SiberianSeaBattle.acl.GameMapper;
 import ru.sumenkov.SiberianSeaBattle.model.game.Fleet;
-import ru.sumenkov.SiberianSeaBattle.model.message.CreateFleetRequestMessage;
-import ru.sumenkov.SiberianSeaBattle.model.message.CreateFleetResponseMessage;
-import ru.sumenkov.SiberianSeaBattle.model.message.CreateGameRequestMessage;
-import ru.sumenkov.SiberianSeaBattle.model.message.CreateGameResponseMessage;
-import ru.sumenkov.SiberianSeaBattle.model.message.GenerateFleetRequestMessage;
-import ru.sumenkov.SiberianSeaBattle.model.message.GenerateFleetResponseMessage;
-import ru.sumenkov.SiberianSeaBattle.model.message.HelloMessage;
-import ru.sumenkov.SiberianSeaBattle.model.message.Greeting;
+import ru.sumenkov.SiberianSeaBattle.model.message.*;
 import ru.sumenkov.SiberianSeaBattle.service.GameService;
 import ru.sumenkov.SiberianSeaBattle.service.SeaBattleService;
 
@@ -72,6 +65,12 @@ public class GameController {
     @SendTo("/see-battle/generate-fleet/response")
     public GenerateFleetResponseMessage generateFleet(GenerateFleetRequestMessage request) throws Exception {
         return seaBattleService.generateFleet(request);
+    }
+
+    @MessageMapping("/see-battle/join-game/request")
+    @SendTo("/see-battle/join-game/response")
+    public JoinGameResponseMessage joinGame(JoinGameRequestMessage request) throws Exception {
+        return seaBattleService.joinGame(request);
     }
 
 }
