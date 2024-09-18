@@ -73,6 +73,7 @@ public class SeaBattleService {
         CreateGameResponseMessage response = new CreateGameResponseMessage();
         response.setMatchId(match.getId().toString());
         response.setUserId(owner.getId().toString());
+        response.setStatus(Status.OK);
 
         notificationService.sendMessage(owner.getChanelId(), "/see-battle/create-game/response", response);
     }
