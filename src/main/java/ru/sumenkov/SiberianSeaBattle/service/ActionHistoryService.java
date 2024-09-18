@@ -54,16 +54,16 @@ public class ActionHistoryService {
     }
 
     @Transactional
-    public List<ActionHistory> findAllByPlayerId(UUID id) {
-        return this.actionHistoryRepository.findAllByPlayerId(id)
+    public List<ActionHistory> findAllByPlayerId(UUID playerId) {
+        return this.actionHistoryRepository.findAllByPlayerId(playerId)
                 .stream()
                 .map(actionHistoryDao -> this.modelMapper.map(actionHistoryDao, ActionHistory.class))
                 .toList();
     }
 
     @Transactional
-    public List<ActionHistory> findAllByMatchId(UUID id) {
-        return this.actionHistoryRepository.findAllByMatchId(id)
+    public List<ActionHistory> findAllByMatchId(UUID matchId) {
+        return this.actionHistoryRepository.findAllByMatchId(matchId)
                 .stream()
                 .map(actionHistoryDao -> this.modelMapper.map(actionHistoryDao, ActionHistory.class))
                 .toList();

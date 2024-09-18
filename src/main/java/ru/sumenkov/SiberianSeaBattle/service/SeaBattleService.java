@@ -64,7 +64,7 @@ public class SeaBattleService {
         matchIdToMatchFleet.put(match.getId(), new MatchFleet(new HashMap<>()));
         CreateGameResponseMessage response = new CreateGameResponseMessage();
         response.setMatchId(match.getId().toString());
-        response.setMatchId(owner.getId().toString());
+        response.setUserId(owner.getId().toString());
 
         return response;
     }
@@ -77,10 +77,11 @@ public class SeaBattleService {
      */
     public CreateFleetResponseMessage createFleet(CreateFleetRequestMessage request) {
         //TODO добавить проверку входных данных
-        Match match = checkMatch(request.getMatchId());
+        Match match = checkMatch(request.getMatchId(), true);
         checkUser(request.getUserId(), match);
         UUID userId = UUID.fromString(request.getUserId());
         MatchFleet mathFleet = getMatchFleet(match, userId);
+        checkInitFleetByUser(mathFleet, userId, match);
 
         CreateFleetResponseMessage response = new CreateFleetResponseMessage();
         CustomFleet customFleet = gameService.checkCustomFleet(request.getGrids());
@@ -96,6 +97,8 @@ public class SeaBattleService {
         return response;
     }
 
+
+
     /**
      * Генерируем флот (авторасстановка флота)
      *
@@ -104,10 +107,11 @@ public class SeaBattleService {
      */
     public GenerateFleetResponseMessage generateFleet(GenerateFleetRequestMessage request) {
         //TODO добавить проверку входных данных
-        Match match = checkMatch(request.getMatchId());
+        Match match = checkMatch(request.getMatchId(), true);
         checkUser(request.getUserId(), match);
         UUID userId = UUID.fromString(request.getUserId());
         MatchFleet mathFleet = getMatchFleet(match, userId);
+        checkInitFleetByUser(mathFleet, userId, match);
         GenerateFleetResponseMessage response = new GenerateFleetResponseMessage();
         Fleet fleet = gameService.getFleet(match.getSizeGrid(), match.getSizeGrid());
         mathFleet.userIdToFleet().put(userId, fleet);
@@ -125,7 +129,7 @@ public class SeaBattleService {
      */
     public JoinGameResponseMessage joinGame(JoinGameRequestMessage request) {
         //TODO добавить проверку входных данных
-        Match match = checkMatch(request.getMatchId());
+        Match match = checkMatch(request.getMatchId(), true);
         if(match.getOpponent() != null) {
             throw new RuntimeException(
                     String.format("В игре с %s игрок уже есть соперник %s", match.getId(), match.getOpponent().getId()));
@@ -136,9 +140,50 @@ public class SeaBattleService {
         matchService.updateMatch(match);
 
         JoinGameResponseMessage response = new JoinGameResponseMessage();
+        response.setUserId(opponent.getId().toString());
         response.setStatus(Status.OK);
+        //TODO нотификация сопернику
 
         return response;
+    }
+
+    /**
+     * Выстрел в игре по полю
+     * @param request запрос
+     * @return ответ
+     */
+    public ShotGameResponseMessage shotGame(ShotGameRequestMessage request) {
+        //TODO добавить проверку входных данных
+        Match match = checkMatch(request.getMatchId(), true);
+        checkUser(request.getUserId(), match);
+        UUID userId = UUID.fromString(request.getUserId());
+
+        MatchFleet mathFleet = getMatchFleet(match, userId);
+        Fleet opponentFleet = mathFleet.getOpponentFleet(userId);
+
+        boolean isHit = gameService.checkShot(opponentFleet, request.getX(), request.getY());
+        ShotGameResponseMessage response = new ShotGameResponseMessage();
+        response.setHit(isHit);
+        int[][] opponentGrids  = GameMapper.toGridsForOpponent(opponentFleet.getGrids());
+        response.setOpponentGrids(opponentGrids);
+        response.setStatus(Status.OK);
+        Optional<Player> player = playerService.getPlayer(userId);
+        if(player.isEmpty()) {
+            throw new RuntimeException(String.format("Игрок %s не найден", userId));
+        }
+        actionHistoryService.createActionHistory(match, player.get(), request.getX(), request.getY());
+
+        return response;
+        //TODO нотификация сопернику
+        //TODO добавить проверку флота и узнать кто победил
+
+    }
+
+    private static void checkInitFleetByUser(MatchFleet mathFleet, UUID userId, Match match) {
+        if (mathFleet.userIdToFleet().get(userId) != null) {
+            throw new RuntimeException(
+                    String.format("В игре с %s игрок %s, уже расставил флот", match.getId(), userId));
+        }
     }
 
 
@@ -152,13 +197,10 @@ public class SeaBattleService {
     private MatchFleet getMatchFleet(Match match, UUID userId) {
         MatchFleet mathFleet = matchIdToMatchFleet.get(match.getId());
         if (mathFleet == null) {
-            throw new RuntimeException(String.format("Игра с %s не найдена, произошла ошибка", match.getId()));
+            throw new RuntimeException(String.format("Игра  %s  c пользователем %s не найдена, произошла ошибка", match.getId(), userId));
         }
 
-        if (mathFleet.userIdToFleet().get(userId) != null) {
-            throw new RuntimeException(
-                    String.format("В игре с %s игрок %s, уже расставил флот", match.getId(), userId));
-        }
+
 
         return mathFleet;
     }
@@ -170,15 +212,17 @@ public class SeaBattleService {
         }
     }
 
-    private Match checkMatch(String matchId) {
+    private Match checkMatch(String matchId, boolean checkFinishGame) {
         Optional<Match> matchOpt = matchService.getMatchById(matchId);
         if (matchOpt.isEmpty()) {
             throw new RuntimeException("Игра не найдена " + matchId);
         }
         Match match = matchOpt.get();
-        if (match.getWinner() != null) {
+        if (checkFinishGame && match.getWinner() == null) {
             throw new RuntimeException(String.format("Игра с %s закончилась ", matchId));
         }
         return match;
     }
+
+
 }

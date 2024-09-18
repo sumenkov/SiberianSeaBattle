@@ -13,24 +13,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ru.sumenkov.SiberianSeaBattle.model.game;
+package ru.sumenkov.SiberianSeaBattle.model.message;
 
-import java.util.Map;
-import java.util.UUID;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
- * Description: Структура для хранения прогреса матча
+ * Description: Запрос на выстрел в игре
  *
  * @author <a href="mailto:onixbed@gmail.com">amaksimov</a>
- * crested on 17.09.2024
+ * crested on 18.09.2024
  */
-public record MatchFleet(Map<UUID, Fleet> userIdToFleet) {
-    public Fleet getOpponentFleet(UUID userId) {
-        for (Map.Entry<UUID, Fleet> entry: userIdToFleet.entrySet()) {
-            if(!entry.getKey().equals(userId)) {
-                return entry.getValue();
-            }
-        }
-        throw new RuntimeException(String.format("Не смогли найти соперника для игрока %s", userId));
-    }
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class ShotGameRequestMessage extends  BaseRequestMessage {
+    private String matchId;
+    private String userId;
+    private int x;
+    private int y;
 }

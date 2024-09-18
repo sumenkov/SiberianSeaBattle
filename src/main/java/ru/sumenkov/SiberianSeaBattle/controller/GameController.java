@@ -73,4 +73,10 @@ public class GameController {
         return seaBattleService.joinGame(request);
     }
 
+    @MessageMapping("/see-battle/shot-game/request")
+    @SendTo("/see-battle/shot-game/response")
+    public ShotGameResponseMessage shotGame(ShotGameRequestMessage request) throws Exception {
+        return seaBattleService.shotGame(request);
+    }
+
 }
