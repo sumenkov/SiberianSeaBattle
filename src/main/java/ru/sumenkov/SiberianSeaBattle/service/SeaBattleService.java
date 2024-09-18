@@ -265,7 +265,7 @@ public class SeaBattleService {
             throw new RuntimeException("Игра не найдена " + matchId);
         }
         Match match = matchOpt.get();
-        if (checkFinishGame && match.getWinner() == null) {
+        if (checkFinishGame && match.getWinner() != null) {
             throw new RuntimeException(String.format("Игра с %s закончилась ", matchId));
         }
         return match;
