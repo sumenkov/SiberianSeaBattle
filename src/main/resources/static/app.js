@@ -8,6 +8,11 @@ stompClient.onConnect = (frame) => {
     stompClient.subscribe('/see-battle/chat/response', (greeting) => {
         showGreeting(JSON.parse(greeting.body).content);
     });
+    stompClient.subscribe(
+          "/user/550e8400-e29b-41d4-a716-446655440000/queue/messages",
+          (greeting) => {
+                  showGreeting(greeting.body);
+        });
 };
 
 stompClient.onWebSocketError = (error) => {
@@ -45,7 +50,7 @@ function disconnect() {
 function sendName() {
     stompClient.publish({
         destination: "/see-battle/chat/request",
-        body: JSON.stringify({'name': $("#name").val()})
+        body: JSON.stringify({'name': $("#name").val(), 'id':'550e8400-e29b-41d4-a716-446655440000' })
     });
 }
 

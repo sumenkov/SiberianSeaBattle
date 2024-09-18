@@ -1,16 +1,15 @@
 package ru.sumenkov.SiberianSeaBattle.model.message;
 
 
+import lombok.Data;
 
+import java.util.UUID;
+
+@Data
 public class HelloMessage {
-    public String getName() {
-        return name;
-    }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 
     private String name;
+    private UUID id;
 
 }

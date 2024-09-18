@@ -19,21 +19,14 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * Description: Запрос на генерацию флота
+ * Description: Нотификация для владелца что нашли соперника
  *
  * @author <a href="mailto:onixbed@gmail.com">amaksimov</a>
- * crested on 17.09.2024
+ * crested on 18.09.2024
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class GenerateFleetResponseMessage extends  BaseResponseMessage {
-    /**
-     * Карта флота
-     */
-    private int[][] grids;
+public class JoinGameOwnerResponseMessage extends BaseResponseMessage {
 
-    /**
-     * Признак старта игры, игроки расставили флот
-     */
-    private boolean isStartGame;
+
 }

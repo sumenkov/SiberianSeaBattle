@@ -18,6 +18,8 @@ package ru.sumenkov.SiberianSeaBattle.model.message;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.UUID;
+
 /**
  * Description: Запрос на создание игры
  *
@@ -35,4 +37,9 @@ public class CreateGameRequestMessage extends BaseRequestMessage {
      * Размер поля если не задан то используем дефолт
      */
     private Integer sizeGrid;
+
+    /**
+     * Идентификатор приватного канала
+     */
+    private UUID chanelId;
 }

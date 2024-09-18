@@ -14,7 +14,7 @@ import java.util.UUID;
 public class Player {
 
     private UUID id;
-
+    private UUID chanelId;
     private String name;
 
 }

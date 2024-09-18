@@ -13,27 +13,29 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package ru.sumenkov.SiberianSeaBattle.model.message;
+package ru.sumenkov.SiberianSeaBattle.service;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 /**
- * Description: Запрос на генерацию флота
+ * Description:
  *
  * @author <a href="mailto:onixbed@gmail.com">amaksimov</a>
- * crested on 17.09.2024
+ * crested on 18.09.2024
  */
-@Data
-@EqualsAndHashCode(callSuper = true)
-public class GenerateFleetResponseMessage extends  BaseResponseMessage {
-    /**
-     * Карта флота
-     */
-    private int[][] grids;
+@Service
+@RequiredArgsConstructor
+public class NotificationService {
+    private final SimpMessagingTemplate messagingTemplate;
 
-    /**
-     * Признак старта игры, игроки расставили флот
-     */
-    private boolean isStartGame;
+
+    public void sendMessage(UUID chanelId, String destination, Object object) {
+        messagingTemplate.convertAndSendToUser(
+                chanelId.toString(), destination,
+                object);
+    }
 }

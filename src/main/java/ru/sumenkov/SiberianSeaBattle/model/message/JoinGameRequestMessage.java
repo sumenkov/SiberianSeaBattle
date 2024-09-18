@@ -18,6 +18,8 @@ package ru.sumenkov.SiberianSeaBattle.model.message;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.UUID;
+
 /**
  * Description: Запрос на подключение к игре
  *
@@ -27,6 +29,16 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class JoinGameRequestMessage extends BaseRequestMessage {
+    /**
+     * Идентификатор игры
+     */
     private String matchId;
+    /**
+     *  Имя юзера
+     */
     private String username;
+    /**
+     * Идентификатор приватного канала
+     */
+    private UUID chanelId;
 }

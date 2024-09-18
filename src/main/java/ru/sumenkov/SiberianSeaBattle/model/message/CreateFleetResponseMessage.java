@@ -29,4 +29,9 @@ import lombok.EqualsAndHashCode;
 public class CreateFleetResponseMessage extends BaseResponseMessage {
 
     private int[][] errorGrids;
+
+    /**
+     * Признак старта игры, игроки расставили флот
+     */
+    private boolean isStartGame;
 }

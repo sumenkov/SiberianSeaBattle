@@ -21,6 +21,9 @@ public class PlayerDao extends AbstractDao {
     @Column(name = "id", unique = true)
     private UUID id;
 
+    @Column(name = "chanel_id", unique = true)
+    private UUID chanelId;
+
     @Column(name = "name", unique = true)
     private String name;
 

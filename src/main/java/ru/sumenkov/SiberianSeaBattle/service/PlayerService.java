@@ -25,9 +25,10 @@ public class PlayerService {
 
 
     @Transactional
-    public Player createPlayer(String name) {
+    public Player createPlayer(String name, UUID chanelId) {
         PlayerDao playerDao =  new PlayerDao();
         playerDao.setName(name);
+        playerDao.setChanelId(chanelId);
         this.playerRepository.save(playerDao);
 
         return this.modelMapper.map(playerDao, Player.class);

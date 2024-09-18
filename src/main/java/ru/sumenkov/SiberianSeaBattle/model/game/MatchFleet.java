@@ -16,6 +16,7 @@
 package ru.sumenkov.SiberianSeaBattle.model.game;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -25,12 +26,31 @@ import java.util.UUID;
  * crested on 17.09.2024
  */
 public record MatchFleet(Map<UUID, Fleet> userIdToFleet) {
+
+    /**
+     * Находит флот соперника
+     * @param userId идентификатор пользователя (не соперника)
+     * @return флот соперника
+     */
     public Fleet getOpponentFleet(UUID userId) {
+       return findOpponentUserId(userId).map(userIdToFleet::get).orElseThrow(()-> new RuntimeException(String.format("Не смогли найти соперника для игрока %s", userId)));
+    }
+
+    public Optional<UUID> findOpponentUserId(UUID userId) {
         for (Map.Entry<UUID, Fleet> entry: userIdToFleet.entrySet()) {
             if(!entry.getKey().equals(userId)) {
-                return entry.getValue();
+                return Optional.of(entry.getKey());
             }
         }
-        throw new RuntimeException(String.format("Не смогли найти соперника для игрока %s", userId));
+       return Optional.empty();
+    }
+
+    /**
+     * Проверяет расставил соперник флот
+     * @param userId идентификатор пользователя (не соперника)
+     * @return true -если соперник готов, false - не готов
+     */
+    public boolean checkOpponentDone(UUID userId) {
+        return userIdToFleet.size() > 1;
     }
 }
