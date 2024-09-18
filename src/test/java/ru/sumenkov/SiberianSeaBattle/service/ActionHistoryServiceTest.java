@@ -10,8 +10,6 @@ import ru.sumenkov.SiberianSeaBattle.model.Player;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest
 class ActionHistoryServiceTest {
 
@@ -26,7 +24,7 @@ class ActionHistoryServiceTest {
 
     @Test
     void createActionHistoryTest() {
-        Player player = this.playerService.createPlayer("p1" + UUID.randomUUID());
+        Player player = this.playerService.createPlayer("p1" + UUID.randomUUID(), UUID.randomUUID());
         Match match = this.matchService.createMatch(player, 5);
         ActionHistory actionHistory = this.actionHistoryService.createActionHistory(match, player, 1, 1);
         Assertions.assertNotNull(actionHistory);

@@ -1,5 +1,6 @@
 package ru.sumenkov.SiberianSeaBattle.service;
 
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,15 +13,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class PlayerService {
 
     private final PlayerRepository playerRepository;
     private final ModelMapper modelMapper;
-
-    public PlayerService(PlayerRepository playerRepository, ModelMapper modelMapper) {
-        this.playerRepository = playerRepository;
-        this.modelMapper = modelMapper;
-    }
 
 
 
@@ -29,9 +26,9 @@ public class PlayerService {
         PlayerDao playerDao =  new PlayerDao();
         playerDao.setName(name);
         playerDao.setChanelId(chanelId);
-        this.playerRepository.save(playerDao);
+        playerDao = playerRepository.save(playerDao);
 
-        return this.modelMapper.map(playerDao, Player.class);
+        return modelMapper.map(playerDao, Player.class);
     }
 
     @Transactional
@@ -41,28 +38,28 @@ public class PlayerService {
 
     @Transactional
     public Optional<Player> getPlayerByName(String name) {
-        return this.playerRepository.findByName(name)
-                .map(playerDao -> this.modelMapper.map(playerDao, Player.class));
+        return playerRepository.findByName(name)
+                .map(playerDao -> modelMapper.map(playerDao, Player.class));
     }
 
     @Transactional
     public Optional<Player> getPlayer(UUID id) {
-        return this.playerRepository.findById(id)
-                .map(playerDao -> this.modelMapper.map(playerDao, Player.class));
+        return playerRepository.findById(id)
+                .map(playerDao -> modelMapper.map(playerDao, Player.class));
     }
 
     @Transactional
     public List<Player> getAllPlayers() {
-        return this.playerRepository.findAll()
+        return playerRepository.findAll()
                 .stream()
-                .map(playerDao -> this.modelMapper.map(playerDao, Player.class))
+                .map(playerDao -> modelMapper.map(playerDao, Player.class))
                 .toList();
     }
 
     @Transactional
     public void updatePlayer(Player player) {
-        PlayerDao playerDao = this.modelMapper.map(player, PlayerDao.class);
-        this.playerRepository.save(playerDao);
+        PlayerDao playerDao = modelMapper.map(player, PlayerDao.class);
+        playerRepository.save(playerDao);
     }
 
 }

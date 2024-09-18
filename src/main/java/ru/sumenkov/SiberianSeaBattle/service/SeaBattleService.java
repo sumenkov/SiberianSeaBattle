@@ -112,10 +112,9 @@ public class SeaBattleService {
             FleetOpponentResponseMessage opponentResponse = new FleetOpponentResponseMessage();
             opponentResponse.setStatus(Status.OK);
             opponentResponse.setStartGame(true);
-            notificationService.sendMessage(opponentUser.getChanelId(), "/see-battle/generate-fleet-opponent/response", opponentResponse);
+            notificationService.sendMessage(opponentUser.getChanelId(), "/see-battle/fleet-opponent/response", opponentResponse);
         }
     }
-
 
 
     /**
@@ -147,7 +146,7 @@ public class SeaBattleService {
             FleetOpponentResponseMessage opponentResponse = new FleetOpponentResponseMessage();
             opponentResponse.setStatus(Status.OK);
             opponentResponse.setStartGame(true);
-            notificationService.sendMessage(opponentUser.getChanelId(), "/see-battle/generate-fleet-opponent/response", opponentResponse);
+            notificationService.sendMessage(opponentUser.getChanelId(), "/see-battle/fleet-opponent/response", opponentResponse);
         }
     }
 
