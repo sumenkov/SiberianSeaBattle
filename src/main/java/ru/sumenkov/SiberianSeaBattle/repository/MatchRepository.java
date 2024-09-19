@@ -14,4 +14,9 @@ public interface MatchRepository extends CrudRepository<MatchDao, UUID> {
     @NonNull
     List<MatchDao> findAll();
 
+    List<MatchDao> findAllByOpponentIsNull();
+
+    List<MatchDao> findAllByOpponentIsNotNullAndWinnerIsNull();
+
+    List<MatchDao> getAllMatchesByWinnerIsNotNull();
 }

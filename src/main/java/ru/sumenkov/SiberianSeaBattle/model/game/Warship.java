@@ -38,6 +38,9 @@ public final class Warship {
      */
     public boolean hit() {
         lives--;
-        return lives==0;
+        return isKill();
+    }
+    public boolean isKill() {
+        return lives == 0;
     }
 }

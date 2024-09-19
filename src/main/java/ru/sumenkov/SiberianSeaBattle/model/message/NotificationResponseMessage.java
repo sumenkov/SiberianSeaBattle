@@ -19,16 +19,13 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * Description: Нотификация для  второго игрока что произошел выстрел
+ * Description: Нотификация об обновлениях
  *
  * @author <a href="mailto:onixbed@gmail.com">amaksimov</a>
- * crested on 18.09.2024
+ * crested on 19.09.2024
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ShotGameOwnerResponseMessage extends BaseResponseMessage {
-
-    boolean isHit;
-    boolean isOpponentWin;
-    int[][] grids;
+public class NotificationResponseMessage extends BaseResponseMessage {
+    private TypeNotification type;
 }

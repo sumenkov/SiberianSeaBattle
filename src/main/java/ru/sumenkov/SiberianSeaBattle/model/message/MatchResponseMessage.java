@@ -17,18 +17,18 @@ package ru.sumenkov.SiberianSeaBattle.model.message;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import ru.sumenkov.SiberianSeaBattle.model.Match;
+
+import java.util.List;
 
 /**
- * Description: Нотификация для  второго игрока что произошел выстрел
+ * Description: Ответ на запрос спимка игр в ожидании
  *
  * @author <a href="mailto:onixbed@gmail.com">amaksimov</a>
- * crested on 18.09.2024
+ * crested on 19.09.2024
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ShotGameOwnerResponseMessage extends BaseResponseMessage {
-
-    boolean isHit;
-    boolean isOpponentWin;
-    int[][] grids;
+public class MatchResponseMessage extends BaseResponseMessage {
+    private List<Match> matches;
 }

@@ -45,4 +45,14 @@ public class GameController {
         seaBattleService.shotGame(request);
     }
 
+    @MessageMapping("/see-battle/matches/request")
+    public void getMatches(MatchRequestMessage request) throws Exception {
+        seaBattleService.getMatches(request);
+    }
+
+    @MessageMapping("/see-battle/match-history/request")
+    public void getMatchHistory(MatchHistoryRequestMessage request) throws Exception {
+        seaBattleService.getMatchHistory(request);
+    }
+
 }

@@ -29,4 +29,5 @@ import lombok.EqualsAndHashCode;
 public class ShotGameResponseMessage extends  BaseResponseMessage {
     boolean isHit;
     int[][] opponentGrids;
+    boolean isWinn;
 }

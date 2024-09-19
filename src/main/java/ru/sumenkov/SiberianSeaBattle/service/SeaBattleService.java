@@ -18,17 +18,16 @@ package ru.sumenkov.SiberianSeaBattle.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.sumenkov.SiberianSeaBattle.acl.GameMapper;
+import ru.sumenkov.SiberianSeaBattle.model.ActionHistory;
 import ru.sumenkov.SiberianSeaBattle.model.Match;
 import ru.sumenkov.SiberianSeaBattle.model.Player;
 import ru.sumenkov.SiberianSeaBattle.model.game.CustomFleet;
 import ru.sumenkov.SiberianSeaBattle.model.game.Fleet;
 import ru.sumenkov.SiberianSeaBattle.model.game.MatchFleet;
+import ru.sumenkov.SiberianSeaBattle.model.game.Warship;
 import ru.sumenkov.SiberianSeaBattle.model.message.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Description: Сервис фасад игры
@@ -53,29 +52,37 @@ public class SeaBattleService {
      * @param request запрос на создание игры
      */
     public void createGame(CreateGameRequestMessage request) {
-        //TODO добавить проверку входных данных
-        // проверка юзера как?
-        int sizeGrid = Optional.ofNullable(request.getSizeGrid()).orElse(5);
-
-        Optional<Player> user = playerService.getPlayerByName(request.getUsername());
-        final Player owner;
-        if(user.isEmpty()) {
-            owner = playerService.createPlayer(request.getUsername(), request.getChanelId());
-        } else {
-           owner =  user.get();
-           owner.setChanelId(request.getChanelId());
-           playerService.updatePlayer(owner);
-        }
-
-        Match match = matchService.createMatch(owner, sizeGrid);
-        //TODO возможно нужно закинуть в бд но уччитывая маппинги это накладно
-        matchIdToMatchFleet.put(match.getId(), new MatchFleet(new HashMap<>()));
         CreateGameResponseMessage response = new CreateGameResponseMessage();
-        response.setMatchId(match.getId().toString());
-        response.setUserId(owner.getId().toString());
-        response.setStatus(Status.OK);
+        try {
+            //TODO добавить проверку входных данных
+            // проверка юзера как?
+            int sizeGrid = Optional.ofNullable(request.getSizeGrid()).orElse(5);
 
-        notificationService.sendMessage(owner.getChanelId(), "/see-battle/create-game/response", response);
+            Optional<Player> user = playerService.getPlayerByName(request.getUsername());
+            final Player owner;
+            if(user.isEmpty()) {
+                owner = playerService.createPlayer(request.getUsername(), request.getChanelId());
+            } else {
+                owner =  user.get();
+                owner.setChanelId(request.getChanelId());
+                playerService.updatePlayer(owner);
+            }
+
+            Match match = matchService.createMatch(owner, sizeGrid);
+            //TODO возможно нужно закинуть в бд но уччитывая маппинги это накладно
+            matchIdToMatchFleet.put(match.getId(), new MatchFleet(new HashMap<>()));
+
+            response.setMatchId(match.getId().toString());
+            response.setUserId(owner.getId().toString());
+            response.setStatus(Status.OK);
+
+            notificationService.sendMessage(owner.getChanelId(), "/see-battle/create-game/response", response);
+            allNotification(TypeNotification.MATCH_WAIT);
+        } catch (RuntimeException re) {
+            response.setStatus(Status.ERROR);
+            response.setErrorDescription(re.getMessage());
+            notificationService.sendMessage(request.getChanelId(), "/see-battle/create-game/response", response);
+        }
     }
 
     /**
@@ -84,36 +91,47 @@ public class SeaBattleService {
      * @param request запрос на создание флота
      */
     public void createFleet(CreateFleetRequestMessage request) {
-        //TODO добавить проверку входных данных
-        Match match = checkMatch(request.getMatchId(), true);
-        checkUser(request.getUserId(), match);
-        UUID userId = UUID.fromString(request.getUserId());
-        Player player = getPlayer(userId);
-        MatchFleet mathFleet = getMatchFleet(match, userId);
-        checkInitFleetByUser(mathFleet, userId, match);
-
         CreateFleetResponseMessage response = new CreateFleetResponseMessage();
-        CustomFleet customFleet = gameService.checkCustomFleet(request.getGrids());
-        if (customFleet.isStatus()) {
-            mathFleet.userIdToFleet().put(userId, customFleet.getFleet());
-            response.setStatus(Status.OK);
-        } else {
+        Player player =null;
+        try {
+            //TODO добавить проверку входных данных
+            Match match = checkMatch(request.getMatchId(), true);
+            checkUser(request.getUserId(), match);
+            UUID userId = UUID.fromString(request.getUserId());
+            player = getPlayer(userId);
+            MatchFleet mathFleet = getMatchFleet(match, userId);
+            checkInitFleetByUser(mathFleet, userId, match);
+
+
+            CustomFleet customFleet = gameService.checkCustomFleet(request.getGrids());
+            if (customFleet.isStatus()) {
+                mathFleet.userIdToFleet().put(userId, customFleet.getFleet());
+                response.setStatus(Status.OK);
+            } else {
+                response.setStatus(Status.ERROR);
+                response.setErrorDescription("Ощибка в расстановке флота");
+                response.setErrorGrids(customFleet.getErrorGrids());
+            }
+            Optional<UUID> opponentUserId = mathFleet.findOpponentUserId(userId);
+            response.setStartGame(opponentUserId.isPresent());
+
+            notificationService.sendMessage(player.getChanelId(), "/see-battle/create-fleet/response", response);
+
+            //Оповещение второго игрока что соперник готов\игра начилась
+            if(opponentUserId.isPresent()) {
+                Player opponentUser = getPlayer(opponentUserId.get());
+                FleetOpponentResponseMessage opponentResponse = new FleetOpponentResponseMessage();
+                opponentResponse.setStatus(Status.OK);
+                opponentResponse.setStartGame(true);
+                notificationService.sendMessage(opponentUser.getChanelId(), "/see-battle/fleet-opponent/response", opponentResponse);
+            }
+
+        } catch (RuntimeException re) {
             response.setStatus(Status.ERROR);
-            response.setErrorDescription("Ощибка в расстановке флота");
-            response.setErrorGrids(customFleet.getErrorGrids());
-        }
-        Optional<UUID> opponentUserId = mathFleet.findOpponentUserId(userId);
-        response.setStartGame(opponentUserId.isPresent());
-
-        notificationService.sendMessage(player.getChanelId(), "/see-battle/create-fleet/response", response);
-
-        //Оповещение второго игрока что соперник готов\игра начилась
-        if(opponentUserId.isPresent()) {
-            Player opponentUser = getPlayer(opponentUserId.get());
-            FleetOpponentResponseMessage opponentResponse = new FleetOpponentResponseMessage();
-            opponentResponse.setStatus(Status.OK);
-            opponentResponse.setStartGame(true);
-            notificationService.sendMessage(opponentUser.getChanelId(), "/see-battle/fleet-opponent/response", opponentResponse);
+            response.setErrorDescription(re.getMessage());
+            if(player != null) {
+                notificationService.sendMessage(player.getChanelId(), "/see-battle/create-fleet/response", response);
+            }
         }
     }
 
@@ -124,30 +142,40 @@ public class SeaBattleService {
      * @param request запрос
      */
     public void generateFleet(GenerateFleetRequestMessage request) {
-        //TODO добавить проверку входных данных
-        Match match = checkMatch(request.getMatchId(), true);
-        checkUser(request.getUserId(), match);
-        UUID userId = UUID.fromString(request.getUserId());
-        Player player = getPlayer(userId);
-        MatchFleet mathFleet = getMatchFleet(match, userId);
-        checkInitFleetByUser(mathFleet, userId, match);
         GenerateFleetResponseMessage response = new GenerateFleetResponseMessage();
-        Fleet fleet = gameService.getFleet(match.getSizeGrid(), match.getSizeGrid());
-        mathFleet.userIdToFleet().put(userId, fleet);
-        response.setStatus(Status.OK);
-        int[][] grids = GameMapper.toGridsForOwner(fleet.getGrids());
-        response.setGrids(grids);
-        Optional<UUID> opponentUserId = mathFleet.findOpponentUserId(userId);
-        response.setStartGame(opponentUserId.isPresent());
-        notificationService.sendMessage(player.getChanelId(), "/see-battle/generate-fleet/response", response);
+        Player player = null;
+        try {
+            //TODO добавить проверку входных данных
+            Match match = checkMatch(request.getMatchId(), true);
+            checkUser(request.getUserId(), match);
+            UUID userId = UUID.fromString(request.getUserId());
+            player = getPlayer(userId);
+            MatchFleet mathFleet = getMatchFleet(match, userId);
+            checkInitFleetByUser(mathFleet, userId, match);
 
-        //Оповещение второго игрока что соперник готов\игра начилась
-        if(opponentUserId.isPresent()) {
-            Player opponentUser = getPlayer(opponentUserId.get());
-            FleetOpponentResponseMessage opponentResponse = new FleetOpponentResponseMessage();
-            opponentResponse.setStatus(Status.OK);
-            opponentResponse.setStartGame(true);
-            notificationService.sendMessage(opponentUser.getChanelId(), "/see-battle/fleet-opponent/response", opponentResponse);
+            Fleet fleet = gameService.getFleet(match.getSizeGrid(), match.getSizeGrid());
+            mathFleet.userIdToFleet().put(userId, fleet);
+            response.setStatus(Status.OK);
+            int[][] grids = GameMapper.toGridsForOwner(fleet.getGrids());
+            response.setGrids(grids);
+            Optional<UUID> opponentUserId = mathFleet.findOpponentUserId(userId);
+            response.setStartGame(opponentUserId.isPresent());
+            notificationService.sendMessage(player.getChanelId(), "/see-battle/generate-fleet/response", response);
+
+            //Оповещение второго игрока что соперник готов\игра начилась
+            if(opponentUserId.isPresent()) {
+                Player opponentUser = getPlayer(opponentUserId.get());
+                FleetOpponentResponseMessage opponentResponse = new FleetOpponentResponseMessage();
+                opponentResponse.setStatus(Status.OK);
+                opponentResponse.setStartGame(true);
+                notificationService.sendMessage(opponentUser.getChanelId(), "/see-battle/fleet-opponent/response", opponentResponse);
+            }
+        } catch (RuntimeException re) {
+            response.setStatus(Status.ERROR);
+            response.setErrorDescription(re.getMessage());
+            if(player != null) {
+                notificationService.sendMessage(player.getChanelId(), "/see-battle/generate-fleet/response", response);
+            }
         }
     }
 
@@ -156,33 +184,41 @@ public class SeaBattleService {
      * @param request запрос
      */
     public void joinGame(JoinGameRequestMessage request) {
-        //TODO добавить проверку входных данных
-        Match match = checkMatch(request.getMatchId(), true);
-        if(match.getOpponent() != null) {
-            throw new RuntimeException(
-                    String.format("В игре с %s игрок уже есть соперник %s", match.getId(), match.getOpponent().getId()));
-        }
-        Optional<Player> opponentOpt = playerService.getPlayerByName(request.getUsername());
-        final Player opponent;
-        if(opponentOpt.isEmpty()) {
-            opponent = playerService.createPlayer(request.getUsername(), request.getChanelId());
-        } else {
-            opponent =  opponentOpt.get();
-            opponent.setChanelId(request.getChanelId());
-            playerService.updatePlayer(opponent);
-        }
-        match.setOpponent(opponent);
-        matchService.updateMatch(match);
         JoinGameResponseMessage response = new JoinGameResponseMessage();
-        response.setUserId(opponent.getId().toString());
-        response.setStatus(Status.OK);
+        try {
+            //TODO добавить проверку входных данных
+            Match match = checkMatch(request.getMatchId(), true);
+            if(match.getOpponent() != null) {
+                throw new RuntimeException(
+                        String.format("В игре с %s игрок уже есть соперник %s", match.getId(), match.getOpponent().getId()));
+            }
+            Optional<Player> opponentOpt = playerService.getPlayerByName(request.getUsername());
+            final Player opponent;
+            if(opponentOpt.isEmpty()) {
+                opponent = playerService.createPlayer(request.getUsername(), request.getChanelId());
+            } else {
+                opponent =  opponentOpt.get();
+                opponent.setChanelId(request.getChanelId());
+                playerService.updatePlayer(opponent);
+            }
+            match.setOpponent(opponent);
+            matchService.updateMatch(match);
 
-        notificationService.sendMessage(opponent.getChanelId(), "/see-battle/join-game/response", response);
-        //Оповещение владелца игры
-        Player owner = getPlayer(match.getOwner().getId());
-        JoinGameOwnerResponseMessage ownerResponse = new JoinGameOwnerResponseMessage();
-        ownerResponse.setStatus(Status.OK);
-        notificationService.sendMessage(owner.getChanelId(), "/see-battle/join-game-owner/response", ownerResponse);
+            response.setUserId(opponent.getId().toString());
+            response.setStatus(Status.OK);
+
+            notificationService.sendMessage(opponent.getChanelId(), "/see-battle/join-game/response", response);
+            //Оповещение владелца игры
+            Player owner = getPlayer(match.getOwner().getId());
+            JoinGameOwnerResponseMessage ownerResponse = new JoinGameOwnerResponseMessage();
+            ownerResponse.setStatus(Status.OK);
+            notificationService.sendMessage(owner.getChanelId(), "/see-battle/join-game-owner/response", ownerResponse);
+            allNotification(TypeNotification.MATCH_WAIT);
+        } catch (RuntimeException re) {
+            response.setStatus(Status.ERROR);
+            response.setErrorDescription(re.getMessage());
+             notificationService.sendMessage(request.getChanelId(), "/see-battle/join-game/response", response);
+        }
     }
 
     /**
@@ -190,32 +226,105 @@ public class SeaBattleService {
      * @param request запрос
      */
     public void shotGame(ShotGameRequestMessage request) {
-        //TODO добавить проверку входных данных
-        Match match = checkMatch(request.getMatchId(), true);
-        checkUser(request.getUserId(), match);
-        UUID userId = UUID.fromString(request.getUserId());
-        Player player = getPlayer(userId);
-        MatchFleet mathFleet = getMatchFleet(match, userId);
-        Fleet opponentFleet = mathFleet.getOpponentFleet(userId);
-
-        boolean isHit = gameService.checkShot(opponentFleet, request.getX(), request.getY());
         ShotGameResponseMessage response = new ShotGameResponseMessage();
-        response.setHit(isHit);
-        int[][] opponentGrids  = GameMapper.toGridsForOpponent(opponentFleet.getGrids());
-        response.setOpponentGrids(opponentGrids);
+        Player player = null;
+        try {
+            //TODO добавить проверку входных данных
+            Match match = checkMatch(request.getMatchId(), true);
+            checkUser(request.getUserId(), match);
+            UUID userId = UUID.fromString(request.getUserId());
+            player = getPlayer(userId);
+            MatchFleet mathFleet = getMatchFleet(match, userId);
+            Fleet opponentFleet = mathFleet.getOpponentFleet(userId);
+
+            boolean isHit = gameService.checkShot(opponentFleet, request.getX(), request.getY());
+
+            response.setHit(isHit);
+            int[][] opponentGrids  = GameMapper.toGridsForOpponent(opponentFleet.getGrids());
+            response.setOpponentGrids(opponentGrids);
+            response.setStatus(Status.OK);
+            actionHistoryService.createActionHistory(match, player, request.getX(), request.getY());
+            boolean isWin = false;
+            if(isHit){
+                isWin = true;
+                for(Warship warship: opponentFleet.getWarships()) {
+                    if(!warship.isKill()) {
+                        //Если ходябы один корабыль живой то победы еще нет
+                        isWin = false;
+                        break;
+                    }
+                }
+                if(isWin) {
+                    allNotification(TypeNotification.MATCH_COMPLETED);
+                    match.setWinner(player);
+                    matchService.updateMatch(match);
+                }
+            }
+            response.setWinn(isWin);
+
+            notificationService.sendMessage(player.getChanelId(), "/see-battle/shot-game/response", response);
+
+            //нотификация сопернику
+            int[][] ownerGrids  = GameMapper.toGridsForOwner(opponentFleet.getGrids());
+            ShotGameOwnerResponseMessage opponentResponse = new ShotGameOwnerResponseMessage();
+            opponentResponse.setStatus(Status.OK);
+            opponentResponse.setHit(isHit);
+            opponentResponse.setOpponentWin(isWin);
+            opponentResponse.setGrids(ownerGrids);
+            notificationService.sendMessage(player.getChanelId(), "/see-battle/shot-game-owner/response", opponentResponse);
+            allNotification(TypeNotification.MATCH_HISTORY);
+        } catch (RuntimeException re) {
+            response.setStatus(Status.ERROR);
+            response.setErrorDescription(re.getMessage());
+            if(player != null) {
+                notificationService.sendMessage(player.getChanelId(), "/see-battle/shot-game/response", response);
+            }
+        }
+    }
+
+    /**
+     * Запрос списка игр в ожидании
+     * @param request запрос
+     */
+    public void getMatches(MatchRequestMessage request) {
+        MatchResponseMessage response = new MatchResponseMessage();
+        try {
+            List<Match> matches = matchService.getAllMatchesByStatus(request.getMatchStatus());
+            response.setMatches(matches);
+            response.setStatus(Status.OK);
+            notificationService.sendMessage(request.getChanelId(), "see-battle/matches/response", response);
+        } catch (RuntimeException re) {
+            response.setStatus(Status.ERROR);
+            response.setErrorDescription(re.getMessage());
+            notificationService.sendMessage(request.getChanelId(), "see-battle/matches/response", response);
+        }
+    }
+
+    /**
+     * Запрос истории игры
+     * @param request запрос
+     */
+    public void getMatchHistory(MatchHistoryRequestMessage request) {
+        MatchHistoryResponseMessage response = new MatchHistoryResponseMessage();
+        try {
+            List<ActionHistory> actionHistories = actionHistoryService.findAllByMatchId(UUID.fromString(request.getMatchId()));
+            response.setActionHistories(actionHistories);
+            response.setStatus(Status.OK);
+            notificationService.sendMessage(request.getChanelId(), "/see-battle/match-history/request", response);
+        } catch (RuntimeException re) {
+            response.setStatus(Status.ERROR);
+            response.setErrorDescription(re.getMessage());
+            notificationService.sendMessage(request.getChanelId(), "/see-battle/match-history/request", response);
+        }
+
+    }
+
+
+    private  void allNotification(TypeNotification type) {
+        NotificationResponseMessage response = new NotificationResponseMessage();
+        response.setType(type);
         response.setStatus(Status.OK);
-        actionHistoryService.createActionHistory(match, player, request.getX(), request.getY());
-        //TODO добавить проверку флота и узнать кто победил
-        notificationService.sendMessage(player.getChanelId(), "/see-battle/shot-game/response", response);
-
-        //нотификация сопернику
-        int[][] ownerGrids  = GameMapper.toGridsForOwner(opponentFleet.getGrids());
-        ShotGameOwnerResponseMessage opponentResponse = new ShotGameOwnerResponseMessage();
-        opponentResponse.setStatus(Status.OK);
-        opponentResponse.setHit(isHit);
-        opponentResponse.setGrids(ownerGrids);
-        notificationService.sendMessage(player.getChanelId(), "/see-battle/shot-game-owner/response", opponentResponse);
-
+        notificationService.sendNotificationAll( "/see-battle/notification-all/request", response);
 
     }
 
@@ -271,6 +380,4 @@ public class SeaBattleService {
         }
         return match;
     }
-
-
 }

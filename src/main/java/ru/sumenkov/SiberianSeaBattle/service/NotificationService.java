@@ -18,6 +18,7 @@ package ru.sumenkov.SiberianSeaBattle.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import ru.sumenkov.SiberianSeaBattle.model.message.NotificationResponseMessage;
 
 import java.util.UUID;
 
@@ -37,5 +38,9 @@ public class NotificationService {
         messagingTemplate.convertAndSendToUser(
                 chanelId.toString(), destination,
                 object);
+    }
+
+    public void sendNotificationAll(String destination, NotificationResponseMessage response) {
+        messagingTemplate.convertAndSend(destination, response);
     }
 }

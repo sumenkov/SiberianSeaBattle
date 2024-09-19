@@ -120,6 +120,13 @@ function sendName() {
       case "/see-battle/shot-game/request":
         bodyByAction = JSON.stringify({'matchId': '440e8400-e29b-41d4-a716-446655440000', 'userId':'777e8400-e29b-41d4-a716-446655440000', 'x':1, 'y':2 });
         break;
+      case "/see-battle/matches/request":
+          bodyByAction = JSON.stringify({'matchStatus': 'WAIT', 'chanelId':'777e8400-e29b-41d4-a716-446655440000'});
+          break;
+      case "/see-battle/match-history/request":
+          bodyByAction = JSON.stringify({'matchId': '777e8400-e29b-41d4-a716-446655440000', 'chanelId':'777e8400-e29b-41d4-a716-446655440000'});
+          break;
+
       default:
         alert( "Нет таких значений" );
     }
