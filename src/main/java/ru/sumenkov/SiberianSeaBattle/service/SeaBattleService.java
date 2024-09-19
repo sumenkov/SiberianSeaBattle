@@ -310,11 +310,11 @@ public class SeaBattleService {
             List<ActionHistory> actionHistories = actionHistoryService.findAllByMatchId(UUID.fromString(request.getMatchId()));
             response.setActionHistories(actionHistories);
             response.setStatus(Status.OK);
-            notificationService.sendMessage(request.getChanelId(), "/see-battle/match-history/request", response);
+            notificationService.sendMessage(request.getChanelId(), "/see-battle/match-history/response", response);
         } catch (RuntimeException re) {
             response.setStatus(Status.ERROR);
             response.setErrorDescription(re.getMessage());
-            notificationService.sendMessage(request.getChanelId(), "/see-battle/match-history/request", response);
+            notificationService.sendMessage(request.getChanelId(), "/see-battle/match-history/response", response);
         }
 
     }
@@ -324,7 +324,7 @@ public class SeaBattleService {
         NotificationResponseMessage response = new NotificationResponseMessage();
         response.setType(type);
         response.setStatus(Status.OK);
-        notificationService.sendNotificationAll( "/see-battle/notification-all/request", response);
+        notificationService.sendNotificationAll( "/see-battle/notification-all/response", response);
 
     }
 

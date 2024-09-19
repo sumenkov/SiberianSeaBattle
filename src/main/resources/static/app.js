@@ -67,12 +67,12 @@ stompClient.onConnect = (frame) => {
                     showGreeting(greeting.body);
           });
    stompClient.subscribe(
-           "/user/777e8400-e29b-41d4-a716-446655440000/see-battle/match-history/request",
+           "/user/777e8400-e29b-41d4-a716-446655440000/see-battle/match-history/response",
            (greeting) => {
                    showGreeting(greeting.body);
          });
    stompClient.subscribe(
-           "/see-battle/notification-all/request",
+           "/see-battle/notification-all/response",
            (greeting) => {
                    showGreeting(greeting.body);
          });

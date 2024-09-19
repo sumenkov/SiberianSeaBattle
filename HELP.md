@@ -134,6 +134,66 @@ _где_
 - opponentGrids - карта соперника с туманом войны! где 0 - промах, -400 - туман, и размер корабля <br><br>
 
 
+#### Получить список игр по статусу
+```
+SEND
+destination:/see-battle/matches/request
+content-length:110
+
+{"matchStatus":"WAIT","chanelId":"777e8400-e29b-41d4-a716-446655440000"}
+```
+_где_
+- chanelId - uuid для создания индивидуального канала для данного пользователя, этот uuid нужно использовать, чтобы подписаться на сообщения от сервера <br><br>
+- matchStatus - статус игры (WAIT - ожидают соперника,  IN_PROGRESS - в процессе игры, COMPLETED -завершины,  ALL - все)
+
+
+#### Ответ на запрос "Получить список игр по статусу"  Внимание нужен chanelId  для подписи на топик /user/{chanelId}/see-battle/matches/response
+```
+MESSAGE
+destination:/user/550e8400-e29b-41d4-a716-446655440088/see-battle/matches/response
+content-type:application/json
+subscription:sub-2
+message-id:51974435-4a3b-04a2-50e3-6f76b43df000-1
+content-length:136
+
+{"status":"OK","errorDescription":null, "matches":[{"id":"248b6042-e77a-475a-8085-ddbd2f2a9ea7","sizeGrid":5,"owner":{"id":"7296a601-6268-4c15-a84e-a59419049db2","chanelId":"550e8400-e29b-41d4-a716-446655440099","name":"username1"},"opponent":{"id":"466f8409-5b0b-44b0-a6cf-3322edada9bb","chanelId":"550e8400-e29b-41d4-a716-446655440077","name":"username2"},"winner":null}]} 
+```
+_где_
+- status - статус "OK" или "ERROR"
+- errorDescription - текс ошибки если статус
+- matches - информация о игре 
+
+#### Получить историю игры
+```
+SEND
+destination:/see-battle/match-history/request
+content-length:110
+
+{"matchId":"777e8400-e29b-41d4-a716-446655440000","chanelId":"777e8400-e29b-41d4-a716-446655440000"}
+```
+_где_
+- chanelId - uuid для создания индивидуального канала для данного пользователя, этот uuid нужно использовать, чтобы подписаться на сообщения от сервера <br><br>
+- matchId - идентификатор матча
+
+
+#### Ответ на запрос "Получить историю игры"  Внимание нужен chanelId  для подписи на топик /user/{chanelId}/see-battle/match-history/response
+```
+MESSAGE
+destination:/user/550e8400-e29b-41d4-a716-446655440088/see-battle/match-history/response
+content-type:application/json
+subscription:sub-2
+message-id:51974435-4a3b-04a2-50e3-6f76b43df000-1
+content-length:136
+
+{"status":"OK","errorDescription":null,"actionHistories":[{"id":"333e8400-e29b-41d4-a716-446655440000", "playerId":"7296a601-6268-4c15-a84e-a59419049db2","matchId":"777e8400-e29b-41d4-a716-446655440000", "x":1, "y":2}]}
+```
+_где_
+- status - статус "OK" или "ERROR"
+- errorDescription - текс ошибки если статус
+- actionHistories -  массив хода игры
+
+
+
 ### Дополнительные нотификации
 #### Нотификация на запрос "Сделать выстрел" для соперника  Внимание нужен chanelId  для подписи на топик /see-battle/shot-game-owner/response
 Нужен чтобы соперник обновлял карту свою и понимал что теперь его ход
@@ -184,3 +244,23 @@ _где_
 - status - статус "OK" или "ERROR"
 - errorDescription - текс ошибки если статус
 - isStartGame - признак старта игры, true -можно начинать играть, false-ждем соперника пока он расставит флот
+
+
+#### Нотификация обновления данных
+```
+MESSAGE
+destination:/see-battle/notification-all/response
+content-type:application/json
+subscription:sub-2
+message-id:51974435-4a3b-04a2-50e3-6f76b43df000-1
+content-length:136
+
+{"status":"OK","errorDescription":null,"type":"MATCH_WAIT"}
+```
+_где_
+- status - статус "OK" или "ERROR"
+- errorDescription - текс ошибки если статус
+- type -   MATCH_WAIT - обновился список игр в ожидании , MATCH_COMPLETED - обновился список игр со статусом завершены , MATCH_HISTORY - обновилась исторрия игр
+
+
+""
