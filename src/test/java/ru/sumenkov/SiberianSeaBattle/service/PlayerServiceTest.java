@@ -17,14 +17,14 @@ class PlayerServiceTest {
 
     @Test
     void createPlayerTest() {
-        Player player = playerService.createPlayer("p1" + UUID.randomUUID(), UUID.randomUUID());
+        Player player = playerService.createPlayer("p1" + UUID.randomUUID(), "p1" + UUID.randomUUID(), UUID.randomUUID());
         assertNotNull(player);
         assertNotNull(player.getId());
     }
 
     @Test
     void updatePlayerTest() {
-        Player oldPlayer = this.playerService.createPlayer("p1" + UUID.randomUUID(), UUID.randomUUID());
+        Player oldPlayer = this.playerService.createPlayer("p1" + UUID.randomUUID(), "p1" + UUID.randomUUID(), UUID.randomUUID());
 
     }
 

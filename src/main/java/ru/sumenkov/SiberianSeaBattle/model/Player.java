@@ -16,5 +16,6 @@ public class Player {
     private UUID id;
     private UUID chanelId;
     private String name;
+    private String password;
 
 }

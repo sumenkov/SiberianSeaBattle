@@ -27,5 +27,5 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class JoinGameResponseMessage extends BaseResponseMessage {
-    private String userId;
+
 }

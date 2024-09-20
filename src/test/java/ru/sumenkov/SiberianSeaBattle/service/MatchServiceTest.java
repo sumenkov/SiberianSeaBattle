@@ -21,7 +21,7 @@ class MatchServiceTest {
 
     @Test
     void createMatchTest() {
-        Player player = playerService.createPlayer("p1" + UUID.randomUUID(), UUID.randomUUID());
+        Player player = playerService.createPlayer("p1" + UUID.randomUUID(), "p1" + UUID.randomUUID(), UUID.randomUUID());
         Match match = matchService.createMatch(player, 3);
         assertNotNull(match);
         assertNotNull(match.getId());

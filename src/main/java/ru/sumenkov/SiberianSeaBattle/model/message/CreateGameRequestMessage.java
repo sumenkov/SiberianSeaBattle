@@ -30,16 +30,11 @@ import java.util.UUID;
 @EqualsAndHashCode(callSuper = true)
 public class CreateGameRequestMessage extends BaseRequestMessage {
     /**
-     * Имя игрока который создает игру
+     * Идентификатор игрока который создает игру
      */
-    private String username;
+    private String userId;
     /**
      * Размер поля если не задан то используем дефолт
      */
     private Integer sizeGrid;
-
-    /**
-     * Идентификатор приватного канала
-     */
-    private UUID chanelId;
 }

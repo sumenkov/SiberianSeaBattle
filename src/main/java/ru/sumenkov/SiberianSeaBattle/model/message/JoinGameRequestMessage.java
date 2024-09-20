@@ -34,11 +34,7 @@ public class JoinGameRequestMessage extends BaseRequestMessage {
      */
     private String matchId;
     /**
-     *  Имя юзера
+     *  Идентификатор игрока
      */
-    private String username;
-    /**
-     * Идентификатор приватного канала
-     */
-    private UUID chanelId;
+    private String userId;
 }

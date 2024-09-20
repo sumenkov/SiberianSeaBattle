@@ -12,18 +12,78 @@
 2. Отправляем сообщение через окно выбрав тип запроса
 3. Смотрим результат (пока проблема) <br><br>
 
+#### Создать игрока
+```
+SEND
+destination:/see-battle/create-user/response
+content-length:87
+
+{"username":"username1","password": "passwordadad","chanelId":"550e8400-e29b-41d4-a716-446655440099"} 
+```
+_где_
+- username - имя игрока
+- password - пароль игрока
+- chanelId - uuid для создания индивидуального канала для данного пользователя, этот uuid нужно использовать, чтобы подписаться на сообщения от сервера <br><br>
+
+#### Ответ на запрос "Создать игрока". Внимание нужен chanelId  для подписи на топик /user/{chanelId}/see-battle/create-user/response
+```
+MESSAGE
+destination:/user/550e8400-e29b-41d4-a716-446655440099/see-battle/create-user/response
+content-type:application/json
+subscription:sub-2
+message-id:51974435-4a3b-04a2-50e3-6f76b43df000-1
+content-length:136
+
+{"status":"OK","errorDescription":null, "userId":"85d19e55-5494-43b4-ac95-35cb0fc6aba1", "chanelId":"550e8400-e29b-41d4-a716-446655440099"} 
+```
+_где_
+- status - статус "OK" или "ERROR"
+- errorDescription - текс ошибки если статус
+- userId - идентификатор пользователя <br><br>
+- chanelId - uuid для создания индивидуального канала для данного пользователя, этот uuid нужно использовать, чтобы подписаться на сообщения от сервера <br><br>
+
+#### Получить игрока (вход)
+```
+SEND
+destination:/see-battle/get-user/response
+content-length:87
+
+{"username":"username1","password": "passwordadad","chanelId":"550e8400-e29b-41d4-a716-446655440099"} 
+```
+_где_
+- username - имя игрока
+- password - пароль игрока
+- chanelId - uuid для создания индивидуального канала для данного пользователя, этот uuid нужно использовать, чтобы подписаться на сообщения от сервера <br><br>
+
+#### Ответ на запрос "Получить игрока (вход)". Внимание нужен chanelId  для подписи на топик /user/{chanelId}/see-battle/get-user/response
+```
+MESSAGE
+destination:/user/550e8400-e29b-41d4-a716-446655440099/see-battle/get-user/response
+content-type:application/json
+subscription:sub-2
+message-id:51974435-4a3b-04a2-50e3-6f76b43df000-1
+content-length:136
+
+{"status":"OK","errorDescription":null, "userId":"85d19e55-5494-43b4-ac95-35cb0fc6aba1", "chanelId":"550e8400-e29b-41d4-a716-446655440099"} 
+```
+_где_
+- status - статус "OK" или "ERROR"
+- errorDescription - текс ошибки если статус
+- userId - идентификатор пользователя <br><br>
+- chanelId - uuid для создания индивидуального канала для данного пользователя, этот uuid нужно использовать, чтобы подписаться на сообщения от сервера <br><br>
+
+
 #### Создать игру, запрос
 ```
 SEND
 destination:/see-battle/create-game/request
 content-length:87
 
-{"username":"username1","sizeGrid":5,"chanelId":"550e8400-e29b-41d4-a716-446655440099"} 
+{"userId":"85d19e55-5494-43b4-ac95-35cb0fc6aba1","sizeGrid":5} 
 ```
 _где_
-- username - имя игрока
+- userId - идентификатор игрока
 - sizeGrid - размер поля (не обязательное поле)
-- chanelId - uuid для создания индивидуального канала для данного пользователя, этот uuid нужно использовать, чтобы подписаться на сообщения от сервера <br><br>
 
 #### Ответ на запрос создать игру. Внимание нужен chanelId  для подписи на топик /user/{chanelId}/see-battle/create-game/response
 ```
@@ -34,13 +94,13 @@ subscription:sub-2
 message-id:51974435-4a3b-04a2-50e3-6f76b43df000-1
 content-length:136
 
-{"status":"OK","errorDescription":null,"matchId":"849cca9b-6356-42d7-aac9-362a208a721f","userId":"85d19e55-5494-43b4-ac95-35cb0fc6aba1"} 
+{"status":"OK","errorDescription":null,"matchId":"849cca9b-6356-42d7-aac9-362a208a721f"} 
 ```
 _где_
 - status - статус "OK" или "ERROR"
 - errorDescription - текс ошибки если статус
 - matchId - идентификатор матча 
-- userId - идентификатор пользователя <br><br>
+
 
 #### Создать флот
 ```
@@ -78,12 +138,11 @@ SEND
 destination:/see-battle/join-game/request
 content-length:123
 
-{"matchId":"440e8400-e29b-41d4-a716-446655440000","username":"username2","chanelId":"550e8400-e29b-41d4-a716-446655440088"}
+{"matchId":"440e8400-e29b-41d4-a716-446655440000","userId":"550e8400-e29b-41d4-a716-446655440045"}
 ```
 _где_
 - matchId - идентификатор матча к которой мы подключаемся
-- username - имя игрока (второго игрока)
-- chanelId - uuid для создания индивидуального канала для данного пользователя, этот uuid нужно использовать, чтобы подписаться на сообщения от сервера <br><br>
+- userId - идентификатор игрока (второго игрока)
 
 #### Ответ на запрос подключится к игре вторым игроком. Внимание нужен chanelId  для подписи на топик /user/{chanelId}/see-battle/join-game/response
 ```
@@ -153,7 +212,7 @@ subscription:sub-2
 message-id:51974435-4a3b-04a2-50e3-6f76b43df000-1
 content-length:136
 
-{"status":"OK","errorDescription":null, "matches":[{"id":"248b6042-e77a-475a-8085-ddbd2f2a9ea7","sizeGrid":5,"owner":{"id":"7296a601-6268-4c15-a84e-a59419049db2","chanelId":"550e8400-e29b-41d4-a716-446655440099","name":"username1"},"opponent":{"id":"466f8409-5b0b-44b0-a6cf-3322edada9bb","chanelId":"550e8400-e29b-41d4-a716-446655440077","name":"username2"},"winner":null}]} 
+{"status":"OK","errorDescription":null, "matches":[{"id":"248b6042-e77a-475a-8085-ddbd2f2a9ea7","sizeGrid":5,"ownerName":"username1","opponentName":"username2","winnerName":null}]} 
 ```
 _где_
 - status - статус "OK" или "ERROR"

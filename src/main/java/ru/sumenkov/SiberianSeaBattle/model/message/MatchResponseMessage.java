@@ -30,5 +30,5 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class MatchResponseMessage extends BaseResponseMessage {
-    private List<Match> matches;
+    private List<MatchUI> matches;
 }

@@ -16,6 +16,7 @@
 package ru.sumenkov.SiberianSeaBattle.service;
 
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import ru.sumenkov.SiberianSeaBattle.acl.GameMapper;
 import ru.sumenkov.SiberianSeaBattle.model.ActionHistory;
@@ -44,7 +45,64 @@ public class SeaBattleService {
     private final ActionHistoryService actionHistoryService;
     private final GameService gameService;
     private final NotificationService notificationService;
+    private final ModelMapper modelMapper;
     private final Map<UUID, MatchFleet> matchIdToMatchFleet = new HashMap<>();
+
+    /**
+     * Создать игрока
+     *
+     * @param request запрос на создание игрока
+     */
+    public void createUser(CreateUserRequestMessage request) {
+        CreateUserResponseMessage response = new CreateUserResponseMessage();
+        try {
+            Optional<Player> user = playerService.getPlayerByName(request.getUsername());
+
+            if(user.isEmpty()) {
+                var player = playerService.createPlayer(request.getUsername(), request.getPassword(), request.getChanelId());
+                response.setUserId(player.getId().toString());
+                response.setChanelId(player.getChanelId().toString());
+                response.setStatus(Status.OK);
+            } else {
+                response.setStatus(Status.ERROR);
+                response.setErrorDescription(String.format("Ошибка игрок с логином %s уже существует", request.getUsername()));
+
+            }
+            notificationService.sendMessage(request.getChanelId(), "/see-battle/create-user/response", response);
+        } catch (RuntimeException re) {
+            response.setStatus(Status.ERROR);
+            response.setErrorDescription(re.getMessage());
+            notificationService.sendMessage(request.getChanelId(), "/see-battle/create-user/response", response);
+        }
+    }
+
+    /**
+     * Получить игрока
+     *
+     * @param request запрос на получение игрока
+     */
+    public void getUser(CreateUserRequestMessage request) {
+        GetUserResponseMessage response = new GetUserResponseMessage();
+        try {
+            Optional<Player> user = playerService.getPlayerByName(request.getUsername());
+
+            if(user.isEmpty()) {
+                throw new RuntimeException(String.format("Игрок с id %s не найден", request.getUsername()));
+            } else {
+                var player =  user.get();
+                player.setChanelId(request.getChanelId());
+                playerService.updatePlayer(player);
+                response.setUserId(player.getId().toString());
+                response.setChanelId(player.getChanelId().toString());
+                response.setStatus(Status.OK);
+            }
+            notificationService.sendMessage(request.getChanelId(), "/see-battle/get-user/response", response);
+        } catch (RuntimeException re) {
+            response.setStatus(Status.ERROR);
+            response.setErrorDescription(re.getMessage());
+            notificationService.sendMessage(request.getChanelId(), "/see-battle/get-user/response", response);
+        }
+    }
 
     /**
      * Создать матч игры
@@ -53,19 +111,18 @@ public class SeaBattleService {
      */
     public void createGame(CreateGameRequestMessage request) {
         CreateGameResponseMessage response = new CreateGameResponseMessage();
+        Player owner = null;
         try {
             //TODO добавить проверку входных данных
             // проверка юзера как?
             int sizeGrid = Optional.ofNullable(request.getSizeGrid()).orElse(5);
 
-            Optional<Player> user = playerService.getPlayerByName(request.getUsername());
-            final Player owner;
+            Optional<Player> user = playerService.getPlayer(request.getUserId());
+
             if(user.isEmpty()) {
-                owner = playerService.createPlayer(request.getUsername(), request.getChanelId());
+                throw new RuntimeException(String.format("Игрок с id %s не найден", request.getUserId()));
             } else {
                 owner =  user.get();
-                owner.setChanelId(request.getChanelId());
-                playerService.updatePlayer(owner);
             }
 
             Match match = matchService.createMatch(owner, sizeGrid);
@@ -73,7 +130,6 @@ public class SeaBattleService {
             matchIdToMatchFleet.put(match.getId(), new MatchFleet(new HashMap<>()));
 
             response.setMatchId(match.getId().toString());
-            response.setUserId(owner.getId().toString());
             response.setStatus(Status.OK);
 
             notificationService.sendMessage(owner.getChanelId(), "/see-battle/create-game/response", response);
@@ -81,7 +137,10 @@ public class SeaBattleService {
         } catch (RuntimeException re) {
             response.setStatus(Status.ERROR);
             response.setErrorDescription(re.getMessage());
-            notificationService.sendMessage(request.getChanelId(), "/see-battle/create-game/response", response);
+            if(owner != null) {
+                notificationService.sendMessage(owner.getChanelId(), "/see-battle/create-game/response", response);
+            }
+
         }
     }
 
@@ -185,6 +244,7 @@ public class SeaBattleService {
      */
     public void joinGame(JoinGameRequestMessage request) {
         JoinGameResponseMessage response = new JoinGameResponseMessage();
+        Player opponent = null;
         try {
             //TODO добавить проверку входных данных
             Match match = checkMatch(request.getMatchId(), true);
@@ -192,19 +252,15 @@ public class SeaBattleService {
                 throw new RuntimeException(
                         String.format("В игре с %s игрок уже есть соперник %s", match.getId(), match.getOpponent().getId()));
             }
-            Optional<Player> opponentOpt = playerService.getPlayerByName(request.getUsername());
-            final Player opponent;
+            Optional<Player> opponentOpt = playerService.getPlayer(request.getUserId());
+
             if(opponentOpt.isEmpty()) {
-                opponent = playerService.createPlayer(request.getUsername(), request.getChanelId());
+                throw new RuntimeException(String.format("Игрок с id %s не найден", request.getUserId()));
             } else {
-                opponent =  opponentOpt.get();
-                opponent.setChanelId(request.getChanelId());
-                playerService.updatePlayer(opponent);
+                opponent = opponentOpt.get();
             }
             match.setOpponent(opponent);
             matchService.updateMatch(match);
-
-            response.setUserId(opponent.getId().toString());
             response.setStatus(Status.OK);
 
             notificationService.sendMessage(opponent.getChanelId(), "/see-battle/join-game/response", response);
@@ -217,7 +273,10 @@ public class SeaBattleService {
         } catch (RuntimeException re) {
             response.setStatus(Status.ERROR);
             response.setErrorDescription(re.getMessage());
-             notificationService.sendMessage(request.getChanelId(), "/see-battle/join-game/response", response);
+            if(opponent != null)  {
+                notificationService.sendMessage(opponent.getChanelId(), "/see-battle/join-game/response", response);
+            }
+
         }
     }
 
@@ -290,7 +349,17 @@ public class SeaBattleService {
         MatchResponseMessage response = new MatchResponseMessage();
         try {
             List<Match> matches = matchService.getAllMatchesByStatus(request.getMatchStatus());
-            response.setMatches(matches);
+            response.setMatches(matches
+                    .stream()
+                    .map(matchDao -> new MatchUI(
+                            matchDao.getId(),
+                            matchDao.getSizeGrid(),
+                            getName(matchDao.getOwner()),
+                            getName(matchDao.getOpponent()),
+                            getName(matchDao.getWinner())))
+                    .toList());
+
+
             response.setStatus(Status.OK);
             notificationService.sendMessage(request.getChanelId(), "see-battle/matches/response", response);
         } catch (RuntimeException re) {
@@ -379,5 +448,12 @@ public class SeaBattleService {
             throw new RuntimeException(String.format("Игра с %s закончилась ", matchId));
         }
         return match;
+    }
+
+    private String getName(Player player) {
+        if(player == null) {
+            return "Нет данных";
+        }
+        return player.getName();
     }
 }

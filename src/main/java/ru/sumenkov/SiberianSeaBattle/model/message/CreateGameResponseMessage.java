@@ -28,5 +28,4 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class CreateGameResponseMessage extends BaseResponseMessage {
     private String matchId;
-    private String userId;
 }

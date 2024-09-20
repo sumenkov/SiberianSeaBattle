@@ -22,9 +22,10 @@ public class PlayerService {
 
 
     @Transactional
-    public Player createPlayer(String name, UUID chanelId) {
+    public Player createPlayer(String name, String password, UUID chanelId) {
         PlayerDao playerDao =  new PlayerDao();
         playerDao.setName(name);
+        playerDao.setPassword(password);
         playerDao.setChanelId(chanelId);
         playerDao = playerRepository.save(playerDao);
 

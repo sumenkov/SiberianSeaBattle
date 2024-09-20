@@ -15,9 +15,21 @@ public class GameController {
     private final SeaBattleService seaBattleService;
     private final NotificationService notificationService;
 
+
+
     @MessageMapping("/see-battle/chat/request")
     public void greeting(HelloMessage message) throws Exception {
         notificationService.sendMessage(message.getId(), "/queue/messages", message);
+    }
+
+    @MessageMapping("/see-battle/create-user/request")
+    public void createUser(CreateUserRequestMessage request) throws Exception {
+        seaBattleService.createUser(request);
+    }
+
+    @MessageMapping("/see-battle/get-user/request")
+    public void getUser(CreateUserRequestMessage request) throws Exception {
+        seaBattleService.getUser(request);
     }
 
     @MessageMapping("/see-battle/create-game/request")

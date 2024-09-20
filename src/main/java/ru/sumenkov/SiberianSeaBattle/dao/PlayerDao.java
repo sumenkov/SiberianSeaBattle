@@ -27,6 +27,9 @@ public class PlayerDao extends AbstractDao {
     @Column(name = "name", unique = true)
     private String name;
 
+    @Column(name = "password")
+    private String password;
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
