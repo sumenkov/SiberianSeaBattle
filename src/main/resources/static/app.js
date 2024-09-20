@@ -135,13 +135,13 @@ function comboboxTopicChange() {
     var bodyByAction;
     switch (action) {
          case "/see-battle/chat/request":
-                    bodyByAction = JSON.stringify({'name': 'test chat', 'id':'550e8400-e29b-41d4-a716-446655440000' });
-                    break;
-          case "/see-battle/create-user/request":
-            bodyByAction = JSON.stringify({'name': 'test chat', 'password':'password1' 'chanelId':'550e8400-e29b-41d4-a716-446655440099' });
+            bodyByAction = JSON.stringify({'name': 'test chat', 'id': '550e8400-e29b-41d4-a716-446655440000' });
+            break;
+         case "/see-battle/create-user/request":
+            bodyByAction = JSON.stringify({ 'name': 'test chat', 'password': 'password1', 'chanelId': '550e8400-e29b-41d4-a716-446655440099' });
             break;
          case "/see-battle/get-user/request":
-              bodyByAction = JSON.stringify({'name': 'test chat', 'password':'password1' 'chanelId':'550e8400-e29b-41d4-a716-446655440099' });
+              bodyByAction = JSON.stringify({'name': 'test chat', 'password': 'password1', 'chanelId': '550e8400-e29b-41d4-a716-446655440099' });
               break;
           case "/see-battle/create-game/request":
             bodyByAction = JSON.stringify({'userId': '072f6c98-1f0f-453a-a08c-946b342353cd', 'sizeGrid':5 });
@@ -166,7 +166,7 @@ function comboboxTopicChange() {
               break;
           default:
                   alert( "Нет таких значений" );
-      }
+    }
     $("#name").val(bodyByAction);
 
 }
