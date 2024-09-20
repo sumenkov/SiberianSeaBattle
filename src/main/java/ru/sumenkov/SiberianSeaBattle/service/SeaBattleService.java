@@ -16,7 +16,6 @@
 package ru.sumenkov.SiberianSeaBattle.service;
 
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import ru.sumenkov.SiberianSeaBattle.acl.GameMapper;
 import ru.sumenkov.SiberianSeaBattle.model.ActionHistory;
@@ -45,7 +44,6 @@ public class SeaBattleService {
     private final ActionHistoryService actionHistoryService;
     private final GameService gameService;
     private final NotificationService notificationService;
-    private final ModelMapper modelMapper;
     private final Map<UUID, MatchFleet> matchIdToMatchFleet = new HashMap<>();
 
     /**
