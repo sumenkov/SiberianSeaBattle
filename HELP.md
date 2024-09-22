@@ -247,6 +247,40 @@ _где_
 - errorDescription - текс ошибки если статус
 - actionHistories - массив хода игры <br><br>
 
+
+#### Получить поля игроков (наблюдать за игрой)
+```
+SEND
+destination:/see-battle/grids/request
+content-length:110
+
+{"matchId":"777e8400-e29b-41d4-a716-446655440000","chanelId":"777e8400-e29b-41d4-a716-446655440000"}
+```
+_где_
+- chanelId - uuid для создания индивидуального канала для данного пользователя, этот uuid нужно использовать, чтобы подписаться на сообщения от сервера <br><br>
+- matchId - идентификатор матча <br><br>
+
+#### Ответ на запрос "Получить поля игроков (наблюдать за игрой)"  Внимание нужен chanelId  для подписи на топик /user/{chanelId}/see-battle/grids/response
+```
+MESSAGE
+destination:/user/550e8400-e29b-41d4-a716-446655440088/see-battle/grids/response
+content-type:application/json
+subscription:sub-2
+message-id:51974435-4a3b-04a2-50e3-6f76b43df000-1
+content-length:136
+
+{"status":"OK","errorDescription":null,"playerOneGrids": [[-400,-400,-400,-400,-400],[-400,-400,-400,-400,-400],[-400,3,-400,-400,-400],[-400,-400,-400,-400,-400],[-400,-400,-400,-400,-400]], "playerOneName":"иван", "playerOneId":"444e8400-e29b-41d4-a716-446655440111","playerTwoGrids": [[-400,-400,-400,-400,-400],[-400,-400,-400,-400,-400],[-400,3,-400,-400,-400],[-400,-400,-400,-400,-400],[-400,-400,-400,-400,-400]], "playerTwoName":"иван", "playerTwoId":"333e8400-e29b-41d4-a716-446655440642"}]}
+```
+_где_
+- status - статус "OK" или "ERROR"
+- errorDescription - текс ошибки если статус
+- playerOneGrids - поле первого игрока 
+- playerOneName - имя первого игрока
+- playerOneId - id первого игрока
+- playerTwoGrids - поле второго игрока
+- playerTwoName - имя второго игрока
+- playerTwoId - id второго игрока
+
 ### Дополнительные нотификации
 #### Нотификация на запрос "Сделать выстрел" для соперника  Внимание нужен chanelId  для подписи на топик /see-battle/shot-game-owner/response
 Нужен чтобы соперник обновлял карту свою и понимал что теперь его ход
@@ -312,4 +346,5 @@ content-length:136
 _где_
 - status - статус "OK" или "ERROR"
 - errorDescription - текс ошибки если статус
-- type -   MATCH_WAIT - обновился список игр в ожидании , MATCH_COMPLETED - обновился список игр со статусом завершены , MATCH_HISTORY - обновилась история игр
+- type -   MATCH_WAIT - обновился список игр в ожидании , MATCH_COMPLETED - обновился список игр со статусом завершены , MATCH_HISTORY - обновилась история игр, GRIDS_UPDATE - обновление поля в теле будет выставлено значение String matchId
+- matchId  - идентификатор матча только если тип GRIDS_UPDATE <br><br>

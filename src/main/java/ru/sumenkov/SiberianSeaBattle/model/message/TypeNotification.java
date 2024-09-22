@@ -24,5 +24,6 @@ package ru.sumenkov.SiberianSeaBattle.model.message;
 public enum TypeNotification {
     MATCH_WAIT,
     MATCH_COMPLETED,
-    MATCH_HISTORY
+    MATCH_HISTORY,
+    GRIDS_UPDATE;
 }

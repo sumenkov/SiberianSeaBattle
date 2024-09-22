@@ -18,15 +18,21 @@ package ru.sumenkov.SiberianSeaBattle.model.message;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.UUID;
+
 /**
- * Description: Нотификация об обновлениях
+ * Description: Запрос на получение информации поля
  *
  * @author <a href="mailto:onixbed@gmail.com">amaksimov</a>
- * crested on 19.09.2024
+ * crested on 22.09.2024
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class NotificationResponseMessage extends BaseResponseMessage {
-    private TypeNotification type;
+public class GridsRequestMessage  extends BaseRequestMessage {
+    /**
+     * Идентификатор приватного канала
+     */
+    private UUID chanelId;
+
     private String matchId;
 }

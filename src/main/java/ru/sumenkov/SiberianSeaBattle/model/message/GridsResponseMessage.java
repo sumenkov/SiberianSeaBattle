@@ -19,14 +19,20 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * Description: Нотификация об обновлениях
+ * Description: Нотификация получение информации поля
  *
  * @author <a href="mailto:onixbed@gmail.com">amaksimov</a>
- * crested on 19.09.2024
+ * crested on 22.09.2024
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class NotificationResponseMessage extends BaseResponseMessage {
-    private TypeNotification type;
-    private String matchId;
+public class GridsResponseMessage extends  BaseResponseMessage {
+
+    private int[][] playerOneGrids;
+    private String playerOneName;
+    private String playerOneId;
+    private int[][] playerTwoGrids;
+
+    private String playerTwoName;
+    private String playerTwoId;
 }

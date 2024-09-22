@@ -330,6 +330,8 @@ public class SeaBattleService {
             opponentResponse.setGrids(ownerGrids);
             notificationService.sendMessage(player.getChanelId(), "/see-battle/shot-game-owner/response", opponentResponse);
             allNotification(TypeNotification.MATCH_HISTORY);
+            allNotification(TypeNotification.GRIDS_UPDATE, match.getId().toString());
+
         } catch (RuntimeException re) {
             response.setStatus(Status.ERROR);
             response.setErrorDescription(re.getMessage());
@@ -383,13 +385,49 @@ public class SeaBattleService {
             response.setErrorDescription(re.getMessage());
             notificationService.sendMessage(request.getChanelId(), "/see-battle/match-history/response", response);
         }
-
     }
 
+    public void getGrids(GridsRequestMessage request) {
+        GridsResponseMessage response = new GridsResponseMessage();
+        try {
+            MatchFleet matchFleet = matchIdToMatchFleet.get(UUID.fromString(request.getMatchId()));
+            if (matchFleet == null) {
+                response.setStatus(Status.ERROR);
+                response.setErrorDescription(String.format("Игра %s не найдена", request.getMatchId()));
+                notificationService.sendMessage( request.getChanelId(), "/see-battle/grids/response", response);
+                return;
 
-    private  void allNotification(TypeNotification type) {
+            }
+            List<Map.Entry<UUID, Fleet>> entries = matchFleet.userIdToFleet().entrySet().stream().sorted(Comparator.comparing(Map.Entry::getKey)).toList();
+            for (int number = 0; number < entries.size(); number++) {
+                var entry = entries.get(number);
+                int[][] grids = GameMapper.toGridsForOpponent(entry.getValue().getGrids());
+                Optional<Player> player = playerService.getPlayer(entry.getKey());
+                if (number == 0) {
+                    response.setPlayerOneGrids(grids);
+                    player.ifPresent(p -> response.setPlayerOneName(p.getName()));
+                    response.setPlayerOneId(entry.getKey().toString());
+                } else {
+                    response.setPlayerTwoGrids(grids);
+                    player.ifPresent(p -> response.setPlayerTwoName(p.getName()));
+                    response.setPlayerTwoId(entry.getKey().toString());
+                }
+            }
+        } catch (RuntimeException re) {
+            response.setStatus(Status.ERROR);
+            response.setErrorDescription(re.getMessage());
+            notificationService.sendMessage(request.getChanelId(), "/see-battle/grids/response", response);
+        }
+    }
+
+    private void allNotification(TypeNotification type) {
+        allNotification(type, null);
+    }
+
+    private void allNotification(TypeNotification type, String matchId) {
         NotificationResponseMessage response = new NotificationResponseMessage();
         response.setType(type);
+        response.setMatchId(matchId);
         response.setStatus(Status.OK);
         notificationService.sendNotificationAll( "/see-battle/notification-all/response", response);
 
@@ -454,4 +492,5 @@ public class SeaBattleService {
         }
         return player.getName();
     }
+
 }

@@ -67,4 +67,9 @@ public class GameController {
         seaBattleService.getMatchHistory(request);
     }
 
+    @MessageMapping("/see-battle/grids/request")
+    public void getGrids(GridsRequestMessage request) throws Exception {
+        seaBattleService.getGrids(request);
+    }
+
 }
