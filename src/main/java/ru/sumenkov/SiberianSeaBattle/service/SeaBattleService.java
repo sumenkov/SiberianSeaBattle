@@ -17,6 +17,7 @@ package ru.sumenkov.SiberianSeaBattle.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import ru.sumenkov.SiberianSeaBattle.acl.GameMapper;
 import ru.sumenkov.SiberianSeaBattle.model.ActionHistory;
 import ru.sumenkov.SiberianSeaBattle.model.Match;
@@ -53,24 +54,30 @@ public class SeaBattleService {
      */
     public void createUser(CreateUserRequestMessage request) {
         CreateUserResponseMessage response = new CreateUserResponseMessage();
+        if(!StringUtils.hasText(request.getUsername())) {
+            throw new RuntimeException("Не указано имя пользователя");
+        }
+        if(!StringUtils.hasText(request.getPassword())) {
+            throw new RuntimeException("Не указан пароль пользователя");
+        }
+
         try {
             Optional<Player> user = playerService.getPlayerByName(request.getUsername());
 
             if(user.isEmpty()) {
-                var player = playerService.createPlayer(request.getUsername(), request.getPassword(), request.getChanelId());
+                var player = playerService.createPlayer(request.getUsername(), request.getPassword(), UUID.fromString(request.getChanelId()));
                 response.setUserId(player.getId().toString());
                 response.setChanelId(player.getChanelId().toString());
                 response.setStatus(Status.OK);
             } else {
-                response.setStatus(Status.ERROR);
-                response.setErrorDescription(String.format("Ошибка игрок с логином %s уже существует", request.getUsername()));
+                throw new RuntimeException(String.format("Ошибка игрок с логином %s уже существует", request.getUsername()));
 
             }
-            notificationService.sendMessage(request.getChanelId(), "/see-battle/create-user/response", response);
+            notificationService.sendMessage(UUID.fromString(request.getChanelId()), "/see-battle/create-user/response", response);
         } catch (RuntimeException re) {
             response.setStatus(Status.ERROR);
             response.setErrorDescription(re.getMessage());
-            notificationService.sendMessage(request.getChanelId(), "/see-battle/create-user/response", response);
+            notificationService.sendMessage(UUID.fromString(request.getChanelId()), "/see-battle/create-user/response", response);
         }
     }
 
@@ -81,24 +88,34 @@ public class SeaBattleService {
      */
     public void getUser(CreateUserRequestMessage request) {
         GetUserResponseMessage response = new GetUserResponseMessage();
+        if(!StringUtils.hasText(request.getUsername())) {
+            throw new RuntimeException("Не указано имя пользователя");
+        }
+        if(!StringUtils.hasText(request.getPassword())) {
+            throw new RuntimeException("Не указан пароль пользователя");
+        }
+
         try {
             Optional<Player> user = playerService.getPlayerByName(request.getUsername());
 
             if(user.isEmpty()) {
-                throw new RuntimeException(String.format("Игрок с id %s не найден", request.getUsername()));
+                throw new RuntimeException(String.format("Игрок с именем %s не найден", request.getUsername()));
             } else {
                 var player =  user.get();
-                player.setChanelId(request.getChanelId());
+                if(!player.getPassword().equals(request.getPassword())) {
+                    throw new RuntimeException(String.format("Игрок с именем %s указал не верный пароль", request.getUsername()));
+                }
+                player.setChanelId(UUID.fromString(request.getChanelId()));
                 playerService.updatePlayer(player);
                 response.setUserId(player.getId().toString());
                 response.setChanelId(player.getChanelId().toString());
                 response.setStatus(Status.OK);
             }
-            notificationService.sendMessage(request.getChanelId(), "/see-battle/get-user/response", response);
+            notificationService.sendMessage(UUID.fromString(request.getChanelId()), "/see-battle/get-user/response", response);
         } catch (RuntimeException re) {
             response.setStatus(Status.ERROR);
             response.setErrorDescription(re.getMessage());
-            notificationService.sendMessage(request.getChanelId(), "/see-battle/get-user/response", response);
+            notificationService.sendMessage(UUID.fromString(request.getChanelId()), "/see-battle/get-user/response", response);
         }
     }
 
@@ -258,6 +275,7 @@ public class SeaBattleService {
                 opponent = opponentOpt.get();
             }
             match.setOpponent(opponent);
+            match.setStatus(MatchStatus.IN_PROGRESS);
             matchService.updateMatch(match);
             response.setStatus(Status.OK);
 
@@ -314,6 +332,7 @@ public class SeaBattleService {
                 if(isWin) {
                     allNotification(TypeNotification.MATCH_COMPLETED);
                     match.setWinner(player);
+                    match.setStatus(MatchStatus.COMPLETED);
                     matchService.updateMatch(match);
                 }
             }
@@ -392,13 +411,9 @@ public class SeaBattleService {
         try {
             MatchFleet matchFleet = matchIdToMatchFleet.get(UUID.fromString(request.getMatchId()));
             if (matchFleet == null) {
-                response.setStatus(Status.ERROR);
-                response.setErrorDescription(String.format("Игра %s не найдена", request.getMatchId()));
-                notificationService.sendMessage( request.getChanelId(), "/see-battle/grids/response", response);
-                return;
-
+                throw new RuntimeException(String.format("Игра %s не найдена", request.getMatchId()));
             }
-            List<Map.Entry<UUID, Fleet>> entries = matchFleet.userIdToFleet().entrySet().stream().sorted(Comparator.comparing(Map.Entry::getKey)).toList();
+            List<Map.Entry<UUID, Fleet>> entries = matchFleet.userIdToFleet().entrySet().stream().sorted(Map.Entry.comparingByKey()).toList();
             for (int number = 0; number < entries.size(); number++) {
                 var entry = entries.get(number);
                 int[][] grids = GameMapper.toGridsForOpponent(entry.getValue().getGrids());

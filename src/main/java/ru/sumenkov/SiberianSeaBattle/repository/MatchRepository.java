@@ -4,6 +4,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 import ru.sumenkov.SiberianSeaBattle.dao.MatchDao;
+import ru.sumenkov.SiberianSeaBattle.model.message.MatchStatus;
 
 import java.util.List;
 import java.util.UUID;
@@ -14,9 +15,5 @@ public interface MatchRepository extends CrudRepository<MatchDao, UUID> {
     @NonNull
     List<MatchDao> findAll();
 
-    List<MatchDao> findAllByOpponentIsNull();
-
-    List<MatchDao> findAllByOpponentIsNotNullAndWinnerIsNull();
-
-    List<MatchDao> getAllMatchesByWinnerIsNotNull();
+    List<MatchDao> findAllByStatus(MatchStatus matchStatus);
 }

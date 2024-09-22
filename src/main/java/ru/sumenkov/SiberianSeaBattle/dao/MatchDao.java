@@ -3,6 +3,7 @@ package ru.sumenkov.SiberianSeaBattle.dao;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
+import ru.sumenkov.SiberianSeaBattle.model.message.MatchStatus;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -35,6 +36,9 @@ public class MatchDao extends AbstractDao {
     @ManyToOne(cascade = CascadeType.DETACH)
     @JoinColumn(name = "winner_id", referencedColumnName = "id")
     private PlayerDao winner;
+
+    @JoinColumn(name = "status")
+    private MatchStatus status;
 
     @Override
     public final boolean equals(Object o) {

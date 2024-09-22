@@ -29,6 +29,7 @@ public class MatchService {
         MatchDao matchDao = new MatchDao();
         matchDao.setOwner(ownerDao);
         matchDao.setSizeGrid(sizeGrid);
+        matchDao.setStatus(MatchStatus.WAIT);
 
 
         this.matchRepository.save(matchDao);
@@ -63,13 +64,12 @@ public class MatchService {
 
     @Transactional
     public List<Match> getAllMatchesByStatus(MatchStatus matchStatus) {
-
-        List<MatchDao> matches =  switch (matchStatus){
-            case ALL -> matchRepository.findAll();
-            case WAIT -> matchRepository.findAllByOpponentIsNull();
-            case IN_PROGRESS -> matchRepository.findAllByOpponentIsNotNullAndWinnerIsNull();
-            case COMPLETED -> matchRepository.getAllMatchesByWinnerIsNotNull();
-        };
+        List<MatchDao> matches;
+        if(MatchStatus.ALL.equals(matchStatus)) {
+            matches = matchRepository.findAll();
+        } else {
+            matches = matchRepository.findAllByStatus(matchStatus);
+        }
         return matches.stream()
                 .map(matchDao -> modelMapper.map(matchDao, Match.class))
                 .toList();
