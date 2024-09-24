@@ -39,9 +39,9 @@ class Board {
         this.canvas = props.canvas;
 
         this.canvas.addEventListener('mousemove', (e) => {
-            const { clientX, clientY } = e;
-            this.mouseX = clientX;
-            this.mouseY = clientY;
+            const { offsetX, offsetY } = e;
+            this.mouseX = offsetX;
+            this.mouseY = offsetY;
         })
     }
 
@@ -112,8 +112,16 @@ class Board {
                             )
                         )
                     ) {
-                        ship.gridPositionX = i;
-                        ship.gridPositionY = j;
+                        ship.applyBoardPosition({
+                            x: i,
+                            y: j,
+                            cellOffeset: {
+                                left: cellStartX,
+                                right: cellStartX + CELL_SIZE,
+                                top: cellStartY,
+                                bottom: cellStartY + CELL_SIZE
+                            }
+                        });
                         context.fillStyle = 'red';
                     }
                 }

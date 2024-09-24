@@ -23,8 +23,14 @@ export interface FullShipPostion {
     right: number;
 }
 
+export interface ShipPositionOnBoard {
+    x: number,
+    y: number,
+    cellOffeset: FullShipPostion
+}
+
 export enum DIRECTIONS {
-    VERTICAL = 0,
+    VERTICAL,
     HORIZONTAL
 }
 
@@ -35,10 +41,12 @@ class Ship {
     public positionX: number;
     public positionY: number;
 
-    public gridPositionX: number | null = null;
-    public gridPositionY: number | null = null;
+    public initialX: number;
+    public initialY: number;
 
     public sidesPosition: FullShipPostion;
+
+    public positionOnBoard: ShipPositionOnBoard[] = [];
 
     public numberOfSegments: PossibeSegmentAmount;
     public sprite: HTMLImageElement = document.createElement('img');
@@ -47,6 +55,7 @@ class Ship {
 
     public segmentSize = 100;
     public isDragging = false;
+
 
     constructor({
         initialX,
@@ -57,6 +66,9 @@ class Ship {
 
         this.positionX = initialX;
         this.positionY = initialY;
+
+        this.initialX = initialX;
+        this.initialY = initialY;
 
         // Избежать тс-жалобу на инициализацию
         this.sidesPosition = {
@@ -82,6 +94,17 @@ class Ship {
 
         canvas.addEventListener('mouseup', () => {
             this.isDragging = false;
+            if (this.positionOnBoard.length < numberOfSegments) {
+                this.positionOnBoard = [];
+                this.positionX = this.initialX;
+                this.positionY = this.initialY;
+            }
+            else if (this.positionOnBoard.length > 0) {
+                const { cellOffeset } = this.positionOnBoard[0];
+                this.positionY = cellOffeset.top;
+                this.positionX = cellOffeset.left;
+            }
+            this.applyDimensions();
         });
 
         canvas.addEventListener('mousemove', (e) => {
@@ -101,6 +124,13 @@ class Ship {
                 this.flipTheShip();
             }
         });
+    }
+
+    applyBoardPosition(position: ShipPositionOnBoard) {
+        if (this.positionOnBoard.length >= this.numberOfSegments) {
+            this.positionOnBoard = [];
+        }
+        this.positionOnBoard = this.positionOnBoard.concat(position);
     }
 
     flipTheShip() {

@@ -1,0 +1,140 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --background: #eff3fe;
+    --background-secondary: #e3e3ff;
+    --interactive: #5f84f1;
+    --text-light: #f1f1f1;
+    --text-dark: #212e54;
+    --interactive-hover: #5677d9;
+    --active: #4763b5;
+}
+
+body {
+    background: var(--background);
+    color: var(--text-dark);
+}
+
+.wrapper {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.panel {
+    border-radius: 10px;
+    box-shadow: 0 0 5px 1px grey;
+    padding: 20px;
+}
+
+input {
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    height: 40px;
+    border: 1px solid var(--interactive);
+    padding: 0 5px;
+    font-size: 16px;
+}
+
+button {
+    border:none;
+    border-radius: 5px;
+    background: var(--interactive);
+    height: 40px;
+    color: var(--text-light);
+    cursor: pointer;
+}
+
+button.smaller {
+    height: 30px;
+}
+
+button.secondary {
+    background: transparent; 
+    border: 1px solid var(--interactive);
+    color: var(--interactive);
+}
+
+button.secondary:hover {
+    background: transparent;
+    box-shadow: inset 0 0 1px 1px;
+}
+
+button:hover {
+   background: var(--interactive-hover); 
+} 
+
+.flex {
+    display: flex;
+    gap: 10px;
+}
+
+.flex-vert {
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+}
+
+.align-end {
+
+}
+
+.login-wrapper {
+    margin-top: 40px;
+    max-width: 400px;
+}
+
+.status-text {
+    font-size: 12px;
+    padding-left: 10px;
+}
+
+.status-panel {
+    padding: 10px;
+    justify-content: flex-end;
+    background:var(--background-secondary); 
+}
+
+.hub-content {
+    width: 100%;
+    padding: 10px;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.game-list {
+    width: 100%;
+    min-width: 400px;
+}
+
+.game-list h1 {
+    margin-bottom: 20px;
+}
+
+.game {
+    background: var(--background-secondary);
+    width: fit-content;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.game + .game {
+    margin-top: 10px;
+}
+
+.ship-positioning {
+    width: 100%;
+    height: 100%;
+}
+
+.ship-positioning {
+
+}
+
+.ship-positioning canvas {
+    margin: 0 auto;
+    display: block;
+}

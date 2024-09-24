@@ -2,11 +2,9 @@ const { defineConfig } = require("vite");
 
 defineConfig(({ command, mode }) => {
 
-    //  const isDev = command === 'serve'
-
     return {
         server: {
-            open: './index.html'
+            open: './index.html',
         },
         build: {
             lib: {
