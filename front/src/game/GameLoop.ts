@@ -1,8 +1,9 @@
-interface GameCostructor {
-    canvas: HTMLCanvasElement;
-}
 
-export type GameLoopUpdateHook = (context: CanvasRenderingContext2D, canvas: HTMLCanvasElement, ...rest: any[]) => void;
+export type GameLoopUpdateHook = (
+    context: CanvasRenderingContext2D,
+    canvas: HTMLCanvasElement,
+    ...rest: any[]
+) => void;
 
 class GameLoop {
 

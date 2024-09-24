@@ -1,41 +1,51 @@
-import Board from "./src/game/Board";
-import GameLoop from "./src/game/GameLoop";
-import createCanvas from "./src/game/initializeCanvas";
-import Ship from "./src/game/Ship";
+import './reset.css';
+import './style.css';
 
-const canvas = createCanvas({});
+import LoginLayout from './src/views/Login/Login.layout';
+import HubLayout from './src/views/Hub/Hub.layout';
+import router from './src/router';
+import credentials from './src/utils/credentials';
+import { socket } from './src/StompSocket/websocket';
+import GameMainLayout from './src/views/Game/GameMain.layout';
 
-const board = new Board({
-    canvas,
-    position: {
-        x: 100,
-        y: 100
+socket.createInstance('ws://cloud.novaris.ru:8080/ws');
+
+router.init('#app');
+router.registerRoute('/', '<h1>Privet route <a href="/board">link</a></h1>');
+router.registerRoute('/login', LoginLayout, () => import('./src/views/Login/Login.script'));
+router.registerRoute('/game', GameMainLayout, () => import('./src/views/Game/GameMain.script'));
+router.registerRoute('/hub', HubLayout, () => import('./src/views/Hub/Hub.script'));
+
+const knownPaths = ['/login', '/game', '/hub'];
+
+router.registerMiddleware((_path) => {
+
+    const { userId, chanelId, username } = credentials.current;
+    const isLoggedIn = userId && chanelId && username;
+
+    console.log('middlewaere running');
+
+    if (window.location.pathname !== '/login' && !isLoggedIn) {
+        window.location.pathname = '/login';
+        return;
     }
-})
 
-const oneSegmentShip = new Ship({
-    initialX: 700,
-    initialY: 100,
-    canvas,
-    numberOfSegments: 1
+    if (isLoggedIn && !knownPaths.includes(_path)) {
+        window.location.pathname = '/hub';
+    }
 });
 
-const twoSegmentShip = new Ship({
-    initialX: 800,
-    initialY: 100,
-    canvas,
-    numberOfSegments: 2
+const { userId, chanelId, username } = credentials.current;
+
+router.applyRoute();
+
+window.addEventListener('popstate', function () {
+    //     router.followURL(window.location.href);
+    router.applyRoute();
 });
 
-const loop = new GameLoop(canvas);
-document.body.appendChild(canvas);
+if (userId && chanelId) {
+}
+else {
+}
 
-
-board.addShip(oneSegmentShip);
-board.addShip(twoSegmentShip);
-
-loop.use(board.draw);
-loop.use(oneSegmentShip.draw.bind(oneSegmentShip));
-loop.use(twoSegmentShip.draw.bind(twoSegmentShip));
-
-loop.start();

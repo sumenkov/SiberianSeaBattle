@@ -2,6 +2,7 @@
     "compilerOptions": {
         "moduleResolution": "Node",
         "target": "es2015",
+        "module": "es2020",
         "strictNullChecks": true,
         "strictFunctionTypes": true,
         "strict": true,
