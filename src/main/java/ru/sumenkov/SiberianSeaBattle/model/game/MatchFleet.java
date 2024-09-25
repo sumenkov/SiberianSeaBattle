@@ -51,10 +51,13 @@ public record MatchFleet(Map<UUID, Fleet> userIdToFleet) {
 
     /**
      * Проверяет расставил соперник флот
-     * @param userId идентификатор пользователя (не соперника)
      * @return true -если соперник готов, false - не готов
      */
-    public boolean checkOpponentDone(UUID userId) {
+    public boolean checkOpponentDone() {
         return userIdToFleet.size() > 1;
+    }
+
+    public boolean checkWaitAllFleet() {
+        return userIdToFleet.isEmpty();
     }
 }

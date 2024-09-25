@@ -19,13 +19,16 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
+import ru.sumenkov.SiberianSeaBattle.model.Match;
 import ru.sumenkov.SiberianSeaBattle.model.game.CustomFleet;
 import ru.sumenkov.SiberianSeaBattle.model.game.Fleet;
 import ru.sumenkov.SiberianSeaBattle.model.game.GridPoint;
 import ru.sumenkov.SiberianSeaBattle.model.game.Warship;
-import ru.sumenkov.SiberianSeaBattle.service.GameService;
+import ru.sumenkov.SiberianSeaBattle.model.message.*;
+import ru.sumenkov.SiberianSeaBattle.service.*;
 
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Description:
@@ -38,6 +41,10 @@ import java.util.Optional;
 @Slf4j
 public class TestController {
     private final GameService gameService;
+    private final SeaBattleService seaBattleService;
+    private final PlayerService playerService;
+    private final MatchService matchService;
+    private final ActionHistoryService actionHistoryService;
 
 
     void initTest() {
@@ -140,5 +147,49 @@ public class TestController {
             stRor.append(" ");
         }
         return stRor.toString();
+    }
+
+
+    //TODO не удалять нужен для тестов
+    //@PostConstruct
+    void  initTest2() {
+        CreateUserRequestMessage createUserRequestMessage = new CreateUserRequestMessage();
+        createUserRequestMessage.setUsername("userName");
+        createUserRequestMessage.setPassword("123");
+        createUserRequestMessage.setChanelId(UUID.randomUUID().toString());
+        seaBattleService.createUser(createUserRequestMessage);
+       var player = playerService.getPlayerByName("userName").orElse(null);
+        CreateGameRequestMessage createGameRequestMessage = new CreateGameRequestMessage();
+        createGameRequestMessage.setSizeGrid(5);
+        createGameRequestMessage.setUserId(player.getId().toString());
+        MatchRequestMessage message = new MatchRequestMessage();
+        message.setUserId(player.getId().toString());
+        seaBattleService.getMatch(message);
+        seaBattleService.createGame(createGameRequestMessage);
+        seaBattleService.getMatch(message);
+        GenerateFleetRequestMessage generateFleetRequestMessage = new GenerateFleetRequestMessage();
+       Match match = matchService.getWaitMatchByPlayerId(player.getId()).orElse(null);
+        generateFleetRequestMessage.setMatchId(match.getId().toString());
+        generateFleetRequestMessage.setUserId(player.getId().toString());
+        seaBattleService.generateFleet(generateFleetRequestMessage);
+        seaBattleService.getMatch(message);
+
+
+        CreateUserRequestMessage createUserRequestMessage2 = new CreateUserRequestMessage();
+        createUserRequestMessage2.setUsername("userName2");
+        createUserRequestMessage2.setPassword("123");
+        createUserRequestMessage2.setChanelId(UUID.randomUUID().toString());
+        seaBattleService.createUser(createUserRequestMessage2);
+        var player2 = playerService.getPlayerByName("userName2").orElse(null);
+        JoinGameRequestMessage joinGameRequestMessage = new JoinGameRequestMessage();
+        joinGameRequestMessage.setMatchId(match.getId().toString());
+        joinGameRequestMessage.setUserId(player2.getId().toString());
+        seaBattleService.joinGame(joinGameRequestMessage);
+        seaBattleService.getMatch(message);
+        GenerateFleetRequestMessage generateFleetRequestMessage2 = new GenerateFleetRequestMessage();
+        generateFleetRequestMessage2.setMatchId(match.getId().toString());
+        generateFleetRequestMessage2.setUserId(player2.getId().toString());
+        seaBattleService.generateFleet(generateFleetRequestMessage2);
+        seaBattleService.getMatch(message);
     }
 }

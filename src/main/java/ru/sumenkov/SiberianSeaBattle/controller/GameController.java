@@ -4,14 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 import ru.sumenkov.SiberianSeaBattle.model.message.*;
-import ru.sumenkov.SiberianSeaBattle.service.GameService;
 import ru.sumenkov.SiberianSeaBattle.service.NotificationService;
 import ru.sumenkov.SiberianSeaBattle.service.SeaBattleService;
 
 @Controller
 @RequiredArgsConstructor
 public class GameController {
-    private final GameService gameService;
     private final SeaBattleService seaBattleService;
     private final NotificationService notificationService;
 

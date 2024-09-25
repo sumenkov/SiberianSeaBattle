@@ -18,6 +18,7 @@ package ru.sumenkov.SiberianSeaBattle.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import ru.sumenkov.SiberianSeaBattle.acl.GameMapper;
 import ru.sumenkov.SiberianSeaBattle.model.ActionHistory;
@@ -30,6 +31,7 @@ import ru.sumenkov.SiberianSeaBattle.model.game.Warship;
 import ru.sumenkov.SiberianSeaBattle.model.message.*;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Description: Сервис фасад игры
@@ -46,7 +48,7 @@ public class SeaBattleService {
     private final ActionHistoryService actionHistoryService;
     private final GameService gameService;
     private final NotificationService notificationService;
-    private final Map<UUID, MatchFleet> matchIdToMatchFleet = new HashMap<>();
+    private final Map<UUID, MatchFleet> matchIdToMatchFleet = new ConcurrentHashMap<>();
 
     /**
      * Создать игрока
@@ -146,7 +148,7 @@ public class SeaBattleService {
 
 
             //TODO возможно нужно закинуть в бд но уччитывая маппинги это накладно
-            matchIdToMatchFleet.put(match.getId(), new MatchFleet(new HashMap<>()));
+            matchIdToMatchFleet.put(match.getId(), new MatchFleet(new ConcurrentHashMap<>()));
 
             response.setMatchId(match.getId().toString());
             response.setStatus(Status.OK);
@@ -168,6 +170,7 @@ public class SeaBattleService {
      *
      * @param request запрос на создание флота
      */
+    @Transactional
     public void createFleet(CreateFleetRequestMessage request) {
         CreateFleetResponseMessage response = new CreateFleetResponseMessage();
         Player player =null;
@@ -185,6 +188,7 @@ public class SeaBattleService {
             if (customFleet.isStatus()) {
                 matchFleet.userIdToFleet().put(userId, customFleet.getFleet());
                 response.setStatus(Status.OK);
+                updateMatchStatus(matchFleet, match, userId);
             } else {
                 response.setStatus(Status.ERROR);
                 response.setErrorDescription("Ощибка в расстановке флота");
@@ -213,7 +217,6 @@ public class SeaBattleService {
         }
     }
 
-
     /**
      * Генерируем флот (авторасстановка флота)
      *
@@ -233,6 +236,7 @@ public class SeaBattleService {
 
             Fleet fleet = gameService.getFleet(match.getSizeGrid(), match.getSizeGrid());
             matchFleet.userIdToFleet().put(userId, fleet);
+            updateMatchStatus(matchFleet, match, userId);
             response.setStatus(Status.OK);
             int[][] grids = GameMapper.toGridsForOwner(fleet.getGrids());
             response.setGrids(grids);
@@ -277,8 +281,9 @@ public class SeaBattleService {
             }
 
             match.setOpponent(opponent);
-            match.setStatus(MatchStatus.IN_PROGRESS);
-            matchService.updateMatch(match);
+            MatchFleet matchFleet = getMatchFleet(match.getId(), opponent.getName());
+            updateMatchStatus(matchFleet, match, opponent.getId());
+
             response.setStatus(Status.OK);
 
             notificationService.sendMessage(opponent.getChanelId(), "/see-battle/join-game/response", response);
@@ -567,6 +572,19 @@ public class SeaBattleService {
             currentMatch.setStatus(MatchStatus.COMPLETED);
             matchService.updateMatch(currentMatch);
         }
+    }
+
+
+    private void updateMatchStatus(MatchFleet matchFleet, Match match, UUID userId) {
+        if(matchFleet.checkWaitAllFleet()) {
+            match.setStatus(MatchStatus.IN_PROGRESS);
+        } else if(matchFleet.checkOpponentDone()) {
+            match.setStatus(MatchStatus.START_GAME);
+        } else {
+            MatchStatus status = match.getOwner().getId().equals(userId)?MatchStatus.IN_PROGRESS_WAIT_FLEET_OPPONENT:MatchStatus.IN_PROGRESS_WAIT_FLEET_OWNER;
+            match.setStatus(status);
+        }
+        matchService.updateMatch(match);
     }
 
 }

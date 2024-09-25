@@ -24,6 +24,10 @@ package ru.sumenkov.SiberianSeaBattle.model.message;
 public enum MatchStatus {
     WAIT,
     IN_PROGRESS,
+
+    IN_PROGRESS_WAIT_FLEET_OWNER,
+    IN_PROGRESS_WAIT_FLEET_OPPONENT,
+    START_GAME,
     COMPLETED,
     ALL
 

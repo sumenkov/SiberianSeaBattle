@@ -201,7 +201,14 @@ content-length:110
 ```
 _где_
 - chanelId - uuid для создания индивидуального канала для данного пользователя, этот uuid нужно использовать, чтобы подписаться на сообщения от сервера <br><br>
-- matchStatus - статус игры (WAIT - ожидают соперника,  IN_PROGRESS - в процессе игры, COMPLETED -завершены,  ALL - все) <br><br>
+- matchStatus - статус игры где
+    - WAIT - ожидают соперника, 
+    - IN_PROGRESS - найден соперник (ожиданиек расстановки флота 2 играков) 
+    - IN_PROGRESS_WAIT_FLEET_OWNER - ожидания расстановки флота владельца, 
+    - IN_PROGRESS_WAIT_FLEET_OPPONENT - ожидание расстановки флота соперника, 
+    - START_GAME - старт игры флот готов
+    - COMPLETED -завершены,  
+    - ALL - все <br><br>
 
 #### Ответ на запрос "Получить список игр по статусу"  Внимание нужен chanelId  для подписи на топик /user/{chanelId}/see-battle/matches/response
 ```
@@ -217,8 +224,15 @@ content-length:136
 _где_
 - status - статус "OK" или "ERROR"
 - errorDescription - текс ошибки если статус
-- matches - информация об игре <br><br>
-    - matchStatus - статус игры (WAIT - ожидают соперника,  IN_PROGRESS - в процессе игры, COMPLETED -завершены,  ALL - все) <br><br>
+- matches - информация об игре
+  - matchStatus - статус игры где
+    - WAIT - ожидают соперника,
+    - IN_PROGRESS - найден соперник (ожиданиек расстановки флота 2 играков)
+    - IN_PROGRESS_WAIT_FLEET_OWNER - ожидания расстановки флота владельца,
+    - IN_PROGRESS_WAIT_FLEET_OPPONENT - ожидание расстановки флота соперника,
+    - START_GAME - старт игры флот готов
+    - COMPLETED -завершены,
+    - ALL - все <br><br>
 
 #### Получить историю игры
 ```
@@ -275,13 +289,20 @@ content-length:136
 _где_
 - status - статус "OK" или "ERROR"
 - errorDescription - текс ошибки если статус
-- playerOneGrids - поле первого игрока 
+- matchStatus - статус игры где
+  - WAIT - ожидают соперника,
+  - IN_PROGRESS - найден соперник (ожиданиек расстановки флота 2 играков)
+  - IN_PROGRESS_WAIT_FLEET_OWNER - ожидания расстановки флота владельца,
+  - IN_PROGRESS_WAIT_FLEET_OPPONENT - ожидание расстановки флота соперника,
+  - START_GAME - старт игры флот готов
+  - COMPLETED -завершены,
+  - ALL - все
+- playerOneGrids - поле первого игрока
 - playerOneName - имя первого игрока
 - playerOneId - id первого игрока
 - playerTwoGrids - поле второго игрока
 - playerTwoName - имя второго игрока
 - playerTwoId - id второго игрока
-
 
 
 #### Получить Игру игрока в статусе не завершонная
@@ -310,12 +331,17 @@ content-length:136
 _где_
 - status - статус "OK" или "ERROR"
 - errorDescription - текс ошибки если статус
-- playerOneGrids - поле первого игрока
-- playerOneName - имя первого игрока
-- playerOneId - id первого игрока
-- playerTwoGrids - поле второго игрока
-- playerTwoName - имя второго игрока
-- playerTwoId - id второго игрока
+- matchStatus - статус игры где
+  - WAIT - ожидают соперника,
+  - IN_PROGRESS - найден соперник (ожиданиек расстановки флота 2 играков)
+  - IN_PROGRESS_WAIT_FLEET_OWNER - ожидания расстановки флота владельца,
+  - IN_PROGRESS_WAIT_FLEET_OPPONENT - ожидание расстановки флота соперника,
+  - START_GAME - старт игры флот готов
+  - COMPLETED -завершены,
+  - ALL - все
+- opponentGrids - поле соперника игрока
+- grids - поле игрока
+
 
 
 

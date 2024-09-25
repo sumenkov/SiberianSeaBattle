@@ -39,11 +39,16 @@ import java.util.Random;
 public class GameService {
 
     private final Random rand = new Random();
-    List<WarshipDescription> warshipDescriptions = List.of(
+    List<WarshipDescription> warshipDescriptionsForRegular = List.of(
             new WarshipDescription(1, 4),
             new WarshipDescription(2, 3),
             new WarshipDescription(3, 2),
             new WarshipDescription(4, 1)
+    );
+    List<WarshipDescription> warshipDescriptionsForMini = List.of(
+            new WarshipDescription(1, 3),
+            new WarshipDescription(1, 2),
+            new WarshipDescription(2, 1)
     );
 
     /**
@@ -54,6 +59,12 @@ public class GameService {
      * @return флот
      */
     public Fleet getFleet(int xSize, int ySize) {
+        final List<WarshipDescription> warshipDescriptions;
+        if (xSize <= 5 | ySize <= 5) {
+            warshipDescriptions = warshipDescriptionsForMini;
+        } else {
+            warshipDescriptions = warshipDescriptionsForRegular;
+        }
         Fleet fleet = new Fleet();
         GridPoint[][] grids = new GridPoint[xSize][ySize];
         initEmptyGrids(grids);
