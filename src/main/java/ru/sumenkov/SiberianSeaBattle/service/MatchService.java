@@ -32,9 +32,9 @@ public class MatchService {
         matchDao.setStatus(MatchStatus.WAIT);
 
 
-        this.matchRepository.save(matchDao);
+        matchRepository.save(matchDao);
 
-        return this.modelMapper.map(matchDao, Match.class);
+        return modelMapper.map(matchDao, Match.class);
     }
 
     @Transactional
@@ -74,4 +74,13 @@ public class MatchService {
                 .map(matchDao -> modelMapper.map(matchDao, Match.class))
                 .toList();
      }
+
+    public Optional<Match> getWaitMatchByPlayerId(UUID playerId) {
+        var match = matchRepository.findByOwner_idAndStatusNot(playerId, MatchStatus.COMPLETED);
+        if (match.isEmpty()) {
+            match = matchRepository.findByOpponent_idAndStatusNot(playerId, MatchStatus.COMPLETED);
+        }
+
+        return match.map(m -> modelMapper.map(m, Match.class));
+    }
 }

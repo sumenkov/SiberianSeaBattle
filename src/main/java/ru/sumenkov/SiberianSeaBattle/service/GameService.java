@@ -47,7 +47,7 @@ public class GameService {
     );
 
     /**
-     * Метод геерации флота и карты
+     * Метод генерации флота и карты
      *
      * @param xSize размкер карты по OX
      * @param ySize размкер карты по OY
@@ -325,7 +325,7 @@ public class GameService {
      *
      * @param grids поле боя
      */
-    private static void initEmptyGrids(int[][] grids) {
+    public static void initEmptyGrids(int[][] grids) {
         //Заполняем поля пустыми клетками
         for (int[] points : grids) {
             Arrays.fill(points, 0);

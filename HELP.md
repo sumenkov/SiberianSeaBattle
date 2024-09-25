@@ -212,12 +212,13 @@ subscription:sub-2
 message-id:51974435-4a3b-04a2-50e3-6f76b43df000-1
 content-length:136
 
-{"status":"OK","errorDescription":null, "matches":[{"id":"248b6042-e77a-475a-8085-ddbd2f2a9ea7","sizeGrid":5,"ownerName":"username1","opponentName":"username2","winnerName":null}]} 
+{"status":"OK","errorDescription":null, "matches":[{"id":"248b6042-e77a-475a-8085-ddbd2f2a9ea7","sizeGrid":5,"ownerName":"username1","opponentName":"username2","winnerName":null, "matchStatus":"WAIT"}]} 
 ```
 _где_
 - status - статус "OK" или "ERROR"
 - errorDescription - текс ошибки если статус
 - matches - информация об игре <br><br>
+    - matchStatus - статус игры (WAIT - ожидают соперника,  IN_PROGRESS - в процессе игры, COMPLETED -завершены,  ALL - все) <br><br>
 
 #### Получить историю игры
 ```
@@ -269,7 +270,7 @@ subscription:sub-2
 message-id:51974435-4a3b-04a2-50e3-6f76b43df000-1
 content-length:136
 
-{"status":"OK","errorDescription":null,"playerOneGrids": [[-400,-400,-400,-400,-400],[-400,-400,-400,-400,-400],[-400,3,-400,-400,-400],[-400,-400,-400,-400,-400],[-400,-400,-400,-400,-400]], "playerOneName":"иван", "playerOneId":"444e8400-e29b-41d4-a716-446655440111","playerTwoGrids": [[-400,-400,-400,-400,-400],[-400,-400,-400,-400,-400],[-400,3,-400,-400,-400],[-400,-400,-400,-400,-400],[-400,-400,-400,-400,-400]], "playerTwoName":"иван", "playerTwoId":"333e8400-e29b-41d4-a716-446655440642"}]}
+{"status":"OK","errorDescription":null, "matchStatus":"WAIT", "playerOneGrids": [[-400,-400,-400,-400,-400],[-400,-400,-400,-400,-400],[-400,3,-400,-400,-400],[-400,-400,-400,-400,-400],[-400,-400,-400,-400,-400]], "playerOneName":"иван", "playerOneId":"444e8400-e29b-41d4-a716-446655440111","playerTwoGrids": [[-400,-400,-400,-400,-400],[-400,-400,-400,-400,-400],[-400,3,-400,-400,-400],[-400,-400,-400,-400,-400],[-400,-400,-400,-400,-400]], "playerTwoName":"иван", "playerTwoId":"333e8400-e29b-41d4-a716-446655440642"}]}
 ```
 _где_
 - status - статус "OK" или "ERROR"
@@ -280,6 +281,43 @@ _где_
 - playerTwoGrids - поле второго игрока
 - playerTwoName - имя второго игрока
 - playerTwoId - id второго игрока
+
+
+
+#### Получить Игру игрока в статусе не завершонная
+```
+SEND
+destination:/see-battle/match/request
+content-length:110
+
+{"userId":"85d19e55-5494-43b4-ac95-35cb0fc6aba1"}
+```
+_где_
+- userId - uuid для игрока который запрашивает статус игры и поля <br><br>
+
+
+#### Ответ на запрос "Получить Игру игрока в статусе не завершонная"  Внимание нужен chanelId  для подписи на топик /user/{chanelId}/see-battle/match/response
+```
+MESSAGE
+destination:/user/550e8400-e29b-41d4-a716-446655440088/see-battle/match/response
+content-type:application/json
+subscription:sub-2
+message-id:51974435-4a3b-04a2-50e3-6f76b43df000-1
+content-length:136
+
+{"status":"OK","errorDescription":null, "matchStatus":"WAIT", "opponentGrids": [[-400,-400,-400,-400,-400],[-400,-400,-400,-400,-400],[-400,3,-400,-400,-400],[-400,-400,-400,-400,-400],[-400,-400,-400,-400,-400]], "grids": [[-400,-400,-400,-400,-400],[-400,-400,-400,-400,-400],[-400,3,-400,-400,-400],[-400,-400,-400,-400,-400],[-400,-400,-400,-400,-400]]}]}
+```
+_где_
+- status - статус "OK" или "ERROR"
+- errorDescription - текс ошибки если статус
+- playerOneGrids - поле первого игрока
+- playerOneName - имя первого игрока
+- playerOneId - id первого игрока
+- playerTwoGrids - поле второго игрока
+- playerTwoName - имя второго игрока
+- playerTwoId - id второго игрока
+
+
 
 ### Дополнительные нотификации
 #### Нотификация на запрос "Сделать выстрел" для соперника  Внимание нужен chanelId  для подписи на топик /see-battle/shot-game-owner/response

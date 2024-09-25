@@ -58,8 +58,13 @@ public class GameController {
     }
 
     @MessageMapping("/see-battle/matches/request")
-    public void getMatches(MatchRequestMessage request) throws Exception {
+    public void getMatches(MatchesRequestMessage request) throws Exception {
         seaBattleService.getMatches(request);
+    }
+
+    @MessageMapping("/see-battle/match/request")
+    public void getMatch(MatchRequestMessage request) throws Exception {
+        seaBattleService.getMatch(request);
     }
 
     @MessageMapping("/see-battle/match-history/request")

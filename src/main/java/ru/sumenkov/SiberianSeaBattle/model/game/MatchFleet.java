@@ -33,7 +33,11 @@ public record MatchFleet(Map<UUID, Fleet> userIdToFleet) {
      * @return флот соперника
      */
     public Fleet getOpponentFleet(UUID userId) {
-       return findOpponentUserId(userId).map(userIdToFleet::get).orElseThrow(()-> new RuntimeException(String.format("Не смогли найти соперника для игрока %s", userId)));
+       return findOpponentFleet(userId).orElseThrow(()-> new RuntimeException(String.format("Не смогли найти соперника для игрока %s", userId)));
+    }
+
+    public Optional<Fleet> findOpponentFleet(UUID userId) {
+        return findOpponentUserId(userId).map(userIdToFleet::get);
     }
 
     public Optional<UUID> findOpponentUserId(UUID userId) {

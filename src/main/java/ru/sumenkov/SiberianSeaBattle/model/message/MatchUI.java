@@ -19,4 +19,9 @@ public class MatchUI {
     private String opponentName;
 
     private String winnerName;
+
+    /**
+     * Статус игр
+     */
+    private MatchStatus matchStatus;
 }

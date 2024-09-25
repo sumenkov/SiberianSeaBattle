@@ -35,4 +35,10 @@ public class GridsResponseMessage extends  BaseResponseMessage {
 
     private String playerTwoName;
     private String playerTwoId;
+
+    /**
+     * Статус игр
+     */
+    private MatchStatus matchStatus;
+
 }

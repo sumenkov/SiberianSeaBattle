@@ -28,7 +28,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class ShotGameOwnerResponseMessage extends BaseResponseMessage {
 
-    boolean isHit;
-    boolean isOpponentWin;
-    int[][] grids;
+    private boolean isHit;
+    private boolean isOpponentWin;
+    private int[][] grids;
 }

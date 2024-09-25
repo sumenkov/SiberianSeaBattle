@@ -18,24 +18,18 @@ package ru.sumenkov.SiberianSeaBattle.model.message;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.UUID;
-
 /**
- * Description: Запрос на получение спимка игре которые ожидают
+ * Description: Запрос на получение игры для Игрока
  *
  * @author <a href="mailto:onixbed@gmail.com">amaksimov</a>
- * crested on 19.09.2024
+ * crested on 25.09.2024
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class MatchRequestMessage extends BaseRequestMessage {
 
     /**
-     * Идентификатор приватного канала
+     * Идентификатор игрока который создает игру
      */
-    private UUID chanelId;
-    /**
-     * Статус игр
-     */
-    private MatchStatus matchStatus;
+    private String userId;
 }
