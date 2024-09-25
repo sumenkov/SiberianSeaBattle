@@ -62,15 +62,7 @@ public class TestController {
             }
             log.info("grids");
             GridPoint[][] grids = fleet.getGrids();
-            for (int oy = 0; oy < grids.length; oy++) {
-                if (oy == 0) {
-                    log.info("    1,2,3,4,5,6,7,8,9,10");
-                    log.info("   ---------------------");
-                }
-                String line = getOxLine(grids,
-                        oy);
-                log.info(line);
-            }
+            GameService.print(grids);
             int x = Math.toIntExact(Math.round(Math.random() * 9));
             int y = Math.toIntExact(Math.round(Math.random() * 9));
             boolean isHit = gameService.checkShot(fleet,
@@ -105,15 +97,7 @@ public class TestController {
         }
         log.info("grids");
         GridPoint[][] grids = customFleet.getFleet().getGrids();
-        for (int oy = 0; oy < grids.length; oy++) {
-            if (oy == 0) {
-                log.info("    1,2,3,4,5,6,7,8,9,10");
-                log.info("   ---------------------");
-            }
-            String line = getOxLine(grids,
-                    oy);
-            log.info(line);
-        }
+        GameService.print(grids);
         int x = Math.toIntExact(Math.round(Math.random() * 9));
         int y = Math.toIntExact(Math.round(Math.random() * 9));
         boolean isHit = gameService.checkShot(fleet,
@@ -127,27 +111,7 @@ public class TestController {
 
     }
 
-    private static String getOxLine(GridPoint[][] grids, int oy) {
-        StringBuilder stRor = new StringBuilder();
-        GridPoint[] pointsOx = grids[oy];
-        for (int ox = 0; ox < pointsOx.length; ox++) {
-            if (ox == 0) {
-                if (oy < 9) {
-                    stRor.append("0");
-                }
-                stRor.append((oy + 1));
-                stRor.append(" |");
-            }
-            GridPoint point = pointsOx[ox];
-            Optional<Warship> warship = point.getWarship();
-            String pointX;
-            pointX = warship.map(value -> value.getLives() == 0 ? "x" : "" + value.getSize())
-                    .orElseGet(() -> point.isExplored() ? "x" : "*");
-            stRor.append(pointX);
-            stRor.append(" ");
-        }
-        return stRor.toString();
-    }
+
 
 
     //TODO не удалять нужен для тестов

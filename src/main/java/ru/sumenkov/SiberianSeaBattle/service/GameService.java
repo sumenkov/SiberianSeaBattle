@@ -15,6 +15,7 @@
  */
 package ru.sumenkov.SiberianSeaBattle.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.sumenkov.SiberianSeaBattle.model.game.CustomFleet;
 import ru.sumenkov.SiberianSeaBattle.model.game.Fleet;
@@ -35,9 +36,11 @@ import java.util.Random;
  * @author <a href="mailto:onixbed@gmail.com">amaksimov</a>
  * crested on 09.09.2024
  */
+@Slf4j
 @Service
 public class GameService {
 
+    public static final String ERROR_GENERATE_FLEET = "Алгоритм не смог расставить флот на поле";
     private final Random rand = new Random();
     List<WarshipDescription> warshipDescriptionsForRegular = List.of(
             new WarshipDescription(1, 4),
@@ -65,10 +68,22 @@ public class GameService {
         } else {
             warshipDescriptions = warshipDescriptionsForRegular;
         }
+        RuntimeException exception = new RuntimeException(ERROR_GENERATE_FLEET);
+        for (int count = 0; count < 10; count++) {
+            try {
+                return getFleet(xSize, ySize, warshipDescriptions);
+            } catch (RuntimeException e) {
+                exception = e;
+            }
+        }
+        throw exception;
+
+    }
+
+    private Fleet getFleet(int xSize, int ySize, List<WarshipDescription> warshipDescriptions) {
         Fleet fleet = new Fleet();
         GridPoint[][] grids = new GridPoint[xSize][ySize];
         initEmptyGrids(grids);
-
         for (WarshipDescription warshipDescription : warshipDescriptions) {
             for (int warshipCount = 0; warshipCount < warshipDescription.count(); warshipCount++) {
                 Warship warship = getWarship(grids, warshipDescription.size());
@@ -76,7 +91,6 @@ public class GameService {
             }
         }
         fleet.setGrids(grids);
-
         return fleet;
     }
 
@@ -349,13 +363,19 @@ public class GameService {
         int minY = 0;
         Optional<Warship> warship;
         boolean directionOX;
+        int count  = 0;
         do {
+            if(count > 1_000_000) {
+                print(grids);
+                throw new RuntimeException(ERROR_GENERATE_FLEET);
+            }
             directionOX = rand.nextBoolean();
             int maxX = grids[0].length - (directionOX ? size : 1);
             int maxY = grids.length - (directionOX ? 1 : size);
             int x = getRandom(maxX, minX);
             int y = getRandom(maxY, minY);
             warship = getWarship(x, y, directionOX, grids, size);
+            count++;
         } while (warship.isEmpty());
 
         return warship.get();
@@ -517,5 +537,39 @@ public class GameService {
 
     private int getRandom(int max, int min) {
         return rand.nextInt(max - min + 1) + min;
+    }
+
+    public static void print(GridPoint[][] grids) {
+        for (int oy = 0; oy < grids.length; oy++) {
+            if (oy == 0) {
+                log.debug("    1,2,3,4,5,6,7,8,9,10");
+                log.debug("   ---------------------");
+            }
+            String line = getOxLine(grids,
+                    oy);
+            log.debug(line);
+        }
+    }
+
+    private static String getOxLine(GridPoint[][] grids, int oy) {
+        StringBuilder stRor = new StringBuilder();
+        GridPoint[] pointsOx = grids[oy];
+        for (int ox = 0; ox < pointsOx.length; ox++) {
+            if (ox == 0) {
+                if (oy < 9) {
+                    stRor.append("0");
+                }
+                stRor.append((oy + 1));
+                stRor.append(" |");
+            }
+            GridPoint point = pointsOx[ox];
+            Optional<Warship> warship = point.getWarship();
+            String pointX;
+            pointX = warship.map(value -> value.getLives() == 0 ? "x" : "" + value.getSize())
+                    .orElseGet(() -> point.isExplored() ? "x" : "*");
+            stRor.append(pointX);
+            stRor.append(" ");
+        }
+        return stRor.toString();
     }
 }
