@@ -19,7 +19,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * Description: Нотификация получение информации поля
+ * Description: Нотификация получение информации поля (для наблюдений)
  *
  * @author <a href="mailto:onixbed@gmail.com">amaksimov</a>
  * crested on 22.09.2024
@@ -28,16 +28,32 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class GridsResponseMessage extends  BaseResponseMessage {
 
-    private int[][] playerOneGrids;
-    private String playerOneName;
-    private String playerOneId;
-    private int[][] playerTwoGrids;
-
-    private String playerTwoName;
-    private String playerTwoId;
-
     /**
-     * Статус игр
+     * Поле первого игрока
+     */
+    private int[][] playerOneGrids;
+    /**
+     * Логин первого игрока
+     */
+    private String playerOneName;
+    /**
+     * Идентификатор первого игрока
+     */
+    private String playerOneId;
+    /**
+     * Поле второго игрока
+     */
+    private int[][] playerTwoGrids;
+    /**
+     * Логин второго игрока
+     */
+    private String playerTwoName;
+    /**
+     * Идентификатор второго игрока
+     */
+    private String playerTwoId;
+    /**
+     * Статус игры
      */
     private MatchStatus matchStatus;
 

@@ -16,12 +16,12 @@
 package ru.sumenkov.SiberianSeaBattle.model.message;
 
 /**
- * Description:
+ * Description: Статусы ответа
  *
  * @author <a href="mailto:onixbed@gmail.com">amaksimov</a>
  * crested on 17.09.2024
  */
 public enum Status {
     OK,
-    ERROR;
+    ERROR
 }

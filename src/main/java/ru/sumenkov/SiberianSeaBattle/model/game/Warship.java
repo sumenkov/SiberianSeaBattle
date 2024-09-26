@@ -27,14 +27,26 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public final class Warship {
+    /**
+     * Начальная точка
+     */
     private final Point start;
+    /**
+     * Конечная точка
+     */
     private Point end;
+    /**
+     * Размер корабля
+     */
     private int size;
+    /**
+     * Количество живых точек
+     */
     private int lives;
 
     /**
      * Нанести удар
-     * @return true если убил, false если живой
+     * @return true - если убил, false - если живой
      */
     public boolean hit() {
         lives--;

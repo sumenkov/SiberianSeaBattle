@@ -33,7 +33,7 @@ public class GenerateFleetResponseMessage extends  BaseResponseMessage {
     private int[][] grids;
 
     /**
-     * Признак старта игры, игроки расставили флот
+     * Признак старта игры, игроки расставили флот. Если true - игрок расставил флот, иначе false
      */
     private boolean isStartGame;
 }

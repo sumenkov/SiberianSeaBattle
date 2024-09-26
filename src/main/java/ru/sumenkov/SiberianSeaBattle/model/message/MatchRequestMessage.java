@@ -29,7 +29,7 @@ import lombok.EqualsAndHashCode;
 public class MatchRequestMessage extends BaseRequestMessage {
 
     /**
-     * Идентификатор игрока который создает игру
+     * Идентификатор игрока
      */
     private String userId;
 }

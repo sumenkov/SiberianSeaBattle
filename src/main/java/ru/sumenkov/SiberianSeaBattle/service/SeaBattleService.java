@@ -186,7 +186,7 @@ public class SeaBattleService {
         Player player =null;
         try {
             //TODO добавить проверку входных данных
-            Match match = checkMatch(request.getMatchId(), true);
+            Match match = checkMatch(request.getMatchId());
             checkUser(request.getUserId(), match);
             UUID userId = UUID.fromString(request.getUserId());
             player = getPlayer(userId);
@@ -201,7 +201,7 @@ public class SeaBattleService {
                 updateMatchStatus(matchFleet, match, userId);
             } else {
                 response.setStatus(Status.ERROR);
-                response.setErrorDescription("Ощибка в расстановке флота");
+                response.setErrorDescription("Ошибка в расстановке флота");
                 response.setErrorGrids(customFleet.getErrorGrids());
             }
             Optional<UUID> opponentUserId = matchFleet.findOpponentUserId(userId);
@@ -230,7 +230,7 @@ public class SeaBattleService {
     }
 
     /**
-     * Генерируем флот (авторасстановка флота)
+     * Генерируем флот (автоматическая расстановка флота)
      *
      * @param request запрос
      */
@@ -240,7 +240,7 @@ public class SeaBattleService {
         Player player = null;
         try {
             //TODO добавить проверку входных данных
-            Match match = checkMatch(request.getMatchId(), true);
+            Match match = checkMatch(request.getMatchId());
             checkUser(request.getUserId(), match);
             UUID userId = UUID.fromString(request.getUserId());
             player = getPlayer(userId);
@@ -291,11 +291,16 @@ public class SeaBattleService {
             findAndStopOldMatch(opponent.getId());
 
 
-            Match match = checkMatch(request.getMatchId(), true);
+            Match match = checkMatch(request.getMatchId());
+            if (match.getOwner() != null && match.getOwner().getId().equals(opponent.getId())) {
+                log.warn(String.format("Попытка подключится к игре %s автором игры логин %s", match.getId(), opponent.getName()));
+                return;
+            }
             if(match.getOpponent() != null) {
                 throw new RuntimeException(
                         String.format("В игре %s уже есть соперник %s", match.getId(), match.getOpponent().getName()));
             }
+
 
             match.setOpponent(opponent);
             MatchFleet matchFleet = getMatchFleet(match.getId(), opponent.getName());
@@ -304,7 +309,7 @@ public class SeaBattleService {
             response.setStatus(Status.OK);
 
             notificationService.sendMessage(opponent.getChanelId(), "/see-battle/join-game/response", response);
-            //Оповещение владелца игры
+            //Оповещение владельца игры
             Player owner = getPlayer(match.getOwner().getId());
             JoinGameOwnerResponseMessage ownerResponse = new JoinGameOwnerResponseMessage();
             ownerResponse.setStatus(Status.OK);
@@ -332,7 +337,7 @@ public class SeaBattleService {
         Player player = null;
         try {
             //TODO добавить проверку входных данных
-            Match match = checkMatch(request.getMatchId(), true);
+            Match match = checkMatch(request.getMatchId());
             checkUser(request.getUserId(), match);
             UUID userId = UUID.fromString(request.getUserId());
             player = getPlayer(userId);
@@ -350,7 +355,7 @@ public class SeaBattleService {
                 isWin = true;
                 for(Warship warship: opponentFleet.getWarships()) {
                     if(!warship.isKill()) {
-                        //Если ходябы один корабыль живой то победы еще нет
+                        //Увы но все корабли флота ушли под воду
                         isWin = false;
                         break;
                     }
@@ -560,19 +565,19 @@ public class SeaBattleService {
 
     private void checkUser(String userId, Match match) {
         if (notEqualsUser(userId, match.getOwner()) && notEqualsUser(userId, match.getOpponent())) {
-            throw new RuntimeException(String.format("Игрок с %s не учавствует в игре %s ", userId, match.getId()));
+            throw new RuntimeException(String.format("Игрок с %s не участвует в игре %s ", userId, match.getId()));
 
         }
     }
 
-    private Match checkMatch(String matchId, boolean checkFinishGame) {
+    private Match checkMatch(String matchId) {
         Optional<Match> matchOpt = matchService.getMatchById(matchId);
         if (matchOpt.isEmpty()) {
-            throw new RuntimeException("Игра не найдена " + matchId);
+            throw new RuntimeException(String.format("Игра %s не найдена", matchId));
         }
         Match match = matchOpt.get();
-        if (checkFinishGame && match.getWinner() != null) {
-            throw new RuntimeException(String.format("Игра с %s закончилась ", matchId));
+        if (match.getWinner() != null) {
+            throw new RuntimeException(String.format("Игра %s закончилась, победил %s ", matchId, match.getWinner().getName()));
         }
         return match;
     }

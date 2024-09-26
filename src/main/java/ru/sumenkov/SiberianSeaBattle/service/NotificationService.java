@@ -23,7 +23,7 @@ import ru.sumenkov.SiberianSeaBattle.model.message.NotificationResponseMessage;
 import java.util.UUID;
 
 /**
- * Description:
+ * Description: Сервис нотификации
  *
  * @author <a href="mailto:onixbed@gmail.com">amaksimov</a>
  * crested on 18.09.2024
@@ -32,7 +32,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class NotificationService {
     private final SimpMessagingTemplate messagingTemplate;
-
 
     public void sendMessage(UUID chanelId, String destination, Object object) {
         messagingTemplate.convertAndSendToUser(

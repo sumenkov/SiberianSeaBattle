@@ -19,7 +19,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * Description: Нотификация для  второго игрока что произошел выстрел
+ * Description: Нотификация для второго игрока, что произошел выстрел
  *
  * @author <a href="mailto:onixbed@gmail.com">amaksimov</a>
  * crested on 18.09.2024
@@ -28,7 +28,16 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class ShotGameOwnerResponseMessage extends BaseResponseMessage {
 
+    /**
+     *  Признак попадания, если true - попал, иначе false.
+     */
     private boolean isHit;
+    /**
+     *  Признак победы соперника, Если true - соперник выйграл, иначе false.
+     */
     private boolean isOpponentWin;
+    /**
+     *  Поле игры
+     */
     private int[][] grids;
 }

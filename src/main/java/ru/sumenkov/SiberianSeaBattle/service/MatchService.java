@@ -31,7 +31,6 @@ public class MatchService {
         matchDao.setSizeGrid(sizeGrid);
         matchDao.setStatus(MatchStatus.WAIT);
 
-
         matchRepository.save(matchDao);
 
         return modelMapper.map(matchDao, Match.class);
@@ -58,8 +57,8 @@ public class MatchService {
 
     @Transactional
     public void updateMatch(Match match) {
-        MatchDao matchDao = this.modelMapper.map(match, MatchDao.class);
-        this.matchRepository.save(matchDao);
+        MatchDao matchDao = modelMapper.map(match, MatchDao.class);
+        matchRepository.save(matchDao);
     }
 
     @Transactional

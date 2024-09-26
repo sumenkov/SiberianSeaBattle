@@ -14,17 +14,34 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Match {
 
+    /**
+     *  Идентификатор игры
+     */
     private UUID id;
 
+    /**
+     *  Размер поля
+     */
     private Integer sizeGrid;
 
+    /**
+     *  Владелец игры
+     */
     private Player owner;
 
-
+    /**
+     *  Соперник в игре
+     */
     private Player opponent;
 
+    /**
+     *  Победитель
+     */
     private Player winner;
 
+    /**
+     *  Статус игры
+     */
     private MatchStatus status;
 
 }

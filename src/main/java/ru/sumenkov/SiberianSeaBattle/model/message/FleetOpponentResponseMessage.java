@@ -19,7 +19,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * Description: Нотификация о растановки короблей для соперника
+ * Description: Нотификация о расстановки кораблей для соперника
  *
  * @author <a href="mailto:onixbed@gmail.com">amaksimov</a>
  * crested on 18.09.2024

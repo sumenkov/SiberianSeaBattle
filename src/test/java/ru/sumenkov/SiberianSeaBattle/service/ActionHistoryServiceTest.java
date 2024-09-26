@@ -24,9 +24,9 @@ class ActionHistoryServiceTest {
 
     @Test
     void createActionHistoryTest() {
-        Player player = this.playerService.createPlayer("un1" + UUID.randomUUID(), "p1" + UUID.randomUUID(), UUID.randomUUID());
-        Match match = this.matchService.createMatch(player, 5);
-        ActionHistory actionHistory = this.actionHistoryService.createActionHistory(match, player, 1, 1);
+        Player player = playerService.createPlayer("un1" + UUID.randomUUID(), "p1" + UUID.randomUUID(), UUID.randomUUID());
+        Match match = matchService.createMatch(player, 5);
+        ActionHistory actionHistory = actionHistoryService.createActionHistory(match, player, 1, 1);
         Assertions.assertNotNull(actionHistory);
     }
 

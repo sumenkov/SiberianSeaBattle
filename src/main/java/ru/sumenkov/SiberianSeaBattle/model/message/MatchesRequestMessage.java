@@ -21,7 +21,7 @@ import lombok.EqualsAndHashCode;
 import java.util.UUID;
 
 /**
- * Description: Запрос на получение списка игре в указанном статусе
+ * Description: Запрос на получение списка игр в указанном статусе
  *
  * @author <a href="mailto:onixbed@gmail.com">amaksimov</a>
  * crested on 19.09.2024
@@ -31,7 +31,7 @@ import java.util.UUID;
 public class MatchesRequestMessage extends BaseRequestMessage {
 
     /**
-     * Идентификатор приватного канала
+     * Идентификатор канала
      */
     private UUID chanelId;
     /**

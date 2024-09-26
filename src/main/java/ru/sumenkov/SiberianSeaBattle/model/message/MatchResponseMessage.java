@@ -28,10 +28,16 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class MatchResponseMessage extends BaseResponseMessage {
 
+    /**
+     * Поле соперника
+     */
     private int[][] opponentGrids;
+    /**
+     * Поле игрока (хозяина)
+     */
     private int[][] grids;
     /**
-     * Статус игр
+     * Статус игры
      */
     private MatchStatus matchStatus;
 }

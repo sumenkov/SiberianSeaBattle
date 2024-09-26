@@ -19,7 +19,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * Description: Ответ на создание флоиа
+ * Description: Ответ на создание флота
  *
  * @author <a href="mailto:onixbed@gmail.com">amaksimov</a>
  * crested on 17.09.2024
@@ -28,6 +28,9 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class CreateFleetResponseMessage extends BaseResponseMessage {
 
+    /**
+     * Поле игрока с указанием ошибки в расстановке
+     */
     private int[][] errorGrids;
 
     /**

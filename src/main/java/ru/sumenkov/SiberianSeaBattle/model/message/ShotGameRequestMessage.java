@@ -27,8 +27,20 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class ShotGameRequestMessage extends  BaseRequestMessage {
+    /**
+     *  Идентификатор игры
+     */
     private String matchId;
+    /**
+     *  Идентификатор игрока
+     */
     private String userId;
+    /**
+     *  Точка удара по OX
+     */
     private int x;
+    /**
+     *  Точка удара по OY
+     */
     private int y;
 }

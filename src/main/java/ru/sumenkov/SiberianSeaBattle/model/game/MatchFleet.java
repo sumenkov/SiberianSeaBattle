@@ -20,7 +20,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Description: Структура для хранения прогреса матча
+ * Description: Структура для хранения прогресса матча
  *
  * @author <a href="mailto:onixbed@gmail.com">amaksimov</a>
  * crested on 17.09.2024
@@ -50,13 +50,17 @@ public record MatchFleet(Map<UUID, Fleet> userIdToFleet) {
     }
 
     /**
-     * Проверяет расставил соперник флот
-     * @return true -если соперник готов, false - не готов
+     * Проверка расстановки флот соперником
+     * @return true - если соперник готов, false - не готов
      */
     public boolean checkOpponentDone() {
         return userIdToFleet.size() > 1;
     }
 
+    /**
+     * Проверка расстановки флот игроками
+     * @return true - если соперники готовы, false - не готовы
+     */
     public boolean checkWaitAllFleet() {
         return userIdToFleet.isEmpty();
     }

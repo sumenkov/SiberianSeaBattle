@@ -13,9 +13,21 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Player {
 
+    /**
+     *  Идентификатор игрока
+     */
     private UUID id;
+    /**
+     *  Идентификатор канала
+     */
     private UUID chanelId;
+    /**
+     *  Логин игрока
+     */
     private String name;
+    /**
+     *  Пароль игрока
+     */
     private String password;
 
 }

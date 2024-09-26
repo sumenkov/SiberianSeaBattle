@@ -12,6 +12,12 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class GetUserResponseMessage extends BaseResponseMessage {
+    /**
+     * Идентификатор игрока
+     */
     private String userId;
+    /**
+     * Идентификатор канала
+     */
     private String chanelId;
 }

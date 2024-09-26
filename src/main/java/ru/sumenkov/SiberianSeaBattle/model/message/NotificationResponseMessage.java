@@ -27,6 +27,12 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class NotificationResponseMessage extends BaseResponseMessage {
+    /**
+     *  Тип нотификации
+     */
     private TypeNotification type;
+    /**
+     *  Идентификатор игры, только для типа  @see TypeNotification#GRIDS_UPDATE
+     */
     private String matchId;
 }

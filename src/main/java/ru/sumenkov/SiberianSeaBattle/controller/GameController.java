@@ -4,9 +4,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 import ru.sumenkov.SiberianSeaBattle.model.message.*;
+import ru.sumenkov.SiberianSeaBattle.model.message.chat.ChatMessageRequest;
 import ru.sumenkov.SiberianSeaBattle.service.NotificationService;
 import ru.sumenkov.SiberianSeaBattle.service.SeaBattleService;
 
+/**
+ * Description: Основная точка входа API
+ *
+ * @author <a href="mailto:onixbed@gmail.com">amaksimov</a>
+ * crested on 09.09.2024
+ */
 @Controller
 @RequiredArgsConstructor
 public class GameController {
@@ -16,8 +23,8 @@ public class GameController {
 
 
     @MessageMapping("/see-battle/chat/request")
-    public void greeting(HelloMessage message) throws Exception {
-        notificationService.sendMessage(message.getId(), "/queue/messages", message);
+    public void greeting(ChatMessageRequest message) throws Exception {
+        notificationService.sendMessage(message.getId(), "/see-battle/chat/response", message);
     }
 
     @MessageMapping("/see-battle/create-user/request")

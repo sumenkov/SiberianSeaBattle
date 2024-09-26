@@ -25,6 +25,12 @@ import lombok.Data;
  */
 @Data
 public abstract class BaseResponseMessage {
+    /**
+     * Статус ответа
+     */
     private Status status;
+    /**
+     * Текст ошибки если статус ERROR
+     */
     private String errorDescription;
 }

@@ -21,7 +21,7 @@ import lombok.EqualsAndHashCode;
 import java.util.List;
 
 /**
- * Description: Ответ на запрос списка игр в указаном статусе
+ * Description: Ответ на запрос списка игр в указанном статусе
  *
  * @author <a href="mailto:onixbed@gmail.com">amaksimov</a>
  * crested on 19.09.2024
@@ -29,5 +29,8 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class MatchesResponseMessage extends BaseResponseMessage {
+    /**
+     * Список игр
+     */
     private List<MatchUI> matches;
 }

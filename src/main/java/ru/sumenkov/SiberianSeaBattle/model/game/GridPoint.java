@@ -22,7 +22,7 @@ import java.util.Optional;
 
 /**
  * Description: Точка в гриде
- * В точке может быть корабыль, а так же isExplored признак  попадания в эту точку
+ * В точке может быть корабль, а так же isExplored признак попадания в эту точку
  *
  * @author <a href="mailto:onixbed@gmail.com">amaksimov</a>
  * crested on 11.09.2024

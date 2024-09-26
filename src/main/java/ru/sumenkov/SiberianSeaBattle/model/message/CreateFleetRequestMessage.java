@@ -28,7 +28,18 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class CreateFleetRequestMessage extends BaseRequestMessage {
 
+    /**
+     * Идентификатор игры
+     */
     private String matchId;
+
+    /**
+     * Идентификатор игрока
+     */
     private String userId;
+
+    /**
+     * Поле с расстановкой
+     */
     private int[][] grids;
 }

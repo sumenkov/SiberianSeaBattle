@@ -26,8 +26,21 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ShotGameResponseMessage extends  BaseResponseMessage {
+public class ShotGameResponseMessage extends BaseResponseMessage {
+
+    /**
+     *  Признак попадания, если true - попал, иначе false.
+     */
     private boolean isHit;
-    private int[][] opponentGrids;
+
+    /**
+     *  Признак победы соперника, Если true - соперник выйграл, иначе false.
+     */
     private boolean isWinn;
+
+    /**
+     *  Поле игры с туманом войны
+     */
+    private int[][] opponentGrids;
+
 }

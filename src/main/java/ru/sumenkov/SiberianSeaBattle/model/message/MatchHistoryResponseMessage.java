@@ -30,6 +30,8 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class MatchHistoryResponseMessage extends BaseResponseMessage {
-
+    /**
+     * Список истории игры
+     */
     private List<ActionHistory> actionHistories;
 }

@@ -24,7 +24,7 @@ class PlayerServiceTest {
 
     @Test
     void updatePlayerTest() {
-        Player oldPlayer = this.playerService.createPlayer("p1" + UUID.randomUUID(), "p1" + UUID.randomUUID(), UUID.randomUUID());
+        Player oldPlayer = playerService.createPlayer("p1" + UUID.randomUUID(), "p1" + UUID.randomUUID(), UUID.randomUUID());
 
     }
 

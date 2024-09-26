@@ -12,7 +12,17 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class CreateUserRequestMessage extends BaseRequestMessage {
+    /**
+     * Логин игрока
+     */
     private String username;
+    /**
+     * Пароль игрока
+     */
     private String password;
+
+    /**
+     * Идентификатор канала
+     */
     private String chanelId;
 }

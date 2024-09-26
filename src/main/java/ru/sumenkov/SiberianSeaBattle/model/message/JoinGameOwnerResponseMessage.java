@@ -19,7 +19,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * Description: Нотификация для владелца что нашли соперника
+ * Description: Нотификация для владельца, что нашли соперника
  *
  * @author <a href="mailto:onixbed@gmail.com">amaksimov</a>
  * crested on 18.09.2024

@@ -30,9 +30,12 @@ import java.util.UUID;
 @EqualsAndHashCode(callSuper = true)
 public class GridsRequestMessage  extends BaseRequestMessage {
     /**
-     * Идентификатор приватного канала
+     * Идентификатор канала
      */
     private UUID chanelId;
 
+    /**
+     * Идентификатор игры
+     */
     private String matchId;
 }

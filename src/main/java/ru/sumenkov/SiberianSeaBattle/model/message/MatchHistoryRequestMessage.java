@@ -31,9 +31,12 @@ import java.util.UUID;
 public class MatchHistoryRequestMessage extends BaseRequestMessage {
 
     /**
-     * Идентификатор приватного канала
+     * Идентификатор канала
      */
     private UUID chanelId;
 
+    /**
+     * Идентификатор игры
+     */
     private String matchId;
 }
