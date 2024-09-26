@@ -15,10 +15,11 @@
  */
 package ru.sumenkov.SiberianSeaBattle.model.message;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.util.UUID;
 
 /**
  * Description: Запрос на создание игры
@@ -32,9 +33,12 @@ public class CreateGameRequestMessage extends BaseRequestMessage {
     /**
      * Идентификатор игрока который создает игру
      */
+    @NotBlank
     private String userId;
     /**
      * Размер поля если не задан то используем дефолт
      */
+    @Positive
+    @NotNull
     private Integer sizeGrid;
 }

@@ -15,6 +15,8 @@
  */
 package ru.sumenkov.SiberianSeaBattle.model.message;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -31,15 +33,18 @@ public class CreateFleetRequestMessage extends BaseRequestMessage {
     /**
      * Идентификатор игры
      */
+    @NotBlank
     private String matchId;
 
     /**
      * Идентификатор игрока
      */
+    @NotBlank
     private String userId;
 
     /**
      * Поле с расстановкой
      */
+    @NotNull
     private int[][] grids;
 }

@@ -20,8 +20,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import ru.sumenkov.SiberianSeaBattle.model.message.NotificationResponseMessage;
 
-import java.util.UUID;
-
 /**
  * Description: Сервис нотификации
  *
@@ -33,9 +31,9 @@ import java.util.UUID;
 public class NotificationService {
     private final SimpMessagingTemplate messagingTemplate;
 
-    public void sendMessage(UUID chanelId, String destination, Object object) {
+    public void sendMessage(String chanelId, String destination, Object object) {
         messagingTemplate.convertAndSendToUser(
-                chanelId.toString(), destination,
+                chanelId, destination,
                 object);
     }
 

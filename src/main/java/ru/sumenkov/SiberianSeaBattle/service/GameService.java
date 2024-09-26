@@ -17,18 +17,9 @@ package ru.sumenkov.SiberianSeaBattle.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.sumenkov.SiberianSeaBattle.model.game.CustomFleet;
-import ru.sumenkov.SiberianSeaBattle.model.game.Fleet;
-import ru.sumenkov.SiberianSeaBattle.model.game.GridPoint;
-import ru.sumenkov.SiberianSeaBattle.model.game.Point;
-import ru.sumenkov.SiberianSeaBattle.model.game.Warship;
-import ru.sumenkov.SiberianSeaBattle.model.game.WarshipDescription;
+import ru.sumenkov.SiberianSeaBattle.model.game.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Description: Сервис по работе с логикой игры
@@ -41,6 +32,7 @@ import java.util.Random;
 public class GameService {
 
     public static final String ERROR_GENERATE_FLEET = "Алгоритм не смог расставить флот на поле";
+    public static final int MINI_SIZE = 5;
     private final Random rand = new Random();
     List<WarshipDescription> warshipDescriptionsForRegular = List.of(
             new WarshipDescription(1, 4),
@@ -62,12 +54,7 @@ public class GameService {
      * @return флот
      */
     public Fleet getFleet(int xSize, int ySize) {
-        final List<WarshipDescription> warshipDescriptions;
-        if (xSize <= 5 | ySize <= 5) {
-            warshipDescriptions = warshipDescriptionsForMini;
-        } else {
-            warshipDescriptions = warshipDescriptionsForRegular;
-        }
+        final List<WarshipDescription> warshipDescriptions = getWarshipDescriptions(xSize, ySize);
         RuntimeException exception = new RuntimeException(ERROR_GENERATE_FLEET);
         for (int count = 0; count < 10; count++) {
             try {
@@ -78,6 +65,16 @@ public class GameService {
         }
         throw exception;
 
+    }
+
+    private List<WarshipDescription> getWarshipDescriptions(int xSize, int ySize) {
+        final List<WarshipDescription> warshipDescriptions;
+        if (xSize <= MINI_SIZE | ySize <= MINI_SIZE) {
+            warshipDescriptions = warshipDescriptionsForMini;
+        } else {
+            warshipDescriptions = warshipDescriptionsForRegular;
+        }
+        return warshipDescriptions;
     }
 
     private Fleet getFleet(int xSize, int ySize, List<WarshipDescription> warshipDescriptions) {
@@ -142,6 +139,7 @@ public class GameService {
                             }
                             if (isInvalidPosition || isDiffSize) {
                                 customFleet.setStatus(false);
+                                customFleet.setErrorMessage("Ошибка в расстановке кораблей");
                                 customFleet.getErrorGrids()[checkEndY][checkEndX] = Point.NUMBER_TO_ERROR;
                                 break;
                             } else {
@@ -169,6 +167,30 @@ public class GameService {
         if (customFleet.getFleet().getWarships() == null) {
             customFleet.getFleet().setWarships(new ArrayList<>());
             customFleet.setStatus(false);
+            customFleet.setErrorMessage("Ошибка в расстановке кораблей");
+        }
+        final List<WarshipDescription> warshipDescriptions = getWarshipDescriptions(grids[0].length, grids.length);
+
+        Map<Integer, Integer> sizeToCount = new HashMap<>();
+        for(Warship warship: customFleet.getFleet().getWarships()) {
+            Integer count = sizeToCount.computeIfAbsent(warship.getSize(), (s)->0);
+            sizeToCount.put(warship.getSize(), 1 + count);
+
+        }
+        for(WarshipDescription description: warshipDescriptions) {
+           Integer count = sizeToCount.get(description.size());
+           if(count == null || !count.equals(description.count())) {
+               customFleet.setStatus(false);
+               customFleet.setErrorMessage(String.format("Ошибка в количестве кораблей, их должно быть %s размером %s", description.count(), description.size()));
+               return customFleet;
+           }
+
+        }
+        int sum = warshipDescriptions.stream().mapToInt(WarshipDescription::count).sum();
+        //Проверка, что кораблей нужное количество
+        if(customFleet.getFleet().getWarships().size() < sum) {
+            customFleet.setStatus(false);
+            customFleet.setErrorMessage("Ошибка в количестве кораблей, их должно быть " + sum);
         }
 
         return customFleet;

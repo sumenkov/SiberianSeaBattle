@@ -1,9 +1,8 @@
 package ru.sumenkov.SiberianSeaBattle.model.message.chat;
 
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-
-import java.util.UUID;
 
 @Data
 public class ChatMessageRequest {
@@ -11,10 +10,12 @@ public class ChatMessageRequest {
     /**
      * Текст в чате
      */
+    @NotBlank
     private String name;
     /**
      * Идентификатор для подписки (канала)
      */
-    private UUID id;
+    @NotBlank
+    private String id;
 
 }

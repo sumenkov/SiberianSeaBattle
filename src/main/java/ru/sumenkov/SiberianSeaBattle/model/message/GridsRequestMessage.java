@@ -15,10 +15,9 @@
  */
 package ru.sumenkov.SiberianSeaBattle.model.message;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.util.UUID;
 
 /**
  * Description: Запрос на получение информации поля
@@ -32,10 +31,12 @@ public class GridsRequestMessage  extends BaseRequestMessage {
     /**
      * Идентификатор канала
      */
-    private UUID chanelId;
+    @NotBlank
+    private String chanelId;
 
     /**
      * Идентификатор игры
      */
+    @NotBlank
     private String matchId;
 }

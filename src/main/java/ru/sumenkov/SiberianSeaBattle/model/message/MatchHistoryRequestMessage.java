@@ -15,10 +15,9 @@
  */
 package ru.sumenkov.SiberianSeaBattle.model.message;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.util.UUID;
 
 /**
  * Description: Запрос получения истории по игре
@@ -33,10 +32,12 @@ public class MatchHistoryRequestMessage extends BaseRequestMessage {
     /**
      * Идентификатор канала
      */
-    private UUID chanelId;
+    @NotBlank
+    private String chanelId;
 
     /**
      * Идентификатор игры
      */
+    @NotBlank
     private String matchId;
 }

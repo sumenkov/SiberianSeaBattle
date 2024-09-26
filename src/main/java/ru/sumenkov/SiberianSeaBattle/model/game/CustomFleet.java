@@ -33,6 +33,10 @@ public class CustomFleet {
      * Если статус не успешный то отображаем поле с ошибкой
      */
     private int[][] errorGrids;
+    /**
+     * Если статус не успешный текст ошибки
+     */
+    private String errorMessage;
 
     /**
      * Флот

@@ -108,11 +108,17 @@ class SiberianSeaBattleApplicationTests {
         seaBattleService.getMatch(message);
         seaBattleService.createGame(createGameRequestMessage);
         seaBattleService.getMatch(message);
-        GenerateFleetRequestMessage generateFleetRequestMessage = new GenerateFleetRequestMessage();
+
         Match match = matchService.getWaitMatchByPlayerId(player.getId()).orElse(null);
-        generateFleetRequestMessage.setMatchId(match.getId().toString());
-        generateFleetRequestMessage.setUserId(player.getId().toString());
-        seaBattleService.generateFleet(generateFleetRequestMessage);
+
+        CreateFleetRequestMessage createFleetRequestMessage = new CreateFleetRequestMessage();
+
+        createFleetRequestMessage.setMatchId(match.getId().toString());
+        createFleetRequestMessage.setUserId(player.getId().toString());
+        int[][] grids = {{3,0,0,0,0},{3,0,2,0,0},{3,0,2,0,1},{0,0,0,0,0},{0,0,0,0,1}};
+        createFleetRequestMessage.setGrids(grids);
+        seaBattleService.createFleet(createFleetRequestMessage);
+
         seaBattleService.getMatch(message);
 
 

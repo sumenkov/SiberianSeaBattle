@@ -1,5 +1,6 @@
 package ru.sumenkov.SiberianSeaBattle.model.message;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -15,14 +16,17 @@ public class CreateUserRequestMessage extends BaseRequestMessage {
     /**
      * Логин игрока
      */
+    @NotBlank
     private String username;
     /**
      * Пароль игрока
      */
+    @NotBlank
     private String password;
 
     /**
      * Идентификатор канала
      */
+    @NotBlank
     private String chanelId;
 }

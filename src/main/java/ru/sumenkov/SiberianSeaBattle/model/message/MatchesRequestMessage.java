@@ -15,10 +15,10 @@
  */
 package ru.sumenkov.SiberianSeaBattle.model.message;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.util.UUID;
 
 /**
  * Description: Запрос на получение списка игр в указанном статусе
@@ -33,9 +33,11 @@ public class MatchesRequestMessage extends BaseRequestMessage {
     /**
      * Идентификатор канала
      */
-    private UUID chanelId;
+    @NotBlank
+    private String chanelId;
     /**
      * Статус игр
      */
+    @NotNull
     private MatchStatus matchStatus;
 }

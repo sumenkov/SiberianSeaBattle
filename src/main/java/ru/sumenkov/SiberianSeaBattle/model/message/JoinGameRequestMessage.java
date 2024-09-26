@@ -15,10 +15,9 @@
  */
 package ru.sumenkov.SiberianSeaBattle.model.message;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.util.UUID;
 
 /**
  * Description: Запрос на подключение к игре
@@ -32,9 +31,11 @@ public class JoinGameRequestMessage extends BaseRequestMessage {
     /**
      * Идентификатор игры
      */
+    @NotBlank
     private String matchId;
     /**
      *  Идентификатор игрока
      */
+    @NotBlank
     private String userId;
 }
