@@ -1,5 +1,5 @@
 import { Client, IMessage } from '@stomp/stompjs'
-import { CreateGameResponse, TypedMessage, UserAuthResponse } from './websocket.types';
+import { CreateGameResponse, JoinGameResponse, TypedMessage, UserAuthResponse } from './websocket.types';
 import credentials from '../utils/credentials';
 import { GAME_TYPE } from '../views/Hub/Hub.elements';
 
@@ -8,7 +8,6 @@ const REPONSE_TIMEOUT = 10000;
 class StompSocketClient {
 
     public instance: Client | null = null;
-    public clientID: string = window.crypto.randomUUID();
 
     public isConnected = false;
     public queue: (() => void)[] = [];
@@ -59,10 +58,11 @@ class StompSocketClient {
     createGame(): Promise<TypedMessage<CreateGameResponse | null>> {
         return new Promise((resolve) => {
 
-            this.subscribe<CreateGameResponse | null>(
+            const subscription = this.subscribe<CreateGameResponse | null>(
                 '/user/#chanelId/see-battle/create-game/response',
                 (message) => {
                     resolve(message);
+                    subscription?.unsubscribe();
                 }
             );
 
@@ -73,17 +73,22 @@ class StompSocketClient {
         })
     }
 
-    registerUser(username: string, password: string): Promise<TypedMessage<UserAuthResponse | null>> {
+    registerUser(
+        username: string,
+        password: string,
+        chanelId: string
+    ): Promise<TypedMessage<UserAuthResponse | null>> {
         return new Promise((resolve, reject) => {
 
             if (!this.instance) {
                 return reject(new Error('No instance'))
             }
 
-            this.instance.subscribe(
-                `/user/${this.clientID}/see-battle/create-user/response`,
+            const subscription = this.instance.subscribe(
+                `/user/${chanelId}/see-battle/create-user/response`,
                 (message) => {
                     resolve(this.parseCallbackData(message));
+                    subscription.unsubscribe();
                 }
             )
 
@@ -92,23 +97,29 @@ class StompSocketClient {
                 body: this.prepareJSON({
                     username,
                     password,
-                    chanelId: this.clientID
+                    chanelId
                 })
             });
+
         });
     }
 
-    login(username: string, password: string): Promise<TypedMessage<UserAuthResponse | null>> {
+    login(
+        username: string,
+        password: string,
+        chanelId: string
+    ): Promise<TypedMessage<UserAuthResponse | null>> {
         return new Promise((resolve, reject) => {
 
             if (!this.instance) {
                 return reject(new Error('No instance'))
             }
 
-            this.instance.subscribe(
-                `/user/${this.clientID}/see-battle/get-user/response`,
+            const subscription = this.instance.subscribe(
+                `/user/${chanelId}/see-battle/get-user/response`,
                 (message) => {
                     resolve(this.parseCallbackData(message));
+                    subscription.unsubscribe();
                 }
             )
 
@@ -117,9 +128,51 @@ class StompSocketClient {
                 body: this.prepareJSON({
                     username,
                     password,
-                    chanelId: this.clientID
+                    chanelId
                 })
             });
+
+        });
+    }
+
+    getCurrnetGameStatus(): Promise<TypedMessage<UserAuthResponse | null>> {
+        return new Promise((resolve, reject) => {
+
+            if (!this.instance) {
+                return reject(new Error('No instance'));
+            }
+
+            const subscription = this.subscribe<UserAuthResponse | null>(
+                '/user/#chanelId/see-battle/match/response',
+                (message) => {
+                    resolve(message);
+                    subscription?.unsubscribe();
+                }
+            );
+
+            this.send('/see-battle/match/request', {}, { userId: true });
+
+        });
+    }
+
+
+    joinTheGame(matchId: string): Promise<TypedMessage<JoinGameResponse | null>> {
+        return new Promise((resolve, reject) => {
+
+            if (!this.instance) {
+                return reject(new Error('No instance'))
+            }
+
+            const subscription = this.subscribe<JoinGameResponse | null>(
+                '/user/#chanelId/see-battle/join-game/response',
+                (message) => {
+                    resolve(message)
+                    subscription?.unsubscribe();
+                }
+            );
+
+            this.send('/see-battle/join-game/request', { matchId }, { userId: true });
+
         });
     }
 
@@ -171,7 +224,10 @@ class StompSocketClient {
 
     }
 
-    subscribe<T>(request: string, callback: (data: TypedMessage<T | null>) => void) {
+    subscribe<T>(
+        request: string,
+        callback: (data: TypedMessage<T | null>) => void
+    ) {
 
         if (!this.instance) {
             throw new Error('No instance');
@@ -185,17 +241,18 @@ class StompSocketClient {
 
         request = request.replace('#chanelId', chanelId).replace('#userId', userId);
 
-        if (this.activeSubscriptions.includes(request)) {
-            return;
-        }
+        //         if (this.activeSubscriptions.includes(request)) {
+        //             return;
+        //         }
 
-        this.activeSubscriptions = this.activeSubscriptions.concat(request);
+        //         this.activeSubscriptions = this.activeSubscriptions.concat(request);
 
         const subFn = () => {
-            this.instance?.subscribe(
+            return this.instance?.subscribe(
                 request,
                 (message) => {
                     callback(this.parseCallbackData(message));
+                    //                     subscibtion?.unsubscribe();
                 }
             )
         }
@@ -204,7 +261,7 @@ class StompSocketClient {
             this.queue = this.queue.concat(subFn);
         }
         else {
-            subFn();
+            return subFn();
         }
     }
 

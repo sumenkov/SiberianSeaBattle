@@ -29,6 +29,7 @@ export default () => {
         throw new Error('Not all required element avaliable');
     }
 
+    const chanelId = window.crypto.randomUUID();
     let formAction: ACTIONS = ACTIONS.SIGN_IN;
 
     const applyFormAction = () => {
@@ -66,10 +67,10 @@ export default () => {
         errorSpan.innerText = '';
 
         if (formAction === ACTIONS.SIGN_UP) {
-            response = await socket.registerUser(username, password);
+            response = await socket.registerUser(username, password, chanelId);
         }
         else if (formAction === ACTIONS.SIGN_IN) {
-            response = await socket.login(username, password);
+            response = await socket.login(username, password, chanelId);
         }
 
         if (!response) {
