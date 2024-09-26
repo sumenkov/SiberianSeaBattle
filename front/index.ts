@@ -8,6 +8,18 @@ import credentials from './src/utils/credentials';
 import { socket } from './src/StompSocket/websocket';
 import GameMainLayout from './src/views/Game/GameMain.layout';
 
+if (!window.crypto.randomUUID) {
+    //@ts-ignore
+    window.crypto.randomUUID = function () {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
+            .replace(/[xy]/g, function (c) {
+                const r = Math.random() * 16 | 0,
+                    v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+    }
+}
+
 socket.createInstance('ws://cloud.novaris.ru:8080/ws');
 
 router.init('#app');

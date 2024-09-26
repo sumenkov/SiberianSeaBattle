@@ -25,6 +25,11 @@ export interface MatchListReponse extends ResponseBase {
     matches: SingleGame[];
 }
 
+export interface JoinGameResponse extends ResponseBase {
+    userId: string;
+    isStartGame: boolean;
+}
+
 export interface SingleGame {
     id: string;
     sizeGrid: number;
@@ -32,3 +37,4 @@ export interface SingleGame {
     opponentName: string | null;
     winnerName: string | null;
 }
+
