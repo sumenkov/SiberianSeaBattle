@@ -1,7 +1,8 @@
 import { Client, IMessage } from '@stomp/stompjs'
-import { CreateGameResponse, JoinGameResponse, TypedMessage, UserAuthResponse } from './websocket.types';
+import { CreateGameResponse, GetGameStatusResponse, JoinGameResponse, SubmitBoardResponse, TypedMessage, UserAuthResponse } from './websocket.types';
 import credentials from '../utils/credentials';
 import { GAME_TYPE } from '../views/Hub/Hub.elements';
+import { subscribe } from 'diagnostics_channel';
 
 const REPONSE_TIMEOUT = 10000;
 
@@ -135,23 +136,51 @@ class StompSocketClient {
         });
     }
 
-    getCurrnetGameStatus(): Promise<TypedMessage<UserAuthResponse | null>> {
+    getCurrnetGameStatus(): Promise<TypedMessage<GetGameStatusResponse | null>> {
         return new Promise((resolve, reject) => {
 
             if (!this.instance) {
                 return reject(new Error('No instance'));
             }
 
-            const subscription = this.subscribe<UserAuthResponse | null>(
+            const subscription = this.subscribe<GetGameStatusResponse | null>(
                 '/user/#chanelId/see-battle/match/response',
                 (message) => {
                     resolve(message);
-                    subscription?.unsubscribe();
+                    subscription?.unsubscribe()
                 }
             );
 
-            this.send('/see-battle/match/request', {}, { userId: true });
+            this.send('/see-battle/match/request', {}, {
+                userId: true
+            });
+            //             const subscription = this.subscribe<GetGameStatusResponse | null>(
+            //                 '/user/#chanelId/see-battle/grids/response',
+            //                 (message) => {
+            //                     resolve(message);
+            //                     subscription?.unsubscribe()
+            //                 }
+            //             );
+            // 
+            //             this.send('/see-battle/grids/request', {}, {
+            //                 chanelId: true,
+            //                 matchId: true
+            //             });
 
+            //             if (!this.instance) {
+            //                 return reject(new Error('No instance'));
+            //             }
+            // 
+            //             const subscription = this.subscribe<UserAuthResponse | null>(
+            //                 '/user/#chanelId/see-battle/match/response',
+            //                 (message) => {
+            //                     resolve(message);
+            //                     subscription?.unsubscribe();
+            //                 }
+            //             );
+            // 
+            //             this.send('/see-battle/match/request', {}, { userId: true });
+            // 
         });
     }
 
@@ -184,6 +213,30 @@ class StompSocketClient {
         });
     }
 
+    submitBoard(board: number[][]): Promise<TypedMessage<SubmitBoardResponse | null>> {
+        return new Promise((resolve, reject) => {
+
+            if (!this.instance) {
+                return reject(new Error('No instance'))
+            }
+
+            const subscription = this.subscribe<SubmitBoardResponse | null>(
+                '/user/#chanelId/see-battle/create-fleet/response',
+                (message) => {
+                    resolve(message)
+                    subscription?.unsubscribe();
+                }
+            );
+
+            this.send(
+                '/see-battle/create-fleet/request',
+                { grids: board },
+                { userId: true, matchId: true }
+            );
+
+        });
+    }
+
     send(
         request: string,
         data: Record<string, any>,
@@ -191,6 +244,7 @@ class StompSocketClient {
             userId?: boolean;
             chanelId?: boolean;
             username?: boolean;
+            matchId?: boolean;
         }
     ) {
 
@@ -198,13 +252,19 @@ class StompSocketClient {
             throw new Error('No instance');
         }
 
-        if (config?.chanelId || config?.userId || config?.username) {
-            const { chanelId, userId, username } = credentials.current;
+        if (
+            config?.chanelId ||
+            config?.userId ||
+            config?.username ||
+            config?.matchId
+        ) {
+            const { chanelId, userId, username, currentGameId } = credentials.current;
             data = {
                 ...data,
-                ...chanelId && { chanelId },
-                ...userId && { userId },
-                ...username && { username }
+                ...config.chanelId && { chanelId },
+                ...config.userId && { userId },
+                ...config.username && { username },
+                ...config.matchId && { matchId: currentGameId },
             }
         }
 

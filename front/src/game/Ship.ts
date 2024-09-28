@@ -93,18 +93,8 @@ class Ship {
         });
 
         canvas.addEventListener('mouseup', () => {
+            this.snapShipToBoardPostion();
             this.isDragging = false;
-            if (this.positionOnBoard.length < numberOfSegments) {
-                this.positionOnBoard = [];
-                this.positionX = this.initialX;
-                this.positionY = this.initialY;
-            }
-            else if (this.positionOnBoard.length > 0) {
-                const { cellOffeset } = this.positionOnBoard[0];
-                this.positionY = cellOffeset.top;
-                this.positionX = cellOffeset.left;
-            }
-            this.applyDimensions();
         });
 
         canvas.addEventListener('mousemove', (e) => {
@@ -124,6 +114,20 @@ class Ship {
                 this.flipTheShip();
             }
         });
+    }
+
+    snapShipToBoardPostion() {
+        if (this.positionOnBoard.length < this.numberOfSegments) {
+            this.positionOnBoard = [];
+            this.positionX = this.initialX;
+            this.positionY = this.initialY;
+        }
+        else if (this.positionOnBoard.length > 0) {
+            const { cellOffeset } = this.positionOnBoard[0];
+            this.positionY = cellOffeset.top;
+            this.positionX = cellOffeset.left;
+        }
+        this.applyDimensions();
     }
 
     applyBoardPosition(position: ShipPositionOnBoard) {

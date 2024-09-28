@@ -1,4 +1,7 @@
 export default (
+    '<div class="bg">' +
+    '     <img src="/src/assets/pattern.png" alt="">' +
+    '</div>' +
     '<div class="wrapper login-wrapper">' +
     '   <form class="panel flex-vert" id="login-form">' +
     '       <h1 id="title">Вход</h1>' +

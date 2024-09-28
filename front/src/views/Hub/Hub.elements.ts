@@ -1,7 +1,7 @@
 import { SingleGame } from "../../StompSocket/websocket.types";
 
 export enum GAME_TYPE {
-    WAITIG_FOR_OPPONENT = 'WAIT',
+    WAITING_FOR_OPPONENT = 'WAIT',
     ONGOING = 'IN_PROGRESS',
     FINISHED = 'COMPLETED'
 }
@@ -31,7 +31,7 @@ export const game = ({
         )
     }
 
-    if (type === GAME_TYPE.WAITIG_FOR_OPPONENT) {
+    if (type === GAME_TYPE.WAITING_FOR_OPPONENT) {
         return (
             '<div class="game">' +
             `   <span class="game-title">${ownerName}</span>` +

@@ -7,6 +7,7 @@ import router from './src/router';
 import credentials from './src/utils/credentials';
 import { socket } from './src/StompSocket/websocket';
 import GameMainLayout from './src/views/Game/GameMain.layout';
+import BattleFieldLayout from './src/views/Game/BattleField.layout';
 
 if (!window.crypto.randomUUID) {
     //@ts-ignore
@@ -20,6 +21,10 @@ if (!window.crypto.randomUUID) {
     }
 }
 
+window.addEventListener('beforeunload', () => {
+    credentials.clearGameStatus();
+});
+
 socket.createInstance('ws://cloud.novaris.ru:8080/ws');
 
 router.init('#app');
@@ -27,8 +32,9 @@ router.registerRoute('/', '<h1>Privet route <a href="/board">link</a></h1>');
 router.registerRoute('/login', LoginLayout, () => import('./src/views/Login/Login.script'));
 router.registerRoute('/game', GameMainLayout, () => import('./src/views/Game/GameMain.script'));
 router.registerRoute('/hub', HubLayout, () => import('./src/views/Hub/Hub.script'));
+router.registerRoute('/battleTest', BattleFieldLayout, () => import('./src/views/Game/BattleField.sctipt'));
 
-const knownPaths = ['/login', '/game', '/hub'];
+const knownPaths = ['/login', '/game', '/hub', '/battleTest'];
 
 router.registerMiddleware((_path) => {
 
@@ -60,4 +66,5 @@ if (userId && chanelId) {
 }
 else {
 }
+
 

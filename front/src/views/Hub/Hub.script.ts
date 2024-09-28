@@ -1,6 +1,6 @@
 import router from "../../router";
 import { socket } from "../../StompSocket/websocket";
-import { MatchListReponse } from "../../StompSocket/websocket.types";
+import { MatchListResponse } from "../../StompSocket/websocket.types";
 import credentials from "../../utils/credentials";
 import { game, GAME_TYPE } from "./Hub.elements";
 
@@ -15,7 +15,7 @@ window.joinTheGame = (e) => {
     const target = e.target as HTMLButtonElement;
 
     if (target.dataset.type && target.dataset.match) {
-        if (target.dataset.type === GAME_TYPE.WAITIG_FOR_OPPONENT) {
+        if (target.dataset.type === GAME_TYPE.WAITING_FOR_OPPONENT) {
             router.followURL('/game?id=' + target.dataset.match);
         }
     }
@@ -24,7 +24,9 @@ window.joinTheGame = (e) => {
 
 export default () => {
 
-    socket.subscribe<MatchListReponse>('/user/#chanelId/see-battle/matches/response', (message) => {
+    credentials.clearGameStatus();
+
+    socket.subscribe<MatchListResponse>('/user/#chanelId/see-battle/matches/response', (message) => {
 
         if (message.body?.status === 'OK') {
 
@@ -44,15 +46,15 @@ export default () => {
 
                 }
 
-                waitingHtml += game({ ...match, type: GAME_TYPE.WAITIG_FOR_OPPONENT });
+                waitingHtml += game({ ...match, type: GAME_TYPE.WAITING_FOR_OPPONENT });
             }
 
             // Чтобы не терять ссылки на контейнеры при смене роута 
-            const waintingForSecondPlayerContainer = document.querySelector('#waiting-for-second-layer');
+            const waitingForSecondPlayerContainer = document.querySelector('#waiting-for-second-layer');
             const ongoingGamesContainer = document.querySelector('#ongoing-games');
             const finishedGamesContainer = document.querySelector('#game-history');
 
-            if (!waintingForSecondPlayerContainer) {
+            if (!waitingForSecondPlayerContainer) {
                 throw new Error('No #waiting-for-second-layer');
             }
 
@@ -64,7 +66,7 @@ export default () => {
                 throw new Error('No #game-history');
             }
 
-            waintingForSecondPlayerContainer.innerHTML = waitingHtml;
+            waitingForSecondPlayerContainer.innerHTML = waitingHtml;
             ongoingGamesContainer.innerHTML = ongoingHtml;
             finishedGamesContainer.innerHTML = finishedHtml;
 
@@ -75,7 +77,7 @@ export default () => {
     });
 
     const getWaitingGameList = () => {
-        socket.getGameList(GAME_TYPE.WAITIG_FOR_OPPONENT);
+        socket.getGameList(GAME_TYPE.WAITING_FOR_OPPONENT);
     }
 
     const getOngoingGameList = () => {
@@ -91,6 +93,7 @@ export default () => {
         const response = await socket.createGame();
 
         if (response.body?.status === 'OK' && response.body.matchId) {
+            credentials.setGame({ createdGameId: response.body.matchId });
             router.followURL('/game?id=' + response.body.matchId);
         }
         else {

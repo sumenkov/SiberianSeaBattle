@@ -32,6 +32,8 @@ class Board {
 
     public shipList: Ship[] = [];
 
+    public shipPositionMap: number[][] = JSON.parse(JSON.stringify(board));
+
     constructor(props: BoardConstructor) {
         this.displayPositionX = props.position.x
         this.displayPositionY = props.position.y
@@ -43,6 +45,7 @@ class Board {
             this.mouseX = offsetX;
             this.mouseY = offsetY;
         })
+
     }
 
 
@@ -80,6 +83,7 @@ class Board {
                 }
 
                 const CELL_START_X_PLUS_HALF = cellStartX + HALF_CELL; const CELL_START_Y_PLUS_HALF = cellStartY + HALF_CELL;
+                let cellMapReference = 0;
 
                 for (const ship of this.shipList) {
                     const dPos = ship.sidesPosition;
@@ -122,9 +126,14 @@ class Board {
                                 bottom: cellStartY + CELL_SIZE
                             }
                         });
+
+                        cellMapReference = ship.numberOfSegments;
+
                         context.fillStyle = 'red';
                     }
                 }
+
+                this.shipPositionMap[i][j] = cellMapReference;
 
                 context.fillRect(
                     cellStartX + BORDER_WIDTH,

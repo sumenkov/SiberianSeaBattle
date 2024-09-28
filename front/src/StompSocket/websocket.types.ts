@@ -1,12 +1,19 @@
 import { IMessage } from '@stomp/stompjs';
 
 type status = 'OK' | 'ERROR';
+type MatchStatus =
+    'WAIT' |
+    'IN_PROGRESS' |
+    'IN_PROGRESS_WAIT_FLEET_OWNER' |
+    'IN_PROGRESS_WAIT_FLEET_OPPONENT' |
+    'START_GAME' |
+    'COMPLETED';
 
 export interface TypedMessage<T> extends Omit<IMessage, 'body'> {
     body: T
 }
 
-interface ResponseBase {
+export interface ResponseBase {
     status: status;
     errorDescription: string | null;
 }
@@ -21,12 +28,21 @@ export interface UserAuthResponse extends ResponseBase {
     chanelId: string
 }
 
-export interface MatchListReponse extends ResponseBase {
+export interface MatchListResponse extends ResponseBase {
     matches: SingleGame[];
 }
 
 export interface JoinGameResponse extends ResponseBase {
     userId: string;
+    isStartGame: boolean;
+}
+
+export interface GetGameStatusResponse extends ResponseBase {
+    matchStatus: MatchStatus;
+}
+
+export interface SubmitBoardResponse extends ResponseBase {
+    errorGrids: number[][];
     isStartGame: boolean;
 }
 
