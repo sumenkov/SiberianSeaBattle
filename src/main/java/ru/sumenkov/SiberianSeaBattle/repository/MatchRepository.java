@@ -21,4 +21,6 @@ public interface MatchRepository extends CrudRepository<MatchDao, UUID> {
     Optional<MatchDao> findByOwner_idAndStatusNot(UUID playerId, MatchStatus matchStatus);
 
     Optional<MatchDao> findByOpponent_idAndStatusNot(UUID playerId, MatchStatus matchStatus);
+
+    List<MatchDao> findAllByStatusIn(List<MatchStatus> matchStatuses);
 }

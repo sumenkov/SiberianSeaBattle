@@ -209,7 +209,7 @@ public class SeaBattleService {
                 response.setErrorGrids(customFleet.getErrorGrids());
             }
             Optional<UUID> opponentUserId = matchFleet.findOpponentUserId(userId);
-            response.setStartGame(opponentUserId.isPresent());
+            response.setStartGame(match.getStatus().equals(MatchStatus.START_GAME));
 
             notificationService.sendMessage(player.getChanelId().toString(), "/see-battle/create-fleet/response", response);
 
@@ -218,7 +218,7 @@ public class SeaBattleService {
                 Player opponentUser = getPlayer(opponentUserId.get());
                 FleetOpponentResponseMessage opponentResponse = new FleetOpponentResponseMessage();
                 opponentResponse.setStatus(Status.OK);
-                opponentResponse.setStartGame(true);
+                opponentResponse.setStartGame(response.isStartGame());
                 notificationService.sendMessage(opponentUser.getChanelId().toString(), "/see-battle/fleet-opponent/response", opponentResponse);
             }
 

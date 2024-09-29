@@ -94,6 +94,10 @@ class SiberianSeaBattleApplicationTests {
 
     @Test
     void seaBattleServiceTest() {
+        MatchesRequestMessage matchesRequestMessage = new MatchesRequestMessage();
+        matchesRequestMessage.setMatchStatus(MatchStatus.IN_PROGRESS);
+        matchesRequestMessage.setChanelId(UUID.randomUUID().toString());
+        seaBattleService.getMatches(matchesRequestMessage);
         CreateUserRequestMessage createUserRequestMessage = new CreateUserRequestMessage();
         createUserRequestMessage.setUsername("userName");
         createUserRequestMessage.setPassword("123");
@@ -120,7 +124,7 @@ class SiberianSeaBattleApplicationTests {
         seaBattleService.createFleet(createFleetRequestMessage);
 
         seaBattleService.getMatch(message);
-
+        seaBattleService.getMatches(matchesRequestMessage);
 
         CreateUserRequestMessage createUserRequestMessage2 = new CreateUserRequestMessage();
         createUserRequestMessage2.setUsername("userName2");
@@ -138,5 +142,6 @@ class SiberianSeaBattleApplicationTests {
         generateFleetRequestMessage2.setUserId(player2.getId().toString());
         seaBattleService.generateFleet(generateFleetRequestMessage2);
         seaBattleService.getMatch(message);
+        seaBattleService.getMatches(matchesRequestMessage);
     }
 }

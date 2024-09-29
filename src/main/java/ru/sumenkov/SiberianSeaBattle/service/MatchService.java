@@ -63,12 +63,14 @@ public class MatchService {
 
     @Transactional
     public List<Match> getAllMatchesByStatus(MatchStatus matchStatus) {
-        List<MatchDao> matches;
-        if(MatchStatus.ALL.equals(matchStatus)) {
-            matches = matchRepository.findAll();
-        } else {
-            matches = matchRepository.findAllByStatus(matchStatus);
-        }
+        List<MatchDao> matches = switch (matchStatus) {
+            case ALL -> matchRepository.findAll();
+            case IN_PROGRESS ->  matchRepository.findAllByStatusIn(List.of(MatchStatus.IN_PROGRESS,
+                    MatchStatus.IN_PROGRESS_WAIT_FLEET_OWNER, MatchStatus.IN_PROGRESS_WAIT_FLEET_OPPONENT,
+                    MatchStatus.START_GAME));
+            default -> matchRepository.findAllByStatus(matchStatus);
+        };
+
         return matches.stream()
                 .map(matchDao -> modelMapper.map(matchDao, Match.class))
                 .toList();
