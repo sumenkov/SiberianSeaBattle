@@ -1,14 +1,16 @@
-[HELP](HELP.md)
+
+Описание игы 
+
+Игра развернута на двух стендах
+- Первый стенд 
+    - http://each-defend.gl.at.ply.gg:1055/ - UI\frontend игры (используем мини пк с win 11)
+    - http://everything-subscribe.gl.at.ply.gg:54577 - backend (для отладки и проверки работы бека)
+- Второй стенд (быстрый)
+    - http://146.0.79.151:8080/ - UI\frontend
+    - http://cloud.novaris.ru:8080 - backend (страница для отладки)
 
 
-Сервер с игрой
-
-БЭК
-- http://everything-subscribe.gl.at.ply.gg:54577 - мини пк с win 11
-
-http://cloud.novaris.ru:8080 - отдельный сервер
-ui
-- http://146.0.79.151:8080/ 
-- http://each-defend.gl.at.ply.gg:1055/ - мини пк с win 11
+## Описание API backend
+[API](HELP.md)
 
 
