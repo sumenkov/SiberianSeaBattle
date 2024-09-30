@@ -346,7 +346,8 @@ public class SeaBattleService {
             UUID userId = UUID.fromString(request.getUserId());
             player = getPlayer(userId);
             MatchFleet matchFleet = getMatchFleet(match.getId(), player.getName());
-            Fleet opponentFleet = matchFleet.getOpponentFleet(userId);
+            UUID opponentUserId =  matchFleet.getOpponentUserId(userId);
+            Fleet opponentFleet = matchFleet.userIdToFleet().get(opponentUserId);
             boolean isHit = gameService.checkShot(opponentFleet, request.getX(), request.getY());
 
             response.setHit(isHit);
@@ -376,16 +377,17 @@ public class SeaBattleService {
             notificationService.sendMessage(player.getChanelId().toString(), "/see-battle/shot-game/response", response);
 
             //нотификация сопернику
+            var opponent = getPlayer(opponentUserId);
             int[][] ownerGrids  = GameMapper.toGridsForOwner(opponentFleet.getGrids());
             ShotGameOwnerResponseMessage opponentResponse = new ShotGameOwnerResponseMessage();
             opponentResponse.setStatus(Status.OK);
             opponentResponse.setHit(isHit);
             opponentResponse.setOpponentWin(isWin);
             opponentResponse.setGrids(ownerGrids);
-            notificationService.sendMessage(player.getChanelId().toString(), "/see-battle/shot-game-owner/response", opponentResponse);
+
+            notificationService.sendMessage(opponent.getChanelId().toString(), "/see-battle/shot-game-owner/response", opponentResponse);
             allNotification(TypeNotification.MATCH_HISTORY);
             allNotification(TypeNotification.GRIDS_UPDATE, match.getId().toString());
-
         } catch (RuntimeException re) {
             response.setStatus(Status.ERROR);
             response.setErrorDescription(re.getMessage());
@@ -396,7 +398,6 @@ public class SeaBattleService {
             log.info(String.format("End shotGame userId %s", request.getUserId()));
         }
     }
-
     /**
      * Запрос списка игр в указанном статусе
      * @param request запрос

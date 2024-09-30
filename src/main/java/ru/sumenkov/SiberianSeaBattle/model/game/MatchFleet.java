@@ -40,6 +40,10 @@ public record MatchFleet(Map<UUID, Fleet> userIdToFleet) {
         return findOpponentUserId(userId).map(userIdToFleet::get);
     }
 
+    public UUID getOpponentUserId(UUID userId) {
+        return findOpponentUserId(userId).orElseThrow(()-> new RuntimeException(String.format("Не смогли найти соперника для игрока %s", userId)));
+    }
+
     public Optional<UUID> findOpponentUserId(UUID userId) {
         for (Map.Entry<UUID, Fleet> entry: userIdToFleet.entrySet()) {
             if(!entry.getKey().equals(userId)) {
