@@ -2,27 +2,38 @@ import router from "../../router";
 import { socket } from "../../StompSocket/websocket";
 import { MatchListResponse } from "../../StompSocket/websocket.types";
 import credentials from "../../utils/credentials";
+import { GAME_STATES } from "../Game/Game.static";
 import { game, GAME_TYPE } from "./Hub.elements";
 
 declare global {
     interface Window {
         joinTheGame: (e: MouseEvent) => void;
+        timeoutIds: ReturnType<typeof setTimeout>[];
+        intervalIds:ReturnType<typeof setInterval>[];
     }
 }
 
 window.joinTheGame = (e) => {
-
     const target = e.target as HTMLButtonElement;
-
     if (target.dataset.type && target.dataset.match) {
         if (target.dataset.type === GAME_TYPE.WAITING_FOR_OPPONENT) {
             router.followURL('/game?id=' + target.dataset.match);
         }
+        else {
+            router.followURL('/watch?id=' + target.dataset.match);
+        }
     }
-
 }
 
 export default () => {
+
+    for (const interval of window.intervalIds) {
+        clearInterval(interval);
+    }
+
+    for (const timeout of window.timeoutIds) {
+        clearTimeout(timeout);
+    }
 
     credentials.clearGameStatus();
 
@@ -34,19 +45,19 @@ export default () => {
             let ongoingHtml = '';
             let finishedHtml = '';
 
+            //             console.log(message.body.matches)
             for (const match of message.body.matches) {
 
-                if (match.winnerName && match.winnerName.toLowerCase() !== 'нет данных') {
+                if (match.matchStatus === GAME_TYPE.FINISHED) {
                     finishedHtml += game({ ...match, type: GAME_TYPE.FINISHED });
                 }
-                else if (match.opponentName && match.opponentName.toLowerCase() !== 'нет данных') {
+                else if (match.matchStatus === GAME_TYPE.ONGOING) {
                     ongoingHtml += game({ ...match, type: GAME_TYPE.ONGOING });
                 }
                 else {
-
+                    waitingHtml += game({ ...match, type: GAME_TYPE.WAITING_FOR_OPPONENT });
                 }
 
-                waitingHtml += game({ ...match, type: GAME_TYPE.WAITING_FOR_OPPONENT });
             }
 
             // Чтобы не терять ссылки на контейнеры при смене роута 
@@ -75,18 +86,6 @@ export default () => {
             alert(message.body?.errorDescription || 'Не по плану пошло (временный вариант)')
         }
     });
-
-    const getWaitingGameList = () => {
-        socket.getGameList(GAME_TYPE.WAITING_FOR_OPPONENT);
-    }
-
-    const getOngoingGameList = () => {
-        socket.getGameList(GAME_TYPE.ONGOING);
-    }
-
-    const getFinihsedGameList = () => {
-        socket.getGameList(GAME_TYPE.FINISHED);
-    }
 
     const createNewGameBtn = document.querySelector<HTMLButtonElement>('#create-game');
     const createNewGame = async () => {
@@ -121,7 +120,5 @@ export default () => {
         throw new Error('No New Game button');
     }
 
-    getWaitingGameList();
-    getOngoingGameList();
-    getFinihsedGameList();
+    socket.getGameList();
 }

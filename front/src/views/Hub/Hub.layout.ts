@@ -2,7 +2,6 @@ import credentials from "../../utils/credentials"
 
 export default () => {
     const { currentCreatedGameId } = credentials.current;
-    console.log(currentCreatedGameId)
     return (
         '<nav class="status-panel flex">' +
         '   <button id="create-game">Создать игру</button>' +

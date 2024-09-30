@@ -1,4 +1,5 @@
 import { IMessage } from '@stomp/stompjs';
+import { GAME_TYPE } from '../views/Hub/Hub.elements';
 
 type status = 'OK' | 'ERROR';
 type MatchStatus =
@@ -39,6 +40,8 @@ export interface JoinGameResponse extends ResponseBase {
 
 export interface GetGameStatusResponse extends ResponseBase {
     matchStatus: MatchStatus;
+    grids?: number[][];
+    opponentGrids?: number[][];
 }
 
 export interface SubmitBoardResponse extends ResponseBase {
@@ -46,8 +49,35 @@ export interface SubmitBoardResponse extends ResponseBase {
     isStartGame: boolean;
 }
 
+export interface GenerateResponse extends ResponseBase {
+    grids: [][];
+}
+
+export interface ShotNotifacation extends ResponseBase {
+    opponentWin: boolean;
+    grids: number[][];
+    hit: boolean;
+}
+
+export interface ShootResponse extends ResponseBase {
+    isHit: boolean;
+    isWin: boolean;
+    opponentGrids: number[][];
+}
+
+export interface ObserveResponse extends ResponseBase {
+    matchStatus: MatchStatus;
+    playerOneGrids: number[][];
+    playerOneName: string;
+    playerOneId: string;
+    playerTwoGrids: number[][];
+    playerTwoName: string;
+    playerTwoId: string;
+}
+
 export interface SingleGame {
     id: string;
+    matchStatus: GAME_TYPE;
     sizeGrid: number;
     ownerName: string;
     opponentName: string | null;

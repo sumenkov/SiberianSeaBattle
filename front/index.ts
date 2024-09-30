@@ -7,7 +7,10 @@ import router from './src/router';
 import credentials from './src/utils/credentials';
 import { socket } from './src/StompSocket/websocket';
 import GameMainLayout from './src/views/Game/GameMain.layout';
-import BattleFieldLayout from './src/views/Game/BattleField.layout';
+import WatchLayout from './src/views/watch/Watch.layout';
+
+window.intervalIds = [];
+window.timeoutIds = [];
 
 if (!window.crypto.randomUUID) {
     //@ts-ignore
@@ -32,16 +35,14 @@ router.registerRoute('/', '<h1>Privet route <a href="/board">link</a></h1>');
 router.registerRoute('/login', LoginLayout, () => import('./src/views/Login/Login.script'));
 router.registerRoute('/game', GameMainLayout, () => import('./src/views/Game/GameMain.script'));
 router.registerRoute('/hub', HubLayout, () => import('./src/views/Hub/Hub.script'));
-router.registerRoute('/battleTest', BattleFieldLayout, () => import('./src/views/Game/BattleField.sctipt'));
+router.registerRoute('/watch', WatchLayout, () => import('./src/views/watch//Watch.script'));
 
-const knownPaths = ['/login', '/game', '/hub', '/battleTest'];
+const knownPaths = ['/login', '/game', '/hub', '/watch'];
 
 router.registerMiddleware((_path) => {
 
     const { userId, chanelId, username } = credentials.current;
     const isLoggedIn = userId && chanelId && username;
-
-    console.log('middlewaere running');
 
     if (window.location.pathname !== '/login' && !isLoggedIn) {
         window.location.pathname = '/login';

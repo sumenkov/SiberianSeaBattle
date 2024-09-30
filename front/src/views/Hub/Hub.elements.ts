@@ -21,7 +21,7 @@ export const game = ({
     if (type === GAME_TYPE.FINISHED) {
         return (
             '<div class="game">' +
-            '   <span>' +
+            '   <span style="border-right: 2px solid black;padding-right: 10px;">' +
             `       ${ownerName} vs ${opponentName}` +
             '   </span>' +
             '   <span>' +
@@ -46,7 +46,7 @@ export const game = ({
             '   <span>' +
             `       ${ownerName} vs ${opponentName}` +
             '   </span>' +
-            `   <button data-match="${id}" data-type="${type}" class="smaller">смотреть</button>` +
+            `   <button data-match="${id}" data-type="${type}" onclick="window.joinTheGame(event)" class="smaller">смотреть</button>` +
             '</div> '
         )
     }

@@ -94,7 +94,6 @@ const credentials = {
         }
 
         if (typeof status === 'number') {
-            console.log('setting status', status)
             this.currentGameStatus = status;
             localStorage.setItem(CREDENTIAL_KEYS.CURRENT_GAME_STATUS, String(status));
         }

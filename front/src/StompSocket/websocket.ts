@@ -1,5 +1,5 @@
 import { Client, IMessage } from '@stomp/stompjs'
-import { CreateGameResponse, GetGameStatusResponse, JoinGameResponse, SubmitBoardResponse, TypedMessage, UserAuthResponse } from './websocket.types';
+import { CreateGameResponse, GenerateResponse, GetGameStatusResponse, JoinGameResponse, ObserveResponse, ShootResponse, SubmitBoardResponse, TypedMessage, UserAuthResponse } from './websocket.types';
 import credentials from '../utils/credentials';
 import { GAME_TYPE } from '../views/Hub/Hub.elements';
 import { subscribe } from 'diagnostics_channel';
@@ -26,8 +26,6 @@ class StompSocketClient {
                 }
 
                 this.queue = [];
-
-                console.log('{ WS CONNECTED }')
             }
         });
 
@@ -205,10 +203,10 @@ class StompSocketClient {
         });
     }
 
-    getGameList(type: GAME_TYPE) {
+    getGameList() {
         const { chanelId } = credentials.current;
         this.send('/see-battle/matches/request', {
-            matchStatus: type,
+            matchStatus: 'ALL',
             chanelId
         });
     }
@@ -231,6 +229,77 @@ class StompSocketClient {
             this.send(
                 '/see-battle/create-fleet/request',
                 { grids: board },
+                { userId: true, matchId: true }
+            );
+
+        });
+    }
+
+    randomBoard(): Promise<TypedMessage<GenerateResponse | null>> {
+        return new Promise((resolve, reject) => {
+
+            if (!this.instance) {
+                return reject(new Error('No instance'))
+            }
+
+            const subscription = this.subscribe<GenerateResponse | null>(
+                '/user/#chanelId/see-battle/generate-fleet/response',
+                (message) => {
+                    resolve(message);
+                    subscription?.unsubscribe();
+                }
+            );
+
+            this.send(
+                '/see-battle/generate-fleet/request',
+                {},
+                { userId: true, matchId: true }
+            );
+
+        });
+    }
+
+    observeGame(): Promise<TypedMessage<ObserveResponse | null>> {
+        return new Promise((resolve, reject) => {
+
+            if (!this.instance) {
+                return reject(new Error('No instance'))
+            }
+
+            const subscription = this.subscribe<ObserveResponse | null>(
+                '/user/#chanelId/see-battle/grids/response',
+                (message) => {
+                    resolve(message);
+                    subscription?.unsubscribe();
+                }
+            );
+
+            this.send(
+                '/see-battle/grids/request',
+                { chanelId: true, matchId: true }
+            );
+
+        });
+    }
+
+    shoot(row: number, column: number): Promise<TypedMessage<ShootResponse | null>> {
+        return new Promise((resolve, reject) => {
+
+            if (!this.instance) {
+                return reject(new Error('No instance'))
+            }
+
+            const subscription = this.subscribe<ShootResponse | null>(
+                '/user/#chanelId/see-battle/shot-game/response',
+                (message) => {
+                    resolve(message);
+                    subscription?.unsubscribe();
+                }
+            );
+
+            this.send(
+                '/see-battle/shot-game/request',
+                { x: column, y: row },
                 { userId: true, matchId: true }
             );
 

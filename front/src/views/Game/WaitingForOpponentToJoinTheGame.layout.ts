@@ -8,8 +8,8 @@ export default (
     '            <img class="preloader-spinner" src="/src/assets/crab.png" alt="">' +
     '            <h1>Ожидание оппонента</h1>' +
     '            <div class="controls">' +
-    '                <button class="secondary">Скопировать ссылку</button>' +
-    '                <button>Отменить</button>' +
+    '                <button id="copy" class="secondary">Скопировать ссылку</button>' +
+    `                <button onclick="window.location.pathname='/hub'">Отменить</button>` +
     '            </div>' +
     '        </div>' +
     '    </div>' +

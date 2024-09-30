@@ -1,20 +1,28 @@
+import { subscribe } from "diagnostics_channel";
 import Board from "../../game/Board";
 import GameLoop from "../../game/GameLoop";
-import Ship from "../../game/Ship";
+import Ship, { DIRECTIONS } from "../../game/Ship";
 import { socket } from "../../StompSocket/websocket";
+import getShipBoardPositionsByGrid from "../../utils/getShipBoardPositionsByGrid";
+import router from "../../router";
+import { reallyRandomGrids } from "./Game.static";
 
 export default () => {
     const canvas = document.querySelector<HTMLCanvasElement>('#ship-postioning-scene');
     const submitBtn = document.querySelector<HTMLButtonElement>('#submit');
+    const generateBth = document.querySelector<HTMLButtonElement>('#random');
 
     if (!canvas) {
-        throw new Error('No #ship-postioning-scene')
+        throw new Error('No #ship-postioning-scene');
     }
 
     if (!submitBtn) {
-        throw new Error('No #submit')
+        throw new Error('No #submit');
     }
 
+    if (!generateBth) {
+        throw new Error('No #random');
+    }
 
     const board = new Board({
         canvas,
@@ -54,18 +62,77 @@ export default () => {
 
     const loop = new GameLoop(canvas);
 
-
     submitBtn.addEventListener('click', async () => {
 
         const submitResponse = await socket.submitBoard(board.shipPositionMap);
 
         if (submitResponse.body?.status == 'OK') {
-            console.log(submitResponse);
+            router.applyRoute();
         }
         else {
             alert(submitResponse.body?.errorDescription || 'Не удалось отправить');
         }
 
+    });
+
+    generateBth.addEventListener('click', async () => {
+        //         const g = reallyRandomGrids[Math.floor(Math.random() * reallyRandomGrids.length)];
+        //         console.log(g);
+        // 
+        //         const positions = getShipBoardPositionsByGrid(
+        //             g
+        //         );
+        // 
+        //         oneSegmentShip.positionOnBoard = positions.oneSegmented;
+        //         secondOneSegmentedShip.positionOnBoard = positions.secondOneSegmenteed;
+        //         twoSegmentShip.positionOnBoard = positions.twoSegmented;
+        //         threeSegmentShip.positionOnBoard = positions.threeSegmented;
+        // 
+        //         console.log(threeSegmentShip.direction === DIRECTIONS.HORIZONTAL, positions.isTwoSegmentHorizontal)
+        // 
+        //         if (positions.isTwoSegmentHorizontal && twoSegmentShip.direction !== DIRECTIONS.HORIZONTAL) {
+        //             twoSegmentShip.flipTheShip();
+        //         }
+        // 
+        //         if (positions.isThreeSegmentHorizontal && threeSegmentShip.direction !== DIRECTIONS.HORIZONTAL) {
+        //             threeSegmentShip.flipTheShip();
+        //         }
+        // 
+        //         oneSegmentShip.snapShipToBoardPostion({ boardOffset: { x: 100, y: 100 } });
+        //         secondOneSegmentedShip.snapShipToBoardPostion({ boardOffset: { x: 100, y: 100 } });
+        //         twoSegmentShip.snapShipToBoardPostion({ boardOffset: { x: 100, y: 100 } });
+        //         threeSegmentShip.snapShipToBoardPostion({ boardOffset: { x: 100, y: 100 } });
+        // 
+
+        const generateResponse = await socket.randomBoard();
+
+        if (generateResponse.body?.status == 'OK') {
+            //             const positions = getShipBoardPositionsByGrid(generateResponse.body.grids);
+            // 
+            //             oneSegmentShip.positionOnBoard = positions.oneSegmented;
+            //             secondOneSegmentedShip.positionOnBoard = positions.secondOneSegmenteed;
+            //             twoSegmentShip.positionOnBoard = positions.twoSegmented;
+            //             threeSegmentShip.positionOnBoard = positions.threeSegmented;
+            // 
+            //             if (positions.isTwoSegmentHorizontal) {
+            //                 twoSegmentShip.flipTheShip();
+            //             }
+            // 
+            //             if (positions.isThreeSegmentHorizontal) {
+            //                 threeSegmentShip.flipTheShip();
+            //             }
+            // 
+            //             oneSegmentShip.snapShipToBoardPostion();
+            //             secondOneSegmentedShip.snapShipToBoardPostion();
+            //             twoSegmentShip.snapShipToBoardPostion();
+            //             threeSegmentShip.snapShipToBoardPostion();
+
+            router.applyRoute();
+
+        }
+        else {
+            alert(generateResponse.body?.errorDescription || 'Не удалось отправить');
+        }
     });
 
     loop.use((() => {

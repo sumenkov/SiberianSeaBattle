@@ -1,10 +1,4 @@
 
-// TODO:
-// 1. Заменить чисорвые константы. Вынести их в отдельный файл.
-// 2. Хранить направление кораблей.
-// 3. Определять на какие клетки они смотрят когда их туда сюда таскаешь.
-//
-
 import getSpriteBySegmentAmount from "../utils/getSpriteBySegmentAmount";
 
 type PossibeSegmentAmount = 1 | 2 | 3;
@@ -14,6 +8,7 @@ interface ShipConstructorProps {
     initialY: number;
     numberOfSegments: PossibeSegmentAmount;
     canvas: HTMLCanvasElement;
+    isStatic?: boolean;
 }
 
 export interface FullShipPostion {
@@ -56,12 +51,16 @@ class Ship {
     public segmentSize = 100;
     public isDragging = false;
 
+    public isStatic = false;
+
+    public blockedCellsAround: { i: number; j: number }[] = [];
 
     constructor({
         initialX,
         initialY,
         numberOfSegments,
         canvas,
+        isStatic
     }: ShipConstructorProps) {
 
         this.positionX = initialX;
@@ -84,49 +83,148 @@ class Ship {
         this.canvas = canvas;
         this.sprite.src = getSpriteBySegmentAmount(numberOfSegments, this.direction);
 
-        canvas.addEventListener('mousedown', (e) => {
-            const eventX = e.offsetX;
-            const eventY = e.offsetY;
-            if (this.isPointWithinTheShip(eventX, eventY)) {
-                this.isDragging = true;
-            }
-        });
+        if (!isStatic) {
+            canvas.addEventListener('mousedown', (e) => {
+                const eventX = e.offsetX;
+                const eventY = e.offsetY;
+                if (this.isPointWithinTheShip(eventX, eventY)) {
+                    this.isDragging = true;
+                }
+            });
 
-        canvas.addEventListener('mouseup', () => {
-            this.snapShipToBoardPostion();
-            this.isDragging = false;
-        });
+            canvas.addEventListener('mouseup', () => {
+                this.snapShipToBoardPostion();
+                this.isDragging = false;
+            });
 
-        canvas.addEventListener('mousemove', (e) => {
-            if (this.isDragging) {
-                const { shipLengthY, shipLengthX } = this.getShipLehgthXY();
-                this.positionX = e.offsetX - shipLengthX / 2;
-                this.positionY = e.offsetY - shipLengthY / 2;
-                this.applyDimensions();
-            }
-        });
+            canvas.addEventListener('mousemove', (e) => {
+                if (this.isDragging) {
+                    const { shipLengthY, shipLengthX } = this.getShipLehgthXY();
+                    this.positionX = e.offsetX - shipLengthX / 2;
+                    this.positionY = e.offsetY - shipLengthY / 2;
+                    this.applyDimensions();
+                    this.blockedCellsAround = [];
+                }
+            });
 
-        canvas.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            const eventX = e.offsetX;
-            const eventY = e.offsetY;
-            if (this.isPointWithinTheShip(eventX, eventY)) {
-                this.flipTheShip();
-            }
-        });
+            canvas.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                const eventX = e.offsetX;
+                const eventY = e.offsetY;
+                if (this.isPointWithinTheShip(eventX, eventY)) {
+                    //                     this.snapShipToBoardPostion();
+                    this.blockedCellsAround = [];
+                    this.positionOnBoard = [];
+                    this.positionX = this.initialX;
+                    this.positionY = this.initialY;
+                    this.flipTheShip();
+                }
+            });
+        }
+
     }
 
-    snapShipToBoardPostion() {
+    snapShipToBoardPostion(props?: { boardOffset?: { x: number, y: number } }) {
         if (this.positionOnBoard.length < this.numberOfSegments) {
             this.positionOnBoard = [];
             this.positionX = this.initialX;
             this.positionY = this.initialY;
         }
         else if (this.positionOnBoard.length > 0) {
+            const shiftX = props?.boardOffset?.x || 0;
+            const shiftY = props?.boardOffset?.y || 0;
             const { cellOffeset } = this.positionOnBoard[0];
-            this.positionY = cellOffeset.top;
-            this.positionX = cellOffeset.left;
+            this.positionY = shiftY + cellOffeset.top;
+            this.positionX = shiftX + cellOffeset.left;
+
+            const start = this.positionOnBoard[0];
+            const finish = this.positionOnBoard[this.positionOnBoard.length - 1];
+
+            const startArray = [
+                {
+                    i: start.x - 1,
+                    j: start.y - 1
+                },
+                {
+                    i: start.x - 1,
+                    j: start.y - 0
+                },
+                {
+                    i: start.x - 1,
+                    j: start.y + 1
+                },
+
+                {
+                    i: start.x,
+                    j: start.y - 1
+                },
+                {
+                    i: start.x,
+                    j: start.y - 0
+                },
+                {
+                    i: start.x,
+                    j: start.y + 1
+                },
+
+                {
+                    i: start.x + 1,
+                    j: start.y - 1
+                },
+                {
+                    i: start.x + 1,
+                    j: start.y - 0
+                },
+                {
+                    i: start.x + 1,
+                    j: start.y + 1
+                },
+            ]
+
+            const finishArray = [
+                {
+                    i: finish.x - 1,
+                    j: finish.y - 1
+                },
+                {
+                    i: finish.x - 1,
+                    j: finish.y - 0
+                },
+                {
+                    i: finish.x - 1,
+                    j: finish.y + 1
+                },
+
+                {
+                    i: finish.x,
+                    j: finish.y - 1
+                },
+                {
+                    i: finish.x,
+                    j: finish.y - 0
+                },
+                {
+                    i: finish.x,
+                    j: finish.y + 1
+                },
+
+                {
+                    i: finish.x + 1,
+                    j: finish.y - 1
+                },
+                {
+                    i: finish.x + 1,
+                    j: finish.y - 0
+                },
+                {
+                    i: finish.x + 1,
+                    j: finish.y + 1
+                },
+            ]
+
+            this.blockedCellsAround = [...startArray, ...finishArray];
         }
+
         this.applyDimensions();
     }
 
@@ -179,7 +277,6 @@ class Ship {
 
     draw(context: CanvasRenderingContext2D) {
         const { shipLengthY, shipLengthX } = this.getShipLehgthXY();
-        //  console.log(this.gridPositionX, this.gridPositionY);
         context.drawImage(
             this.sprite,
             this.positionX,
