@@ -28,7 +28,8 @@ window.addEventListener('beforeunload', () => {
     credentials.clearGameStatus();
 });
 
-socket.createInstance('ws://cloud.novaris.ru:8080/ws');
+//socket.createInstance('ws://cloud.novaris.ru:8080/ws');
+socket.createInstance('ws://everything-subscribe.gl.at.ply.gg:54577/ws');
 
 router.init('#app');
 router.registerRoute('/', '<h1>Privet route <a href="/board">link</a></h1>');
