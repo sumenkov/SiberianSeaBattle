@@ -1,5 +1,6 @@
 import { CELL_SIZE, COLUMN_AMOUNT, ROW_AMOUNT } from "./GameValues";
-import Ship, { FullShipPostion } from "./Ship";
+import Ship from "./Ship";
+import cellBg from '../assets/cellBG.png.b64';
 
 interface CellProps {
     canvas: HTMLCanvasElement;
@@ -42,7 +43,7 @@ const board: number[][] = Array(ROW_AMOUNT).fill(column, 0);
 const BORDER_WIDTH = 1;
 const HALF_CELL = CELL_SIZE / 2;
 const waterImage = new Image(CELL_SIZE, CELL_SIZE);
-waterImage.src = '/src/assets/cellBG.png';
+waterImage.src = cellBg;
 
 class Board {
 

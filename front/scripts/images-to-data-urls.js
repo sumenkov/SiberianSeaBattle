@@ -4,16 +4,18 @@ const fs = require('fs');
 const path = require('path');
 
 const shipsPath = path.resolve(__dirname, '..', 'src', 'assets', 'ships');
+const otherAssetsPath = path.resolve(__dirname, '..', 'src', 'assets');
 const shipsDir = fs.readdirSync(shipsPath);
+const otherAssetsDir = fs.readdirSync(otherAssetsPath);
 
 const jsTemplate =
     "const dataUrl = '#';\n" +
     "export default dataUrl;"
 
-for (const shipFile of shipsDir) {
-    if (shipFile.endsWith('.png')) {
+const handler = (file, path) => {
+    if (file.endsWith('.png')) {
         try {
-            const imagePath = shipsPath + '/' + shipFile;
+            const imagePath = path + '/' + file;
             const tsOutputPath = imagePath + '.b64.ts';
             const content = fs.readFileSync(imagePath);
             const b64 = Buffer.from(content).toString('base64');
@@ -28,5 +30,13 @@ for (const shipFile of shipsDir) {
             console.error(error);
         }
     }
+}
+
+for (const file of shipsDir) {
+    handler(file, shipsPath);
+}
+
+for (const file of otherAssetsDir) {
+    handler(file, otherAssetsPath);
 }
 
