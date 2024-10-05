@@ -1,9 +1,11 @@
+import hit from '../../assets/hit.png.b64';
+
 export enum GAME_STATES {
     POSITIONING,
     PLAYING,
     LOADING,
     WAITING_FOR_OPPONENT_TO_JOIN,
-    WAITING_FOR_OPPONENT_TO_SUBMIT_TEIR_BOARD,
+    WAITING_FOR_OPPONENT_TO_SUBMIT_THEIR_BOARD,
     WIN,
     LOSE
 }
@@ -19,11 +21,11 @@ export const SetViewWaitingForOpponentToJoinEvent = new CustomEvent(
 );
 export const SetViewWaitingForOpponentToSubmitTheirBoard = new CustomEvent(
     'changeGameView',
-    { detail: { type: GAME_STATES.WAITING_FOR_OPPONENT_TO_SUBMIT_TEIR_BOARD } }
+    { detail: { type: GAME_STATES.WAITING_FOR_OPPONENT_TO_SUBMIT_THEIR_BOARD } }
 );
 
 export const hitSprite = new Image(100, 100);
-hitSprite.src = '/src/assets/hit.png';
+hitSprite.src = hit;
 
 export const reallyRandomGrids = [
     [

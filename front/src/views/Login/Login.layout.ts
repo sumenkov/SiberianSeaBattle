@@ -1,6 +1,8 @@
+import pattern from '../../assets/pattern.png.b64';
+
 export default (
     '<div class="bg">' +
-    '     <img src="/src/assets/pattern.png" alt="">' +
+    `    <img src="${pattern}" alt="">` +
     '</div>' +
     '<div class="wrapper login-wrapper">' +
     '   <form class="panel flex-vert" id="login-form">' +
